@@ -1,13 +1,13 @@
 "use client";
 import Header from "@/components/Header";
-import Main from "@/components/Main";
+import Admin from "@/components/admin/Admin";
 
 export default function Home() {
    return (
       <>
          <Header />
          <main>
-            <Main />
+            <Admin />
          </main>
       </>
    );
