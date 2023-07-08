@@ -47,15 +47,17 @@ const Header = () => {
                   Researcher
                </Text>
             </Link>
-            <Text
-               fontSize="1.5rem"
-               fontWeight="bold"
-               color="blue.500"
-               cursor="pointer"
-               ml={10}
-            >
-               Discover
-            </Text>
+            <Link href="/investor">
+               <Text
+                  fontSize="1.5rem"
+                  fontWeight="bold"
+                  color="blue.500"
+                  cursor="pointer"
+                  ml={10}
+               >
+                  Discover
+               </Text>
+            </Link>
             <Link href="/admin">
                <Text
                   fontSize="1.5rem"
