@@ -82,7 +82,7 @@ describe("FundsFactory Contract", function () {
       });
    });
 
-   describe.skip("Researcher functions", function () {
+   describe("Researcher functions", function () {
       describe("Adding a project", function () {
          beforeEach(async function () {
             [admin, researcher1, researcher2, researcher3] =
@@ -100,6 +100,14 @@ describe("FundsFactory Contract", function () {
                "dupond",
                "kevin",
                "parkeon"
+            );
+            await fundsFactory.changeResearcherStatus(
+               researcher1.address,
+               true
+            );
+            await fundsFactory.changeResearcherStatus(
+               researcher2.address,
+               true
             );
          });
 
@@ -182,6 +190,10 @@ describe("FundsFactory Contract", function () {
                "dupont",
                "david",
                "archeon"
+            );
+            await fundsFactory.changeResearcherStatus(
+               researcher1.address,
+               true
             );
             await fundsFactory
                .connect(researcher1)
