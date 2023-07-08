@@ -45,7 +45,8 @@ contract FundsFactory is Ownable {
 
     struct ResearchProject {
         uint id;
-        string name;
+        string title;
+        string description;
         uint creationTime;
         bool isAccepted;
         address researcher;
@@ -127,6 +128,8 @@ contract FundsFactory is Ownable {
     }
 
     function addResearchProject(
+        string memory title,
+        string memory description,
         uint amountAsked,
         string memory projectDetailsUri
     ) external onlyResearcher {
@@ -137,6 +140,8 @@ contract FundsFactory is Ownable {
             "Project detail is mandatory"
         );
         ResearchProject memory project;
+        project.title = title;
+        project.description = description;
         project.creationTime = block.timestamp;
         project.researcher = msg.sender;
         project.amountAsked = amountAsked;

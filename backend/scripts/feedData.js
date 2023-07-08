@@ -52,9 +52,24 @@ async function main() {
    await transaction.wait();
 
    // Create projects
-   await fundsFactory.addResearchProject(1000, "URI");
-   await fundsFactory.addResearchProject(10000, "URI2");
-   await fundsFactory.addResearchProject(100000, "URI3");
+   await fundsFactory.addResearchProject(
+      "Projet1",
+      "Description du projet1",
+      1000,
+      "URI"
+   );
+   await fundsFactory.addResearchProject(
+      "Projet2",
+      "Description du projet2",
+      10000,
+      "URI2"
+   );
+   await fundsFactory.addResearchProject(
+      "Projet3",
+      "Description du projet3",
+      100000,
+      "URI3"
+   );
 
    // Valid first project
    await fundsFactory.validResearchProject(0);

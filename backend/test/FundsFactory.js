@@ -65,7 +65,7 @@ describe("FundsFactory Contract", function () {
             );
             await fundsFactory
                .connect(researcher1)
-               .addResearchProject(100, "uri1");
+               .addResearchProject("projet1", "description1", 100, "uri1");
          });
 
          it("emit an event when validate a project", async function () {
@@ -113,7 +113,9 @@ describe("FundsFactory Contract", function () {
 
          it("emit an event when adding a project", async function () {
             await expect(
-               fundsFactory.connect(researcher1).addResearchProject(100, "uri1")
+               fundsFactory
+                  .connect(researcher1)
+                  .addResearchProject("projet1", "description1", 100, "uri1")
             )
                .to.emit(fundsFactory, "ResearchProjectCreated")
                .withArgs(0, researcher1.address);
@@ -122,30 +124,36 @@ describe("FundsFactory Contract", function () {
          it("get project info from researcher", async function () {
             await fundsFactory
                .connect(researcher1)
-               .addResearchProject(100, "uri1");
+               .addResearchProject("projet1", "description1", 100, "uri1");
             const project1 = await fundsFactory
                .connect(researcher1)
                .getResearchProject(0);
+            expect(project1.title).to.be.equal("projet1");
+            expect(project1.description).to.be.equal("description1");
             expect(project1.researcher).to.be.equal(researcher1.address);
             expect(project1.amountAsked).to.be.equal(new BN(100));
             expect(project1.projectDetailsUri).to.be.equal("uri1");
 
             await fundsFactory
                .connect(researcher2)
-               .addResearchProject(200, "uri2");
+               .addResearchProject("projet2", "description2", 200, "uri2");
             const project2 = await fundsFactory
                .connect(researcher2)
                .getResearchProject(1);
+            expect(project2.title).to.be.equal("projet2");
+            expect(project2.description).to.be.equal("description2");
             expect(project2.researcher).to.be.equal(researcher2.address);
             expect(project2.amountAsked).to.be.equal(new BN(200));
             expect(project2.projectDetailsUri).to.be.equal("uri2");
 
             await fundsFactory
                .connect(researcher1)
-               .addResearchProject(300, "uri3");
+               .addResearchProject("projet3", "description3", 300, "uri3");
             const project3 = await fundsFactory
                .connect(researcher1)
                .getResearchProject(2);
+            expect(project3.title).to.be.equal("projet3");
+            expect(project3.description).to.be.equal("description3");
             expect(project3.researcher).to.be.equal(researcher1.address);
             expect(project3.amountAsked).to.be.equal(new BN(300));
             expect(project3.projectDetailsUri).to.be.equal("uri3");
@@ -160,20 +168,24 @@ describe("FundsFactory Contract", function () {
 
          it("should fail if amount is 0", async function () {
             await expect(
-               fundsFactory.connect(researcher1).addResearchProject(0, "uri1")
+               fundsFactory
+                  .connect(researcher1)
+                  .addResearchProject("projet1", "description1", 0, "uri1")
             ).to.be.revertedWith("Amount asked should not be 0");
          });
 
          it("should fail if details is empty", async function () {
             await expect(
-               fundsFactory.connect(researcher1).addResearchProject(100, "")
+               fundsFactory
+                  .connect(researcher1)
+                  .addResearchProject("projet1", "description1", 100, "")
             ).to.be.revertedWith("Project detail is mandatory");
          });
 
          it("should fail if get unknown project", async function () {
             await fundsFactory
                .connect(researcher1)
-               .addResearchProject(100, "uri1");
+               .addResearchProject("projet1", "description1", 100, "uri1");
             await expect(
                fundsFactory.connect(researcher1).getResearchProject(1)
             ).to.be.revertedWith("Project id dont exist");
@@ -197,7 +209,7 @@ describe("FundsFactory Contract", function () {
             );
             await fundsFactory
                .connect(researcher1)
-               .addResearchProject(100, "uri1");
+               .addResearchProject("projet1", "description1", 100, "uri1");
             await fundsFactory.validResearchProject(0);
          });
 
@@ -233,7 +245,12 @@ describe("FundsFactory Contract", function () {
          );
          await fundsFactory
             .connect(researcher1)
-            .addResearchProject(ethers.utils.parseEther("100"), "uri1");
+            .addResearchProject(
+               "projet1",
+               "description1",
+               ethers.utils.parseEther("100"),
+               "uri1"
+            );
          await fundsFactory.validResearchProject(0);
          await fundsFactory
             .connect(researcher1)
