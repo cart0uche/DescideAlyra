@@ -13,7 +13,7 @@ function OneResearcher({ researcher }) {
    } = useResearcher();
 
    useEffect(() => {
-      fetchResearcherInfo(researcher);
+      fetchResearcherInfo(researcher.address);
    }, []);
    
 

@@ -69,7 +69,7 @@ export function useResearcher() {
       },
    });
 
-   const fetchResearcherInfo = async (researcher) => {
+   const fetchResearcherInfo = async (address) => {
       const data = await readContract({
          address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
          abi: Contract.abi,
@@ -80,7 +80,7 @@ export function useResearcher() {
          onSuccess(data) {
             setResearcherInfo(data);
          },
-         args: [researcher && researcher.address],
+         args: [address],
          account: addressAccount,
       });
       setResearcherInfo(data);
