@@ -1,61 +1,38 @@
-import { Tr, Td, Button, useToast } from "@chakra-ui/react";
+import { Button, Tr, Td } from "@chakra-ui/react";
 import { CheckIcon } from "@chakra-ui/icons";
 import { v4 as uuidv4 } from "uuid";
-import { useContractWrite, useContractRead, useAccount } from "wagmi";
-import Contract from "@/public/FundsFactory.json";
+import { useResearcher } from "@/hooks/useResearcher";
+import { useEffect } from "react";
 
 function OneResearcher({ researcher }) {
-   const toast = useToast();
-   const { address: addrAccount } = useAccount();
+   const {
+      fetchResearcherInfo,
+      changeResearcherStatus,
+      isLoadingChangeResearcherStatus,
+      researcherInfo,
+   } = useResearcher();
 
-   const { write, isLoading } = useContractWrite({
-      address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-      abi: Contract.abi,
-      functionName: "changeResearcherStatus",
-      args: [researcher.address, true],
-      onError(error) {
-         console.log(error);
-         onClose();
-         toast({
-            status: "error",
-            isClosable: true,
-            position: "top-middle",
-            title: "L'inscription a échoué",
-            description: error.message,
-         });
-      },
-      onSuccess(data) {
-         toast({
-            status: "info",
-            isClosable: true,
-            position: "top-middle",
-            title: "Reasercher has been validated",
-         });
-      },
-   });
+   useEffect(() => {
+      fetchResearcherInfo(researcher);
+   }, []);
+   
 
    const getResearcherInfo = () => {
-      if (dataResearcher !== undefined && dataResearcher.isValidated) {
+      if (researcherInfo !== undefined && researcherInfo.isValidated) {
          return <CheckIcon />;
       } else {
          return (
-            <Button isLoading={isLoading} onClick={write}>
+            <Button
+               isLoading={isLoadingChangeResearcherStatus}
+               onClick={() => {
+                  changeResearcherStatus({ args: [researcher.address, true] });
+               }}
+            >
                Valid
             </Button>
          );
       }
    };
-
-   const { data: dataResearcher, error } = useContractRead({
-      address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-      abi: Contract.abi,
-      functionName: "getResearcher",
-      onError(error) {
-         console.log("Error", error);
-      },
-      args: [researcher.address],
-      account: addrAccount,
-   });
 
    return (
       <Tr key={uuidv4()}>

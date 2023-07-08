@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import {
    Flex,
    Box,
@@ -12,43 +11,12 @@ import {
    useToast,
 } from "@chakra-ui/react";
 
-import { publicClient } from "../client";
-import { parseAbiItem } from "viem";
 import OneResearcher from "./OneResearcher";
 import { v4 as uuidv4 } from "uuid";
+import { useResearcher } from "@/hooks/useResearcher";
 
 function ResearchList() {
-   const [researchers, setResearchers] = useState([]);
-
-   async function fetchResearcher(setter) {
-      const filter = await publicClient.createEventFilter({
-         address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-         event: parseAbiItem(
-            "event ResearcherAdded(address, string, string, string)"
-         ),
-         fromBlock: 0n,
-      });
-
-      const logs = await publicClient.getFilterLogs({ filter });
-
-      const parsedResearchers = logs.map((log, index) => {
-         const address = log.args[0];
-         const lastname = log.args[1];
-         const forname = log.args[2];
-         const company = log.args[3];
-         return {
-            address,
-            lastname,
-            forname,
-            company,
-         };
-      });
-      setResearchers(parsedResearchers);
-   }
-
-   useEffect(() => {
-      fetchResearcher();
-   }, []);
+   const { researchers } = useResearcher();
 
    return (
       <div>
@@ -66,12 +34,13 @@ function ResearchList() {
                      </Thead>
 
                      <Tbody>
-                        {researchers.map((researcher) => (
-                           <OneResearcher
-                              key={uuidv4()}
-                              researcher={researcher}
-                           />
-                        ))}
+                        {researchers &&
+                           researchers.map((researcher) => (
+                              <OneResearcher
+                                 key={uuidv4()}
+                                 researcher={researcher}
+                              />
+                           ))}
                      </Tbody>
                   </Table>
                </TableContainer>
