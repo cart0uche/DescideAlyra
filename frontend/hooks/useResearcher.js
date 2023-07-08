@@ -17,12 +17,15 @@ export function useResearcher() {
 
    // Get all researcher
    async function fetchResearcher() {
+      const blockNumber = BigInt(
+         Number(await publicClient.getBlockNumber()) - 15000
+      );
       const filter = await publicClient.createEventFilter({
          address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
          event: parseAbiItem(
             "event ResearcherAdded(address, string, string, string)"
          ),
-         fromBlock: 0n,
+         fromBlock: blockNumber < 0 ? 0n : blockNumber,
       });
 
       const logs = await publicClient.getFilterLogs({ filter });
@@ -45,10 +48,13 @@ export function useResearcher() {
    // Get all projects
    async function fetchProject() {
       console.log("--------> fetchProject");
+      const blockNumber = BigInt(
+         Number(await publicClient.getBlockNumber()) - 15000
+      );
       const filter = await publicClient.createEventFilter({
          address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
          event: parseAbiItem("event ResearchProjectCreated(uint256, address)"),
-         fromBlock: 0n,
+         fromBlock: blockNumber < 0 ? 0n : blockNumber,
       });
 
       const logs = await publicClient.getFilterLogs({ filter });
