@@ -42,6 +42,22 @@ async function main() {
       "Roma",
       "Gamma"
    );
+
+   // Valid first researcher
+   const transaction = await fundsFactory.changeResearcherStatus(
+      "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      true
+   );
+
+   await transaction.wait();
+
+   // Create projects
+   await fundsFactory.addResearchProject(1000, "URI");
+   await fundsFactory.addResearchProject(10000, "URI2");
+   await fundsFactory.addResearchProject(100000, "URI3");
+
+   // Valid first project
+   await fundsFactory.validResearchProject(0);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

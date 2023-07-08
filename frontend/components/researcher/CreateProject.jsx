@@ -7,11 +7,9 @@ import {
    VStack,
    Box,
 } from "@chakra-ui/react";
-import { useAccount } from "wagmi";
 import { useResearcher } from "@/hooks/useResearcher";
 
 function CreateProject() {
-   const { address } = useAccount();
    const { createProject, isLoadingCreateProject } = useResearcher();
    const [inputValue, setInputValue] = useState({
       projectName: "",
@@ -73,6 +71,7 @@ function CreateProject() {
             maxW="400px"
             mx="auto"
             boxShadow="md"
+            mt={20}
          >
             <VStack spacing={4}>
                <FormControl id="projectName">

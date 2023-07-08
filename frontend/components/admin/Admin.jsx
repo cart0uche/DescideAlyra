@@ -9,6 +9,7 @@ import {
    Flex,
    Box,
 } from "@chakra-ui/react";
+import ProjectList from "./ProjectList";
 
 function Admin() {
    return (
@@ -24,6 +25,13 @@ function Admin() {
                   <Flex justifyContent="center" alignItems="center">
                      <Box w="300px">
                         <ResearchList />
+                     </Box>
+                  </Flex>
+               </TabPanel>
+               <TabPanel>
+                  <Flex justifyContent="center" alignItems="center">
+                     <Box w="300px">
+                        <ProjectList />
                      </Box>
                   </Flex>
                </TabPanel>

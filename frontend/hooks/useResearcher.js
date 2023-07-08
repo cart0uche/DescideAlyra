@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
-import { useAccount, useContractWrite, useContractRead } from "wagmi";
+import { useState, useEffect } from "react";
+import { useAccount, useContractWrite } from "wagmi";
 import { publicClient } from "../conf/client";
 import { parseAbiItem } from "viem";
 import Contract from "@/public/FundsFactory.json";
@@ -10,7 +10,9 @@ export function useResearcher() {
    const { isConnected, address: addressAccount } = useAccount();
    const [isResearcher, setIsResearcher] = useState(null);
    const [researchers, setResearchers] = useState([]);
+   const [projects, setProjects] = useState([]);
    const [researcherInfo, setResearcherInfo] = useState();
+   const [projectInfo, setProjectInfo] = useState();
    const toast = useToast();
 
    // Get all researcher
@@ -38,6 +40,27 @@ export function useResearcher() {
          };
       });
       setResearchers(parsedResearchers);
+   }
+
+   // Get all projects
+   async function fetchProject() {
+      const filter = await publicClient.createEventFilter({
+         address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+         event: parseAbiItem("event ResearchProjectCreated(uint256, address)"),
+         fromBlock: 0n,
+      });
+
+      const logs = await publicClient.getFilterLogs({ filter });
+
+      const parsedProjects = logs.map((log, index) => {
+         const projectId = log.args[0];
+         const researcherAddress = log.args[1];
+         return {
+            projectId,
+            researcherAddress,
+         };
+      });
+      setProjects(parsedProjects);
    }
 
    // Change status of one researcher
@@ -69,6 +92,33 @@ export function useResearcher() {
       },
    });
 
+   // Change status of one researcher
+   const { write: validProject, isLoading: isLoadingValidProject } =
+      useContractWrite({
+         address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+         abi: Contract.abi,
+         functionName: "validResearchProject",
+         account: addressAccount,
+         onError(error) {
+            console.log(error);
+            toast({
+               status: "error",
+               isClosable: true,
+               position: "top-middle",
+               title: "La validation du projet a échoué",
+               description: error.message,
+            });
+         },
+         onSuccess(data) {
+            toast({
+               status: "info",
+               isClosable: true,
+               position: "top-middle",
+               title: "Project has been validated",
+            });
+         },
+      });
+
    const fetchResearcherInfo = async (address) => {
       const data = await readContract({
          address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
@@ -77,13 +127,30 @@ export function useResearcher() {
          onError(error) {
             console.log("Error", error);
          },
-         onSuccess(data) {
-            setResearcherInfo(data);
-         },
+         onSuccess(data) {},
          args: [address],
          account: addressAccount,
       });
       setResearcherInfo(data);
+   };
+
+   const fetchProjectInfo = async (id) => {
+      console.log("->fetchProjectInfo ", id);
+      const data = await readContract({
+         address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+         abi: Contract.abi,
+         functionName: "getResearchProject",
+         onError(error) {
+            console.log("fetchProjectInfo FAILED");
+            console.log("Error", error);
+         },
+         onSuccess(data) {
+            console.log("fetchProjectInfo SUCCESS");
+         },
+         args: [Number(id)],
+         account: addressAccount,
+      });
+      setProjectInfo(data);
    };
 
    const { write: subscribe, isLoadingSubscribe } = useContractWrite({
@@ -110,33 +177,33 @@ export function useResearcher() {
       },
    });
 
-   const { write: createProject, isLoadingCreateProject } =
-      useContractWrite({
-         address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-         abi: Contract.abi,
-         functionName: "addResearchProject",
-         onError: (error) => {
-            console.log(error);
-            toast({
-               status: "error",
-               isClosable: true,
-               position: "top-middle",
-               title: "La creation du projet a échoué",
-               description: error.message,
-            });
-         },
-         onSuccess: (data) => {
-            toast({
-               status: "info",
-               isClosable: true,
-               position: "top-middle",
-               title: "Projet crée",
-            });
-         },
-      });
+   const { write: createProject, isLoadingCreateProject } = useContractWrite({
+      address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+      abi: Contract.abi,
+      functionName: "addResearchProject",
+      onError: (error) => {
+         console.log(error);
+         toast({
+            status: "error",
+            isClosable: true,
+            position: "top-middle",
+            title: "La creation du projet a échoué",
+            description: error.message,
+         });
+      },
+      onSuccess: (data) => {
+         toast({
+            status: "info",
+            isClosable: true,
+            position: "top-middle",
+            title: "Projet crée",
+         });
+      },
+   });
 
    useEffect(() => {
       fetchResearcher();
+      fetchProject();
    }, [isConnected, addressAccount]);
 
    return {
@@ -149,5 +216,11 @@ export function useResearcher() {
       isLoadingSubscribe,
       createProject,
       isLoadingCreateProject,
+      projects,
+      setProjects,
+      fetchProjectInfo,
+      projectInfo,
+      validProject,
+      isLoadingValidProject,
    };
 }
