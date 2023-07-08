@@ -1,7 +1,7 @@
 import { Button, Tr, Td } from "@chakra-ui/react";
 import { CheckIcon } from "@chakra-ui/icons";
 import { v4 as uuidv4 } from "uuid";
-import { useResearcher } from "@/hooks/useResearcher";
+import { useProject } from "@/hooks/useProject";
 import { useEffect } from "react";
 
 function OneProject({ project }) {
@@ -10,7 +10,7 @@ function OneProject({ project }) {
       validProject,
       isLoadingValidProject,
       projectInfo,
-   } = useResearcher();
+   } = useProject();
 
    useEffect(() => {
       fetchProjectInfo(project.projectId);

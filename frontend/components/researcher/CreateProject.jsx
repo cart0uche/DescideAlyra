@@ -7,10 +7,10 @@ import {
    VStack,
    Box,
 } from "@chakra-ui/react";
-import { useResearcher } from "@/hooks/useResearcher";
+import { useProject } from "@/hooks/useProject";
 
 function CreateProject() {
-   const { createProject, isLoadingCreateProject } = useResearcher();
+   const { createProject, isLoadingCreateProject } = useProject();
    const [inputValue, setInputValue] = useState({
       projectTitle: "",
       projectDescription: "",

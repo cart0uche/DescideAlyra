@@ -6,10 +6,10 @@ import {
    Divider,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-import { useResearcher } from "@/hooks/useResearcher";
+import { useProject } from "@/hooks/useProject";
 
 function CardProject({ project }) {
-   const { fetchProjectInfo, projectInfo } = useResearcher();
+   const { fetchProjectInfo, projectInfo } = useProject();
 
    useEffect(() => {
       fetchProjectInfo(project.projectId);
@@ -22,9 +22,7 @@ function CardProject({ project }) {
                <CardHeader>
                   <Heading size="sm"> Proposal {projectInfo.title}</Heading>
                </CardHeader>
-               <CardBody>
-                  {projectInfo.description.slice(0, 100)} + "..."
-               </CardBody>
+               <CardBody>{projectInfo.description.slice(0, 100)} ...</CardBody>
                <Divider />
                <CardFooter>
                   <Heading size="s" color="#3182CE">

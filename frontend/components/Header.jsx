@@ -54,7 +54,7 @@ const Header = () => {
                cursor="pointer"
                ml={10}
             >
-               Project
+               Discover
             </Text>
             <Link href="/admin">
                <Text

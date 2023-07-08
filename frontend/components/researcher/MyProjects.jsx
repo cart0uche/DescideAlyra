@@ -7,12 +7,12 @@ import {
    Flex,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { useResearcher } from "@/hooks/useResearcher";
+import { useProject } from "@/hooks/useProject";
 import CardProject from "./CardProject";
 import { v4 as uuidv4 } from "uuid";
 
 function MyProjects() {
-   const { projects } = useResearcher();
+   const { projects } = useProject();
 
    console.log("myProjects: ");
    console.log(projects);

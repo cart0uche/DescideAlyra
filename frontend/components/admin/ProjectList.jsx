@@ -8,12 +8,12 @@ import {
    Th,
    TableContainer,
 } from "@chakra-ui/react";
-import { useResearcher } from "@/hooks/useResearcher";
+import { useProject } from "@/hooks/useProject";
 import { v4 as uuidv4 } from "uuid";
 import OneProject from "./OneProject";
 
 function ProjectList() {
-   const { projects } = useResearcher();
+   const { projects } = useProject();
 
    console.log("projects :");
    console.log(projects);
