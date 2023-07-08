@@ -86,6 +86,30 @@ export function useResearcher() {
       setResearcherInfo(data);
    };
 
+   const { write: subscribe, isLoadingSubscribe } = useContractWrite({
+      address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+      abi: Contract.abi,
+      functionName: "addResearcher",
+      onError: (error) => {
+         console.log(error);
+         toast({
+            status: "error",
+            isClosable: true,
+            position: "top-middle",
+            title: "L'inscription a échoué",
+            description: error.message,
+         });
+      },
+      onSuccess: (data) => {
+         toast({
+            status: "info",
+            isClosable: true,
+            position: "top-middle",
+            title: "Inscription réalisée",
+         });
+      },
+   });
+
    useEffect(() => {
       fetchResearcher();
    }, [isConnected, addressAccount]);
@@ -96,5 +120,7 @@ export function useResearcher() {
       isLoadingChangeResearcherStatus,
       fetchResearcherInfo,
       researcherInfo,
+      subscribe,
+      isLoadingSubscribe,
    };
 }

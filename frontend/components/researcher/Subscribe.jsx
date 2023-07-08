@@ -6,14 +6,13 @@ import {
    Button,
    VStack,
    Box,
-   useToast,
 } from "@chakra-ui/react";
-import { useContractWrite, useAccount } from "wagmi";
-import Contract from "@/public/FundsFactory.json";
+import { useAccount } from "wagmi";
+import { useResearcher } from "@/hooks/useResearcher";
 
 function Subscribe() {
-   const toast = useToast();
    const { address } = useAccount();
+   const { subscribe, isLoadingSubscribe } = useResearcher();
    const [inputValue, setInputValue] = useState({
       firstName: "",
       lastName: "",
@@ -50,7 +49,14 @@ function Subscribe() {
          formData.company !== ""
       ) {
          console.log("WRITE !  ");
-         write();
+         subscribe({
+            args: [
+               address,
+               formData.firstName,
+               formData.lastName,
+               formData.company,
+            ],
+         });
       }
 
       return () => {
@@ -61,31 +67,6 @@ function Subscribe() {
          });
       };
    }, [formData]);
-
-   const { write, isLoading } = useContractWrite({
-      address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-      abi: Contract.abi,
-      functionName: "addResearcher",
-      args: [address, formData.firstName, formData.lastName, formData.company],
-      onError: (error) => {
-         console.log(error);
-         toast({
-            status: "error",
-            isClosable: true,
-            position: "top-middle",
-            title: "L'inscription a échoué",
-            description: error.message,
-         });
-      },
-      onSuccess: (data) => {
-         toast({
-            status: "info",
-            isClosable: true,
-            position: "top-middle",
-            title: "Inscription réalisée",
-         });
-      },
-   });
 
    return (
       <Box
@@ -130,7 +111,7 @@ function Subscribe() {
             <Button
                colorScheme="blue"
                onClick={handleSubmit}
-               isLoading={isLoading}
+               isLoading={isLoadingSubscribe}
             >
                Valider
             </Button>
