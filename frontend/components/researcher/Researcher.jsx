@@ -2,7 +2,8 @@ import React, { useEffect } from "react";
 import Subscribe from "./Subscribe";
 import { useResearcher } from "@/hooks/useResearcher";
 import { useAccount } from "wagmi";
-import { Text } from "@chakra-ui/react";
+import { Text, Box } from "@chakra-ui/react";
+import ResearcherBoard from "./ResearcherBoard";
 
 function Researcher() {
    const { address } = useAccount();
@@ -15,20 +16,20 @@ function Researcher() {
    console.log(researcherInfo);
 
    return (
-      <>
+      <Box textAlign="center" p="2rem">
          {researcherInfo && researcherInfo.exist ? (
             researcherInfo.isValidated ? (
-               <Text>Content for validated researcher</Text>
+               <ResearcherBoard />
             ) : (
-               <Text>
-                  Your registration has been taken into account, it will be
-                  validated as soon as possible
+               <Text fontSize="1.2rem">
+                  Your registration has been taken into account. It will be
+                  validated as soon as possible.
                </Text>
             )
          ) : (
             <Subscribe />
          )}
-      </>
+      </Box>
    );
 }
 

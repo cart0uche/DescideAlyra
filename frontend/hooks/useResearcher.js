@@ -110,6 +110,31 @@ export function useResearcher() {
       },
    });
 
+   const { write: createProject, isLoadingCreateProject } =
+      useContractWrite({
+         address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+         abi: Contract.abi,
+         functionName: "addResearchProject",
+         onError: (error) => {
+            console.log(error);
+            toast({
+               status: "error",
+               isClosable: true,
+               position: "top-middle",
+               title: "La creation du projet a échoué",
+               description: error.message,
+            });
+         },
+         onSuccess: (data) => {
+            toast({
+               status: "info",
+               isClosable: true,
+               position: "top-middle",
+               title: "Projet crée",
+            });
+         },
+      });
+
    useEffect(() => {
       fetchResearcher();
    }, [isConnected, addressAccount]);
@@ -122,5 +147,7 @@ export function useResearcher() {
       researcherInfo,
       subscribe,
       isLoadingSubscribe,
+      createProject,
+      isLoadingCreateProject,
    };
 }

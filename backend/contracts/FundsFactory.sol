@@ -45,6 +45,7 @@ contract FundsFactory is Ownable {
 
     struct ResearchProject {
         uint id;
+        string name;
         uint creationTime;
         bool isAccepted;
         address researcher;

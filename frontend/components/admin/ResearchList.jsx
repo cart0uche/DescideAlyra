@@ -6,9 +6,7 @@ import {
    Tbody,
    Tr,
    Th,
-   Td,
    TableContainer,
-   useToast,
 } from "@chakra-ui/react";
 
 import OneResearcher from "./OneResearcher";
