@@ -15,7 +15,8 @@ import OneProject from "./OneProject";
 function ProjectList() {
    const { projects } = useResearcher();
 
-   console.log("projects", projects);
+   console.log("projects :");
+   console.log(projects);
 
    return (
       <div>

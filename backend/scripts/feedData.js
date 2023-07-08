@@ -53,20 +53,20 @@ async function main() {
 
    // Create projects
    await fundsFactory.addResearchProject(
-      "Projet1",
-      "Description du projet1",
+      "Building a low-cost DIY bioreactor system for sustainable microbial cultivation",
+      "Our project aims to develop a food-grade, low-cost, bubble column bioreactor system for easy and sustainable cultivation of filamentous fungi, yeast, bacteria, and algae. The bioreactor system will be designed to cost less than $300, becoming accessible to anyone interested in sustainable agriculture, food security, and biotech. By sharing our project outcomes and resources, we aim to inspire others to build their own bioreactors and explore the potential of microbial cultivation.",
       1000,
       "URI"
    );
    await fundsFactory.addResearchProject(
-      "Projet2",
-      "Description du projet2",
+      "Creating a field dissection microscope that can be built in the field",
+      "Microscopes are one of the most important scientific tools. There are no shortage of low-cost microscope designs. However, different experiments need different types of microscope. Field microscopes must be robust enough for tough conditions, ideally they should be repairable in the field.",
       10000,
       "URI2"
    );
    await fundsFactory.addResearchProject(
-      "Projet3",
-      "Description du projet3",
+      "Developing a low-cost, high-sensitivity solution for phage concentration detection",
+      "Phages are hard-to-detect bacteria viruses, crucial for understanding microbial ecosystems. We aim to characterise phage presence and abundance by developing a portable, low-cost, open-source instrument for microfluidic droplet ddPCR based on a UC2 light sheet microscope. This tool will democratise access to phage quantification, advancing research in diagnostics, ecology, and phage therapy, transforming our understanding of viral infections. ",
       100000,
       "URI3"
    );

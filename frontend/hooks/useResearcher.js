@@ -44,6 +44,7 @@ export function useResearcher() {
 
    // Get all projects
    async function fetchProject() {
+      console.log("--------> fetchProject");
       const filter = await publicClient.createEventFilter({
          address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
          event: parseAbiItem("event ResearchProjectCreated(uint256, address)"),

@@ -8,6 +8,7 @@ import {
    Box,
 } from "@chakra-ui/react";
 import CreateProject from "./CreateProject";
+import MyProjects from "./MyProjects";
 
 function ResearcherBoard() {
    return (
@@ -19,7 +20,9 @@ function ResearcherBoard() {
             </TabList>
 
             <TabPanels>
-               <TabPanel></TabPanel>
+               <TabPanel>
+                  <MyProjects />
+               </TabPanel>
                <TabPanel>
                   <Flex justifyContent="center" alignItems="center">
                      <Box w="300px">

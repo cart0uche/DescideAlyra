@@ -12,12 +12,14 @@ import { useResearcher } from "@/hooks/useResearcher";
 function CreateProject() {
    const { createProject, isLoadingCreateProject } = useResearcher();
    const [inputValue, setInputValue] = useState({
-      projectName: "",
+      projectTitle: "",
+      projectDescription: "",
       amountAsked: "",
       projectDetailsUri: "",
    });
    const [formData, setFormData] = useState({
-      projectName: "",
+      projectTitle: "",
+      projectDescription: "",
       amountAsked: "",
       projectDetailsUri: "",
    });
@@ -34,7 +36,8 @@ function CreateProject() {
       e.preventDefault();
       setFormData(inputValue);
       setInputValue({
-         projectName: "",
+         projectTitle: "",
+         projectDescription: "",
          amountAsked: "",
          projectDetailsUri: "",
       });
@@ -42,19 +45,26 @@ function CreateProject() {
 
    useEffect(() => {
       if (
-         formData.projectName !== "" &&
+         formData.projectTitle !== "" &&
+         formData.projectDescription !== "" &&
          formData.amountAsked !== "" &&
          formData.projectDetailsUri !== ""
       ) {
          console.log("WRITE !");
          createProject({
-            args: [formData.amountAsked, formData.projectDetailsUri],
+            args: [
+               formData.projectTitle,
+               formData.projectDescription,
+               formData.amountAsked,
+               formData.projectDetailsUri,
+            ],
          });
       }
 
       return () => {
          setFormData({
-            projectName: "",
+            projectTitle: "",
+            projectDescription: "",
             amountAsked: "",
             projectDetailsUri: "",
          });
@@ -74,12 +84,22 @@ function CreateProject() {
             mt={20}
          >
             <VStack spacing={4}>
-               <FormControl id="projectName">
+               <FormControl id="projectTitle">
                   <FormLabel>Project name</FormLabel>
                   <Input
-                     name="projectName"
+                     name="projectTitle"
                      type="text"
-                     value={inputValue.name}
+                     value={inputValue.title}
+                     onChange={handleChange}
+                  />
+               </FormControl>
+
+               <FormControl id="projectDescription">
+                  <FormLabel>Project description</FormLabel>
+                  <Input
+                     name="projectDescription"
+                     type="text"
+                     value={inputValue.description}
                      onChange={handleChange}
                   />
                </FormControl>
