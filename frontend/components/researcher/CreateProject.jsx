@@ -17,6 +17,7 @@ function CreateProject() {
       projectDescription: "",
       amountAsked: "",
       imageUrl: "",
+      projectDetailsUri: "",
    });
 
    const handleChange = (e) => {
@@ -27,10 +28,17 @@ function CreateProject() {
       }));
    };
 
-   const setFileUrl = (url) => {
+   const setFileUrlImage = (url) => {
       setInputValue((prevData) => ({
          ...prevData,
          imageUrl: url,
+      }));
+   };
+
+   const setFileUrlLitepaper = ( url) => {
+      setInputValue((prevData) => ({
+         ...prevData,
+         projectDetailsUri: url,
       }));
    };
 
@@ -42,7 +50,7 @@ function CreateProject() {
             inputValue.projectDescription,
             inputValue.imageUrl,
             inputValue.amountAsked,
-            "DETAILS",
+            inputValue.projectDetailsUri,
          ],
       });
    };
@@ -89,7 +97,15 @@ function CreateProject() {
                   />
                </FormControl>
 
-               <UploadIPFS setFileUrl={setFileUrl} />
+               <FormControl id="image">
+                  <FormLabel>Image</FormLabel>
+                  <UploadIPFS setFileUrl={setFileUrlImage} />
+               </FormControl>
+
+               <FormControl id="image">
+                  <FormLabel>Litepaper</FormLabel>
+                  <UploadIPFS setFileUrl={setFileUrlLitepaper} />
+               </FormControl>
 
                <Button
                   colorScheme="blue"

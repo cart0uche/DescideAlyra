@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect   } from "react";
 import { NFTStorage } from "nft.storage";
-import { Button } from "@chakra-ui/react";
 
 const UploadIPFS = ({ setFileUrl }) => {
    const [img, setImg] = useState([]);
@@ -24,19 +23,22 @@ const UploadIPFS = ({ setFileUrl }) => {
       }
    };
 
+   useEffect(() => {
+      upload();
+   }, [img]);
+
    return (
       <div>
          <div>
             <label>
                <input
                   type="file"
-                  onChange={(e) => setImg(e.target.files[0])}
+                  onChange={(e) => {
+                     setImg(e.target.files[0]);
+                  }}
                ></input>
             </label>
          </div>
-         <Button isLoading={isUploading} onClick={upload}>
-            Upload image to IPFS
-         </Button>
       </div>
    );
 };

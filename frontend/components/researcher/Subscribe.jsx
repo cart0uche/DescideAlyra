@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
    FormControl,
    FormLabel,
@@ -18,11 +18,6 @@ function Subscribe() {
       lastName: "",
       company: "",
    });
-   const [formData, setFormData] = useState({
-      firstName: "",
-      lastName: "",
-      company: "",
-   });
 
    const handleChange = (e) => {
       const { name, value } = e.target;
@@ -32,41 +27,38 @@ function Subscribe() {
       }));
    };
 
-   const handleSubmit = (e) => {
+   const handleSubmit = async (e) => {
       e.preventDefault();
-      setFormData(inputValue);
-      setInputValue({
-         firstName: "",
-         lastName: "",
-         company: "",
-      });
-   };
 
-   useEffect(() => {
       if (
-         formData.firstName !== "" &&
-         formData.lastName !== "" &&
-         formData.company !== ""
+         inputValue.firstName !== "" &&
+         inputValue.lastName !== "" &&
+         inputValue.company !== ""
       ) {
-         console.log("WRITE !  ");
-         subscribe({
-            args: [
-               address,
-               formData.firstName,
-               formData.lastName,
-               formData.company,
-            ],
-         });
-      }
+         try {
+            console.log("WRITE !");
+            subscribe({
+               args: [
+                  address,
+                  inputValue.firstName,
+                  inputValue.lastName,
+                  inputValue.company,
+               ],
+            });
 
-      return () => {
-         setFormData({
-            firstName: "",
-            lastName: "",
-            company: "",
-         });
-      };
-   }, [formData]);
+            setInputValue({
+               firstName: "",
+               lastName: "",
+               company: "",
+            });
+         } catch (error) {
+            console.error("Error subscribing:", error);
+            alert("An error occurred while subscribing. Please try again.");
+         }
+      } else {
+         alert("Please fill in all the fields.");
+      }
+   };
 
    return (
       <Box
