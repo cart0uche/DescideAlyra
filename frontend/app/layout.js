@@ -7,6 +7,7 @@ import { hardhat } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import { ChakraProvider } from "@chakra-ui/react";
+import { FundsContextProvider } from "@/context/fundsContext";
 
 const { chains, publicClient } = configureChains(
    [hardhat],
@@ -31,7 +32,9 @@ export default function RootLayout({ children }) {
          <body>
             <WagmiConfig config={wagmiConfig}>
                <RainbowKitProvider chains={chains}>
-                  <ChakraProvider>{children}</ChakraProvider>
+                  <ChakraProvider>
+                     <FundsContextProvider>{children}</FundsContextProvider>
+                  </ChakraProvider>
                </RainbowKitProvider>
             </WagmiConfig>
          </body>

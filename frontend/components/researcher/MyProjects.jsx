@@ -1,11 +1,4 @@
-import {
-   Card,
-   CardFooter,
-   Divider,
-   SimpleGrid,
-   Box,
-   Flex,
-} from "@chakra-ui/react";
+import { Card, SimpleGrid, Flex } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useProject } from "@/hooks/useProject";
 import CardProject from "./CardProject";

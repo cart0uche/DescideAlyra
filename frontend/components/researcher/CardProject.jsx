@@ -8,13 +8,20 @@ import {
 import { useState, useEffect } from "react";
 import { useProject } from "@/hooks/useProject";
 import Image from "next/image";
+import Link from "next/link";
+import { useFundsContext } from "@/context/fundsContext";
 
 function CardProject({ project }) {
    const { fetchProjectInfo, projectInfo } = useProject();
+   const { setProjectInfoContext } = useFundsContext();
 
    useEffect(() => {
       fetchProjectInfo(project.projectId);
    }, [project]);
+
+   useEffect(() => {
+      setProjectInfoContext(projectInfo);
+   }, [projectInfo]);
 
    return (
       <>
@@ -34,9 +41,11 @@ function CardProject({ project }) {
                </CardBody>
                <Divider />
                <CardFooter>
-                  <Heading size="s" color="#3182CE">
-                     Details
-                  </Heading>
+                  <Link href="/project">
+                     <Heading size="s" color="#3182CE">
+                        Details
+                     </Heading>
+                  </Link>
                </CardFooter>
             </>
          ) : null}
