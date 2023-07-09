@@ -1,12 +1,18 @@
 import { useFundsContext } from "@/context/fundsContext";
-import { Flex, Divider, Heading, Box, Text } from "@chakra-ui/react";
-import Image from "next/image";
-import Link from "next/link";
+import {
+   Box,
+   Flex,
+   Heading,
+   Image,
+   Link,
+   Spacer,
+   Stack,
+   Text,
+} from "@chakra-ui/react";
+import { FaEthereum, FaClock, FaCheckCircle } from "react-icons/fa";
 
 function Project() {
    const { projectInfoContext } = useFundsContext();
-
-   console.log("projectInfoContext", projectInfoContext);
 
    const getStatusProject = (status) => {
       switch (status) {
@@ -18,51 +24,135 @@ function Project() {
             return "Ready for funding";
          case 3:
             return "Ended";
+         default:
+            return "";
       }
    };
 
-   function convertEpochToDate(epoch) {
-      const date = new Date(epoch * 1000); // Multiply by 1000 as JavaScript works with milliseconds
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      return `${year}-${month}-${day}`;
-   }
-
    return (
-      <Flex direction="column" alignItems="center" p={8}>
-         <Heading size="xl" textAlign="center" my={4}>
-            {projectInfoContext.title}
-         </Heading>
-         <Box position="relative" width="500px" height="500px" my={4}>
-            <Image
-               src={projectInfoContext.imageUrl}
-               layout="fill"
-               objectFit="contain"
-               alt="image"
-            />
-         </Box>
-         <Text fontSize="xl" mt={4}>
-            Created the{" "}
-            {convertEpochToDate(Number(projectInfoContext.creationTime))} by{" "}
-            {projectInfoContext.researcher}
-         </Text>
+      <Flex direction="column" p={8} alignItems="center">
+         <Box
+            borderWidth="1px"
+            borderRadius="md"
+            p={8}
+            boxShadow="md"
+            bg="white"
+            width="100%"
+            maxWidth="900px"
+         >
+            <Flex direction="column" alignItems="center" mb={6}>
+               <Heading size="2xl" textAlign="center">
+                  {projectInfoContext.title}
+               </Heading>
+               <Text fontSize="lg" mt={2} color="gray.500">
+                  by {projectInfoContext.researcher}
+               </Text>
+            </Flex>
 
-         <Text fontSize="xl" mt={4}>
-            Status Project : {getStatusProject(projectInfoContext.status)}
-         </Text>
+            <Flex
+               direction={{ base: "column", md: "row" }}
+               alignItems="center"
+               justifyContent="space-between"
+               mb={8}
+            >
+               <Box
+                  position="relative"
+                  width={{ base: "100%", md: "50%" }}
+                  height="auto"
+                  mb={{ base: 4, md: 0 }}
+               >
+                  <Image
+                     src={projectInfoContext.imageUrl}
+                     layout="responsive"
+                     objectFit="cover"
+                     alt="Project Image"
+                  />
+               </Box>
 
-         <Text fontSize="xl" mt={4}>
-            Goal : {Number(projectInfoContext.amountAsked)} ETH
-         </Text>
-         <Text fontSize="xl" mt={4}>
-            {projectInfoContext.description}
-         </Text>
-         <Link href={projectInfoContext.projectDetailsUri}>
-            <Text fontSize="xl" mt={4}>
-               Link to the litepaper
+               <Stack
+                  direction="column"
+                  alignItems={{ base: "flex-start", md: "flex-end" }}
+                  ml={{ base: 0, md: 6 }}
+                  mt={{ base: 4, md: 0 }}
+                  textAlign={{ base: "left", md: "right" }}
+               >
+                  <Stack direction="row" alignItems="center" mb={4}>
+                     <FaEthereum size={24} color="gray.500" />
+                     <Text fontSize="xl" fontWeight="bold">
+                        Goal:
+                     </Text>
+                     <Text fontSize="xl">
+                        {Number(projectInfoContext.amountAsked)} ETH
+                     </Text>
+                  </Stack>
+
+                  <Stack direction="row" alignItems="center" mb={4}>
+                     <FaClock size={24} color="gray.500" />
+                     <Text fontSize="xl" fontWeight="bold">
+                        Status:
+                     </Text>
+                     <Text fontSize="xl" color="blue.500">
+                        {getStatusProject(projectInfoContext.status)}
+                     </Text>
+                  </Stack>
+
+                  <Link href={projectInfoContext.projectDetailsUri}>
+                     <Text
+                        fontSize="xl"
+                        color="blue.500"
+                        fontWeight="bold"
+                        _hover={{ textDecoration: "underline" }}
+                     >
+                        View Litepaper
+                     </Text>
+                  </Link>
+               </Stack>
+            </Flex>
+
+            <Text fontSize="xl" mb={8} maxWidth="100%">
+               {projectInfoContext.description}
             </Text>
-         </Link>
+
+            {projectInfoContext.status === 1 && (
+               <Flex justify="flex-end" mb={8}>
+                  <Link href="#" passHref>
+                     <Box
+                        as="a"
+                        display="inline-block"
+                        bg="blue.500"
+                        color="white"
+                        borderRadius="md"
+                        py={4}
+                        px={6}
+                        fontSize="xl"
+                        fontWeight="bold"
+                        _hover={{ bg: "blue.600" }}
+                     >
+                        Fund this project
+                     </Box>
+                  </Link>
+               </Flex>
+            )}
+
+            {projectInfoContext.status === 2 && (
+               <Flex justify="flex-end" mb={8}>
+                  <Box
+                     display="flex"
+                     alignItems="center"
+                     bg="green.500"
+                     color="white"
+                     borderRadius="md"
+                     py={2}
+                     px={4}
+                     fontSize="xl"
+                     fontWeight="bold"
+                  >
+                     <FaCheckCircle size={24} style={{ marginRight: "8px" }} />
+                     Funding in progress
+                  </Box>
+               </Flex>
+            )}
+         </Box>
       </Flex>
    );
 }
