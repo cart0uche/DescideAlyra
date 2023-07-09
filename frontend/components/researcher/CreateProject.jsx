@@ -8,6 +8,7 @@ import {
    Box,
 } from "@chakra-ui/react";
 import { useProject } from "@/hooks/useProject";
+import UploadIPFS from "@/components/utils/UploadIPFS";
 
 function CreateProject() {
    const { createProject, isLoadingCreateProject } = useProject();
@@ -15,13 +16,7 @@ function CreateProject() {
       projectTitle: "",
       projectDescription: "",
       amountAsked: "",
-      projectDetailsUri: "",
-   });
-   const [formData, setFormData] = useState({
-      projectTitle: "",
-      projectDescription: "",
-      amountAsked: "",
-      projectDetailsUri: "",
+      imageUrl: "",
    });
 
    const handleChange = (e) => {
@@ -32,48 +27,28 @@ function CreateProject() {
       }));
    };
 
+   const setFileUrl = (url) => {
+      setInputValue((prevData) => ({
+         ...prevData,
+         imageUrl: url,
+      }));
+   };
+
    const handleSubmit = (e) => {
       e.preventDefault();
-      setFormData(inputValue);
-      setInputValue({
-         projectTitle: "",
-         projectDescription: "",
-         amountAsked: "",
-         projectDetailsUri: "",
+      createProject({
+         args: [
+            inputValue.projectTitle,
+            inputValue.projectDescription,
+            inputValue.imageUrl,
+            inputValue.amountAsked,
+            "DETAILS",
+         ],
       });
    };
 
-   useEffect(() => {
-      if (
-         formData.projectTitle !== "" &&
-         formData.projectDescription !== "" &&
-         formData.amountAsked !== "" &&
-         formData.projectDetailsUri !== ""
-      ) {
-         console.log("WRITE !");
-         createProject({
-            args: [
-               formData.projectTitle,
-               formData.projectDescription,
-               formData.amountAsked,
-               formData.projectDetailsUri,
-            ],
-         });
-      }
-
-      return () => {
-         setFormData({
-            projectTitle: "",
-            projectDescription: "",
-            amountAsked: "",
-            projectDetailsUri: "",
-         });
-      };
-   }, [formData]);
-
    return (
       <div>
-         {" "}
          <Box
             p={4}
             borderWidth="1px"
@@ -89,7 +64,7 @@ function CreateProject() {
                   <Input
                      name="projectTitle"
                      type="text"
-                     value={inputValue.title}
+                     value={inputValue.projectTitle}
                      onChange={handleChange}
                   />
                </FormControl>
@@ -99,7 +74,7 @@ function CreateProject() {
                   <Input
                      name="projectDescription"
                      type="text"
-                     value={inputValue.description}
+                     value={inputValue.projectDescription}
                      onChange={handleChange}
                   />
                </FormControl>
@@ -114,15 +89,7 @@ function CreateProject() {
                   />
                </FormControl>
 
-               <FormControl id="projectDetailsUri">
-                  <FormLabel>Link to your whitepaper</FormLabel>
-                  <Input
-                     name="projectDetailsUri"
-                     type="text"
-                     value={inputValue.projectDetailsUri}
-                     onChange={handleChange}
-                  />
-               </FormControl>
+               <UploadIPFS setFileUrl={setFileUrl} />
 
                <Button
                   colorScheme="blue"

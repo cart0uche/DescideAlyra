@@ -25,5 +25,10 @@
       "hardhat-gas-reporter": "^1.0.8",
       "solidity-coverage": "^0.8.0",
       "typechain": "^8.1.0"
+   },
+   "browser": {
+      "fs": false,
+      "os": false,
+      "path": false
    }
 }

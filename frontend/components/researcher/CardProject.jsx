@@ -7,6 +7,7 @@ import {
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useProject } from "@/hooks/useProject";
+import Image from "next/image";
 
 function CardProject({ project }) {
    const { fetchProjectInfo, projectInfo } = useProject();
@@ -22,7 +23,15 @@ function CardProject({ project }) {
                <CardHeader>
                   <Heading size="sm"> Proposal {projectInfo.title}</Heading>
                </CardHeader>
-               <CardBody>{projectInfo.description.slice(0, 100)} ...</CardBody>
+               <CardBody>
+                  <Image
+                     src={projectInfo.imageUrl}
+                     width={100}
+                     height={100}
+                     alt="image"
+                  />
+                  {projectInfo.description.slice(0, 100)} ...
+               </CardBody>
                <Divider />
                <CardFooter>
                   <Heading size="s" color="#3182CE">

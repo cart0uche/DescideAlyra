@@ -47,6 +47,7 @@ contract FundsFactory is Ownable {
         uint id;
         string title;
         string description;
+        string imageUrl;
         uint creationTime;
         bool isAccepted;
         address researcher;
@@ -130,6 +131,7 @@ contract FundsFactory is Ownable {
     function addResearchProject(
         string memory title,
         string memory description,
+        string memory imageUrl,
         uint amountAsked,
         string memory projectDetailsUri
     ) external onlyResearcher {
@@ -142,6 +144,7 @@ contract FundsFactory is Ownable {
         ResearchProject memory project;
         project.title = title;
         project.description = description;
+        project.imageUrl = imageUrl;
         project.creationTime = block.timestamp;
         project.researcher = msg.sender;
         project.amountAsked = amountAsked;
