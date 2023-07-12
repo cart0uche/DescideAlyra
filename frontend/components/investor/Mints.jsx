@@ -1,5 +1,5 @@
 import { useNFT } from "@/hooks/useNFT";
-import { SimpleGrid } from "@chakra-ui/react";
+import { SimpleGrid, Box } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import Mint from "./Mint";
 
@@ -78,11 +78,8 @@ function Mints({ projectInfoContext }) {
    }, [NFTQuantityMinted]);
 
    return (
-      <div>
-         <SimpleGrid
-            spacing={4}
-            templateColumns="repeat(auto-fill, minmax(200px, 1fr))"
-         >
+      <Box mt={8}>
+         <SimpleGrid columns={4} spacing={8} justifyContent="center">
             {NFTs.map((nft) => (
                <Mint
                   key={nft.type}
@@ -95,7 +92,7 @@ function Mints({ projectInfoContext }) {
                />
             ))}
          </SimpleGrid>
-      </div>
+      </Box>
    );
 }
 

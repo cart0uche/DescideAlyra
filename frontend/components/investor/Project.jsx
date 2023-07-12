@@ -109,24 +109,6 @@ function Project() {
                <Mints projectInfoContext={projectInfoContext} />
             </Flex>
 
-            {projectInfoContext.status === 1 && (
-               <Flex justify="flex-end" mb={8}>
-                  <Box
-                     display="flex"
-                     alignItems="center"
-                     bg="green.500"
-                     color="white"
-                     borderRadius="md"
-                     py={2}
-                     px={4}
-                     fontSize="xl"
-                     fontWeight="bold"
-                  >
-                     <FaCheckCircle size={24} style={{ marginRight: "8px" }} />
-                     Funding in progress
-                  </Box>
-               </Flex>
-            )}
          </Box>
       </Flex>
    );
