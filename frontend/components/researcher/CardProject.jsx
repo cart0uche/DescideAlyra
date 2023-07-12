@@ -9,9 +9,11 @@ import { useState, useEffect } from "react";
 import { useProject } from "@/hooks/useProject";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useFundsContext } from "@/context/fundsContext";
 
 function CardProject({ project }) {
+   const router = useRouter();
    const { fetchProjectInfo, projectInfo } = useProject();
    const { setProjectInfoContext } = useFundsContext();
 
@@ -19,9 +21,11 @@ function CardProject({ project }) {
       fetchProjectInfo(project.projectId);
    }, [project]);
 
-   useEffect(() => {
+   const handleDetailClick = () => {
+      console.log("handleDetailClick");
       setProjectInfoContext(projectInfo);
-   }, [projectInfo]);
+      router.push("/project");
+   };
 
    return (
       <>
@@ -41,10 +45,12 @@ function CardProject({ project }) {
                </CardBody>
                <Divider />
                <CardFooter>
-                  <Link href="/project">
-                     <Heading size="s" color="#3182CE">
-                        Details
-                     </Heading>
+                  <Link href="/project" legacyBehavior>
+                     <a onClick={handleDetailClick}>
+                        <Heading as="h2" size="s" color="#3182CE">
+                           Details
+                        </Heading>
+                     </a>
                   </Link>
                </CardFooter>
             </>

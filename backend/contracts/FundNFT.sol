@@ -85,6 +85,7 @@ contract FundNFT is
     ) public onlyOwner checkSupply(nftType.CLASSIC, amount) {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
+         nftConfs[nftType.CLASSIC].number++;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
 
@@ -98,6 +99,7 @@ contract FundNFT is
     ) public onlyOwner checkSupply(nftType.PLUS, amount) {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
+        nftConfs[nftType.PLUS].number++;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
 
@@ -111,6 +113,7 @@ contract FundNFT is
     ) public onlyOwner checkSupply(nftType.PREMIUM, amount) {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
+        nftConfs[nftType.PREMIUM].number++;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
 
@@ -124,6 +127,7 @@ contract FundNFT is
     ) public onlyOwner checkSupply(nftType.VIP, amount) {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
+        nftConfs[nftType.VIP].number++;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
 

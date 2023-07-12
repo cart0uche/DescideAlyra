@@ -142,6 +142,7 @@ contract FundsFactory is Ownable {
             "Project detail is mandatory"
         );
         ResearchProject memory project;
+        project.id = researchProjects.length;
         project.title = title;
         project.description = description;
         project.imageUrl = imageUrl;

@@ -1,15 +1,7 @@
 import { useFundsContext } from "@/context/fundsContext";
-import {
-   Box,
-   Flex,
-   Heading,
-   Image,
-   Link,
-   Spacer,
-   Stack,
-   Text,
-} from "@chakra-ui/react";
+import { Box, Flex, Heading, Image, Link, Text } from "@chakra-ui/react";
 import { FaEthereum, FaClock, FaCheckCircle } from "react-icons/fa";
+import Mints from "./Mints";
 
 function Project() {
    const { projectInfoContext } = useFundsContext();
@@ -69,32 +61,32 @@ function Project() {
                   />
                </Box>
 
-               <Stack
+               <Flex
                   direction="column"
                   alignItems={{ base: "flex-start", md: "flex-end" }}
                   ml={{ base: 0, md: 6 }}
                   mt={{ base: 4, md: 0 }}
                   textAlign={{ base: "left", md: "right" }}
                >
-                  <Stack direction="row" alignItems="center" mb={4}>
+                  <Flex alignItems="center" mb={4}>
                      <FaEthereum size={24} color="gray.500" />
-                     <Text fontSize="xl" fontWeight="bold">
+                     <Text fontSize="xl" fontWeight="bold" ml={2}>
                         Goal:
                      </Text>
                      <Text fontSize="xl">
                         {Number(projectInfoContext.amountAsked)} ETH
                      </Text>
-                  </Stack>
+                  </Flex>
 
-                  <Stack direction="row" alignItems="center" mb={4}>
+                  <Flex alignItems="center" mb={4}>
                      <FaClock size={24} color="gray.500" />
-                     <Text fontSize="xl" fontWeight="bold">
+                     <Text fontSize="xl" fontWeight="bold" ml={2}>
                         Status:
                      </Text>
                      <Text fontSize="xl" color="blue.500">
                         {getStatusProject(projectInfoContext.status)}
                      </Text>
-                  </Stack>
+                  </Flex>
 
                   <Link href={projectInfoContext.projectDetailsUri}>
                      <Text
@@ -106,35 +98,18 @@ function Project() {
                         View Litepaper
                      </Text>
                   </Link>
-               </Stack>
+               </Flex>
             </Flex>
 
             <Text fontSize="xl" mb={8} maxWidth="100%">
                {projectInfoContext.description}
             </Text>
 
-            {projectInfoContext.status === 1 && (
-               <Flex justify="flex-end" mb={8}>
-                  <Link href="#" passHref>
-                     <Box
-                        as="a"
-                        display="inline-block"
-                        bg="blue.500"
-                        color="white"
-                        borderRadius="md"
-                        py={4}
-                        px={6}
-                        fontSize="xl"
-                        fontWeight="bold"
-                        _hover={{ bg: "blue.600" }}
-                     >
-                        Fund this project
-                     </Box>
-                  </Link>
-               </Flex>
-            )}
+            <Flex alignItems="center" mb={4}>
+               <Mints projectInfoContext={projectInfoContext} />
+            </Flex>
 
-            {projectInfoContext.status === 2 && (
+            {projectInfoContext.status === 1 && (
                <Flex justify="flex-end" mb={8}>
                   <Box
                      display="flex"

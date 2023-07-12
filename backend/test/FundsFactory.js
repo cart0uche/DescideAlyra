@@ -397,6 +397,36 @@ describe("FundsFactory Contract", function () {
          expect(await nftContract.balanceOf(investor1)).to.be.equal(1);
       });
 
+      it("increment minted NFTs", async function () {
+         const project1 = await fundsFactory
+            .connect(researcher1)
+            .getResearchProject(0);
+         const nftAddress = project1.fundNFT;
+
+         let [classic, plus, premium, vip] = await fundsFactory
+            .connect(investor1)
+            .getNumberNFTMinted(0);
+         expect(Number(classic)).to.be.equal(0);
+         expect(Number(plus)).to.be.equal(0);
+         expect(Number(premium)).to.be.equal(0);
+         expect(Number(vip)).to.be.equal(0);
+
+         await fundsFactory
+            .connect(investor1)
+            .buyNFT_Classic(project1.id, "uri", {
+               value: ethers.parseEther("1"),
+            });
+
+         [classic, plus, premium, vip] = await fundsFactory
+            .connect(investor1)
+            .getNumberNFTMinted(0);
+         expect(Number(classic)).to.be.equal(1);
+         expect(Number(plus)).to.be.equal(0);
+         expect(Number(premium)).to.be.equal(0);
+         expect(Number(vip)).to.be.equal(0);
+      });
+
+
       it("should revert if not enaugh pay for classic NFT", async function () {
          await expect(
             fundsFactory
