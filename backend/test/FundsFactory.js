@@ -324,7 +324,6 @@ describe("FundsFactory Contract", function () {
             .connect(researcher1)
             .getResearchProject(0);
          const nftAddress = project1.fundNFT;
-         console.log("project1", project1);
          const nftContract = await ethers.getContractAt("FundNFT", nftAddress);
          await expect(
             await fundsFactory
@@ -380,6 +379,22 @@ describe("FundsFactory Contract", function () {
          )
             .to.emit(nftContract, "fundNFTMinted")
             .withArgs(investor1.address, 0, VIP);
+      });
+
+      it("increment investor balance", async function () {
+         const project1 = await fundsFactory
+            .connect(researcher1)
+            .getResearchProject(0);
+         const nftAddress = project1.fundNFT;
+         const nftContract = await ethers.getContractAt("FundNFT", nftAddress);
+
+         expect(await nftContract.balanceOf(investor1)).to.be.equal(0);
+         await fundsFactory
+            .connect(investor1)
+            .buyNFT_Classic(project1.id, "uri", {
+               value: ethers.parseEther("1"),
+            });
+         expect(await nftContract.balanceOf(investor1)).to.be.equal(1);
       });
 
       it("should revert if not enaugh pay for classic NFT", async function () {
