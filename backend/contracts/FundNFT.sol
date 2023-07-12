@@ -19,6 +19,8 @@ contract FundNFT is
     // EVENT
     event fundNFTMinted(address _from, uint _tokenId, uint nftType);
 
+    // ajouter un mapping pour savoir qui a minté quoi ?
+
     //ENUM
     enum nftType {
         CLASSIC,
@@ -38,16 +40,14 @@ contract FundNFT is
     uint256 public constant MAX_SUPPLY = 75;
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIdCounter;
-    string private uri;
     mapping(nftType => nftConf) nftConfs;
 
     constructor(
         string memory _tokenName,
         string memory _symbol,
-        string memory _uri,
         uint amountAsked
     ) ERC721(_tokenName, _symbol) {
-        uri = _uri;
+
 
         // set max supply for each type of NFT
         nftConfs[nftType.CLASSIC].max = 40;
@@ -80,7 +80,8 @@ contract FundNFT is
 
     function safeMintClassic(
         address to,
-        uint amount
+        uint amount,
+       string memory uri
     ) public onlyOwner checkSupply(nftType.CLASSIC, amount) {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
@@ -92,7 +93,8 @@ contract FundNFT is
 
     function safeMintPlus(
         address to,
-        uint amount
+        uint amount,
+        string memory uri
     ) public onlyOwner checkSupply(nftType.PLUS, amount) {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
@@ -104,7 +106,8 @@ contract FundNFT is
 
     function safeMintPremium(
         address to,
-        uint amount
+        uint amount,
+        string memory uri
     ) public onlyOwner checkSupply(nftType.PREMIUM, amount) {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
@@ -116,7 +119,8 @@ contract FundNFT is
 
     function safeMintVIP(
         address to,
-        uint amount
+        uint amount,
+        string memory uri
     ) public onlyOwner checkSupply(nftType.VIP, amount) {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
@@ -145,6 +149,15 @@ contract FundNFT is
             nftConfs[nftType.PLUS].amount,
             nftConfs[nftType.PREMIUM].amount,
             nftConfs[nftType.VIP].amount
+        );
+    }
+    
+    function getNumberNFTMinted() external view returns (uint, uint, uint, uint) {
+        return (
+            nftConfs[nftType.CLASSIC].number,
+            nftConfs[nftType.PLUS].number,
+            nftConfs[nftType.PREMIUM].number,
+            nftConfs[nftType.VIP].number
         );
     }
 

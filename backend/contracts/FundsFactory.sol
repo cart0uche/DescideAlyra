@@ -2,6 +2,7 @@
 pragma solidity 0.8.17;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "./FundNFT.sol";
 
 contract FundsFactory is Ownable {
@@ -22,7 +23,6 @@ contract FundsFactory is Ownable {
     enum ResearchProjectStatus {
         created,
         validated,
-        readyForFunding,
         ended
     }
 
@@ -155,6 +155,9 @@ contract FundsFactory is Ownable {
             researchProjects.length - 1
         );
 
+        string memory idStr =  Strings.toString(researchProjects.length - 1);
+        addNFT(researchProjects.length - 1, string.concat("DESCIDE", idStr), string.concat("DSC", idStr));
+
         emit ResearchProjectCreated(researchProjects.length - 1, msg.sender);
     }
 
@@ -177,21 +180,14 @@ contract FundsFactory is Ownable {
     function addNFT(
         uint id,
         string memory tokenName,
-        string memory symbol,
-        string memory uri
-    ) external belongToResearcher(id) {
-        require(
-            researchProjects[id].status == ResearchProjectStatus.validated,
-            "Project not validated"
-        );
+        string memory symbol
+    ) internal {
         FundNFT nft = new FundNFT(
             tokenName,
             symbol,
-            uri,
             researchProjects[id].amountAsked
         );
         researchProjects[id].fundNFT = nft;
-        researchProjects[id].status = ResearchProjectStatus.readyForFunding;
     }
 
     ////////////////////////////////
@@ -200,7 +196,7 @@ contract FundsFactory is Ownable {
     modifier readyToFund(uint id) {
         require(
             researchProjects[id].status ==
-                ResearchProjectStatus.readyForFunding,
+                ResearchProjectStatus.validated,
             "Project not ready for funding"
         );
         _;
@@ -213,28 +209,35 @@ contract FundsFactory is Ownable {
         return nft.getPrices();
     }
 
-    function buyNFT_Classic(uint id) external payable readyToFund(id) {
-        investors[msg.sender] += msg.value;
+    function getNumberNFTMinted(
+        uint id
+    ) external view returns (uint, uint, uint, uint) {
         FundNFT nft = FundNFT(researchProjects[id].fundNFT);
-        nft.safeMintClassic(msg.sender, msg.value);
+        return nft.getNumberNFTMinted();
     }
 
-    function buyNFT_Plus(uint id) external payable readyToFund(id) {
+    function buyNFT_Classic(uint id, string memory uri) external payable readyToFund(id) {
         investors[msg.sender] += msg.value;
         FundNFT nft = FundNFT(researchProjects[id].fundNFT);
-        nft.safeMintPlus(msg.sender, msg.value);
+        nft.safeMintClassic(msg.sender, msg.value, uri);
     }
 
-    function buyNFT_Premium(uint id) external payable readyToFund(id) {
+    function buyNFT_Plus(uint id, string memory uri) external payable readyToFund(id) {
         investors[msg.sender] += msg.value;
         FundNFT nft = FundNFT(researchProjects[id].fundNFT);
-        nft.safeMintPremium(msg.sender, msg.value);
+        nft.safeMintPlus(msg.sender, msg.value, uri);
     }
 
-    function buyNFT_VIP(uint id) external payable readyToFund(id) {
+    function buyNFT_Premium(uint id, string memory uri) external payable readyToFund(id) {
         investors[msg.sender] += msg.value;
         FundNFT nft = FundNFT(researchProjects[id].fundNFT);
-        nft.safeMintVIP(msg.sender, msg.value);
+        nft.safeMintPremium(msg.sender, msg.value, uri);
+    }
+
+    function buyNFT_VIP(uint id, string memory uri) external payable readyToFund(id) {
+        investors[msg.sender] += msg.value;
+        FundNFT nft = FundNFT(researchProjects[id].fundNFT);
+        nft.safeMintVIP(msg.sender, msg.value, uri);
     }
 
     ////////////////////////////////
