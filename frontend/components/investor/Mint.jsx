@@ -44,7 +44,7 @@ function Mint({ type, price, quantitySold, quantity, mintFct, projectID }) {
                   onClick={() =>
                      mintFct({
                         value: ethers.utils.parseEther(price.toString()),
-                        args: [projectID, ""],
+                        args: [projectID],
                      })
                   }
                   isDisabled={remaining === 0}

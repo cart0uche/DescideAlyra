@@ -54,7 +54,7 @@ function Project() {
                   mb={{ base: 4, md: 0 }}
                >
                   <Image
-                     src={projectInfoContext.imageUrl}
+                     src={"https://ipfs.io/ipfs/" + projectInfoContext.imageUrl}
                      layout="responsive"
                      objectFit="cover"
                      alt="Project Image"
@@ -73,6 +73,7 @@ function Project() {
                      <Text fontSize="xl" fontWeight="bold" ml={2}>
                         Goal:
                      </Text>
+
                      <Text fontSize="xl">
                         {Number(projectInfoContext.amountAsked)} ETH
                      </Text>
@@ -88,7 +89,12 @@ function Project() {
                      </Text>
                   </Flex>
 
-                  <Link href={projectInfoContext.projectDetailsUri}>
+                  <Link
+                     href={
+                        "https://ipfs.io/ipfs/" +
+                        projectInfoContext.projectDetailsUri
+                     }
+                  >
                      <Text
                         fontSize="xl"
                         color="blue.500"
@@ -108,7 +114,6 @@ function Project() {
             <Flex alignItems="center" mb={4}>
                <Mints projectInfoContext={projectInfoContext} />
             </Flex>
-
          </Box>
       </Flex>
    );

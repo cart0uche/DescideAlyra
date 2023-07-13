@@ -15,7 +15,7 @@ const UploadIPFS = ({ setFileUrl }) => {
          const imageCid = await client.storeBlob(blob);
          const url = `https://ipfs.io/ipfs/${imageCid}`;
          console.log("NFT metadata uploaded to IPFS : ", url);
-         setFileUrl(url);
+         setFileUrl(imageCid);
       } catch (err) {
          console.log(err);
       } finally {

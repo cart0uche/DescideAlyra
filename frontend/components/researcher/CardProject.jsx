@@ -36,7 +36,7 @@ function CardProject({ project }) {
                </CardHeader>
                <CardBody>
                   <Image
-                     src={projectInfo.imageUrl}
+                     src={"https://ipfs.io/ipfs/" + projectInfo.imageUrl}
                      width={100}
                      height={100}
                      alt="image"
