@@ -21,6 +21,14 @@ contract FundsFactory is Ownable {
     event FundsAdded(uint amount, uint projectId);
 
     // ENUMS
+
+    enum NftType {
+        classic,
+        plus,
+        premium,
+        vip
+    }
+
     enum ResearchProjectStatus {
         created,
         validated,
@@ -158,6 +166,9 @@ contract FundsFactory is Ownable {
         );
 
         string memory idStr =  Strings.toString(researchProjects.length - 1);
+
+
+
         addNFT(researchProjects.length - 1, string.concat("DESCIDE", idStr), string.concat("DSC", idStr));
 
         emit ResearchProjectCreated(researchProjects.length - 1, msg.sender);
@@ -218,47 +229,7 @@ contract FundsFactory is Ownable {
         return nft.getNumberNFTMinted();
     }
 
-    function buyNFT_Classic(uint id) external payable readyToFund(id) {
-        investors[msg.sender] += msg.value;
-        FundNFT nft = FundNFT(researchProjects[id].fundNFT);
-
-        bytes memory uri = abi.encodePacked(
-        '{',
-            '"name": "', researchProjects[id].title, '",',
-            '"image": "ipfs://', researchProjects[id].imageUrl, '"',
-        '}'
-        );
-
-        string memory dataURI = string(
-            abi.encodePacked(
-                "data:application/json;base64,",
-                Base64.encode(uri)
-            )
-        );
-
-        nft.safeMintClassic(msg.sender, msg.value, dataURI);
-    }
-
-    function buyNFT_Plus(uint id) external payable readyToFund(id) {
-        investors[msg.sender] += msg.value;
-        FundNFT nft = FundNFT(researchProjects[id].fundNFT);
-        bytes memory uri = abi.encodePacked(
-        '{',
-            '"name": "', researchProjects[id].title, '",',
-            '"image": "ipfs://', researchProjects[id].imageUrl, '"',
-        '}'
-        );
-
-        string memory dataURI = string(
-            abi.encodePacked(
-                "data:application/json;base64,",
-                Base64.encode(uri)
-            )
-        );
-        nft.safeMintPlus(msg.sender, msg.value, dataURI);
-    }
-
-    function buyNFT_Premium(uint id) external payable readyToFund(id) {
+    function buyNFT(uint id, uint typeNFT) external payable readyToFund(id) {
         investors[msg.sender] += msg.value;
         FundNFT nft = FundNFT(researchProjects[id].fundNFT);
         bytes memory uri = abi.encodePacked(
@@ -275,27 +246,17 @@ contract FundsFactory is Ownable {
             )
         );
 
-        nft.safeMintPremium(msg.sender, msg.value, dataURI);
-    }
-
-    function buyNFT_VIP(uint id) external payable readyToFund(id) {
-        investors[msg.sender] += msg.value;
-        FundNFT nft = FundNFT(researchProjects[id].fundNFT);
-        bytes memory uri = abi.encodePacked(
-        '{',
-            '"name": "', researchProjects[id].title, '",',
-            '"image": "ipfs://', researchProjects[id].imageUrl, '"',
-        '}'
-        );
-
-        string memory dataURI = string(
-            abi.encodePacked(
-                "data:application/json;base64,",
-                Base64.encode(uri)
-            )
-        );
-
-        nft.safeMintVIP(msg.sender, msg.value, dataURI);
+        if (typeNFT == uint(NftType.classic)) {
+                nft.safeMintClassic(msg.sender, msg.value, dataURI);
+        } else if (typeNFT == uint(NftType.plus)) {
+                nft.safeMintPlus(msg.sender, msg.value, dataURI);
+        } else if (typeNFT == uint(NftType.premium)) {
+                nft.safeMintPremium(msg.sender, msg.value, dataURI);
+        } else if (typeNFT == uint(NftType.vip)) {
+                nft.safeMintVIP(msg.sender, msg.value, dataURI);
+        } else {
+            revert("NFT type not exist");
+        }
     }
 
     ////////////////////////////////

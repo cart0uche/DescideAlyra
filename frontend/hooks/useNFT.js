@@ -53,55 +53,10 @@ export function useNFT() {
       setNFTQuantityMinted(data);
    };
 
-
-   const { write: buyNFT_Classic } = useContractWrite({
+   const { write: buyNFT } = useContractWrite({
       address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
       abi: Contract.abi,
-      functionName: "buyNFT_Classic",
-      onError(error) {
-         console.log("buyNFT FAILED");
-         console.log("Error", error);
-      },
-      onSuccess(data) {
-         console.log("buyNFT SUCCESS");
-      },
-      account: addressAccount,
-   });
-
-
-   const { write: buyNFT_Plus } = useContractWrite({
-      address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-      abi: Contract.abi,
-      functionName: "buyNFT_Plus",
-      onError(error) {
-         console.log("buyNFT FAILED");
-         console.log("Error", error);
-      },
-      onSuccess(data) {
-         console.log("buyNFT SUCCESS");
-      },
-      account: addressAccount,
-   });
-
-
-   const { write: buyNFT_Premium } = useContractWrite({
-      address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-      abi: Contract.abi,
-      functionName: "buyNFT_Premium",
-      onError(error) {
-         console.log("buyNFT FAILED");
-         console.log("Error", error);
-      },
-      onSuccess(data) {
-         console.log("buyNFT SUCCESS");
-      },
-      account: addressAccount,
-   });
-
-   const { write: buyNFT_VIP } = useContractWrite({
-      address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-      abi: Contract.abi,
-      functionName: "buyNFT_VIP",
+      functionName: "buyNFT",
       onError(error) {
          console.log("buyNFT FAILED");
          console.log("Error", error);
@@ -117,9 +72,6 @@ export function useNFT() {
       NFTPrices,
       fetchNFTNbMinted,
       NFTQuantityMinted,
-      buyNFT_Classic,
-      buyNFT_Plus,
-      buyNFT_Premium,
-      buyNFT_VIP
+      buyNFT,
    };
 }

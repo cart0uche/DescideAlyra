@@ -8,8 +8,12 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { ethers } from "ethers";
+import { useNFT } from "@/hooks/useNFT";
 
-function Mint({ type, price, quantitySold, quantity, mintFct, projectID }) {
+function Mint({ type, price, quantitySold, quantity, typeNFT, projectID }) {
+   const {   
+      buyNFT,
+   } = useNFT();
    const progress = (quantitySold / quantity) * 100;
    const remaining = quantity - quantitySold;
 
@@ -42,9 +46,9 @@ function Mint({ type, price, quantitySold, quantity, mintFct, projectID }) {
                   width="100%"
                   mt={4}
                   onClick={() =>
-                     mintFct({
+                     buyNFT({
                         value: ethers.utils.parseEther(price.toString()),
-                        args: [projectID],
+                        args: [projectID, typeNFT],
                      })
                   }
                   isDisabled={remaining === 0}

@@ -9,10 +9,7 @@ function Mints({ projectInfoContext }) {
       NFTPrices,
       fetchNFTNbMinted,
       NFTQuantityMinted,
-      buyNFT_Classic,
-      buyNFT_Plus,
-      buyNFT_Premium,
-      buyNFT_VIP,
+      buyNFT,
    } = useNFT();
    const [NFTs, setNFTs] = useState([
       {
@@ -20,28 +17,28 @@ function Mints({ projectInfoContext }) {
          price: 0,
          quantitySold: 0,
          quantity: 40,
-         mintFct: buyNFT_Classic,
+         typeNFT: 0,
       },
       {
          type: "Plus",
          price: 0,
          quantitySold: 0,
          quantity: 30,
-         mintFct: buyNFT_Plus,
+         typeNFT: 1,
       },
       {
          type: "Premium",
          price: 0,
          quantitySold: 0,
          quantity: 4,
-         mintFct: buyNFT_Premium,
+         typeNFT: 2,
       },
       {
          type: "VIP",
          price: 0,
          quantitySold: 0,
          quantity: 1,
-         mintFct: buyNFT_VIP,
+         typeNFT: 3,
       },
    ]);
 
@@ -87,7 +84,7 @@ function Mints({ projectInfoContext }) {
                   price={nft.price / 100}
                   quantitySold={nft.quantitySold}
                   quantity={nft.quantity}
-                  mintFct={nft.mintFct}
+                  typeNFT={nft.typeNFT}
                   projectID={projectInfoContext.id}
                />
             ))}

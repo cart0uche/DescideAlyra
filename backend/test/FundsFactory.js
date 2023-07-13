@@ -326,7 +326,7 @@ describe("FundsFactory Contract", function () {
          const nftAddress = project1.fundNFT;
          const nftContract = await ethers.getContractAt("FundNFT", nftAddress);
          await expect(
-            await fundsFactory.connect(investor1).buyNFT_Classic(project1.id, {
+            await fundsFactory.connect(investor1).buyNFT(project1.id, CLASSIC, {
                value: ethers.parseEther("0.1"),
             })
          )
@@ -343,7 +343,7 @@ describe("FundsFactory Contract", function () {
          await expect(
             await fundsFactory
                .connect(investor1)
-               .buyNFT_Plus(0, { value: ethers.parseEther("2.5") })
+               .buyNFT(0, PLUS, { value: ethers.parseEther("2.5") })
          )
             .to.emit(nftContract, "fundNFTMinted")
             .withArgs(investor1.address, 0, PLUS);
@@ -356,7 +356,7 @@ describe("FundsFactory Contract", function () {
          const nftAddress = project1.fundNFT;
          const nftContract = await ethers.getContractAt("FundNFT", nftAddress);
          await expect(
-            await fundsFactory.connect(investor1).buyNFT_Premium(0, {
+            await fundsFactory.connect(investor1).buyNFT(0, PREMIUM, {
                value: ethers.parseEther("5"),
             })
          )
@@ -373,7 +373,7 @@ describe("FundsFactory Contract", function () {
          await expect(
             await fundsFactory
                .connect(investor1)
-               .buyNFT_VIP(0, { value: ethers.parseEther("10") })
+               .buyNFT(0, VIP, { value: ethers.parseEther("10") })
          )
             .to.emit(nftContract, "fundNFTMinted")
             .withArgs(investor1.address, 0, VIP);
@@ -387,7 +387,7 @@ describe("FundsFactory Contract", function () {
          const nftContract = await ethers.getContractAt("FundNFT", nftAddress);
 
          expect(await nftContract.balanceOf(investor1)).to.be.equal(0);
-         await fundsFactory.connect(investor1).buyNFT_Classic(project1.id, {
+         await fundsFactory.connect(investor1).buyNFT(project1.id, CLASSIC, {
             value: ethers.parseEther("1"),
          });
          expect(await nftContract.balanceOf(investor1)).to.be.equal(1);
@@ -407,7 +407,7 @@ describe("FundsFactory Contract", function () {
          expect(Number(premium)).to.be.equal(0);
          expect(Number(vip)).to.be.equal(0);
 
-         await fundsFactory.connect(investor1).buyNFT_Classic(project1.id, {
+         await fundsFactory.connect(investor1).buyNFT(project1.id, CLASSIC, {
             value: ethers.parseEther("1"),
          });
 
@@ -424,7 +424,7 @@ describe("FundsFactory Contract", function () {
          await expect(
             fundsFactory
                .connect(investor1)
-               .buyNFT_Classic(0, { value: ethers.parseEther("0.09") })
+               .buyNFT(0, CLASSIC, { value: ethers.parseEther("0.09") })
          ).to.be.revertedWith("Not enaugh paid");
       });
    });
