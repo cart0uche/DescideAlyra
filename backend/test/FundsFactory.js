@@ -282,6 +282,70 @@ describe("FundsFactory Contract", function () {
             expect(await nftContract.symbol()).to.equal("DSC0");
          });
       });
+
+      // test the function createFundsRequest
+      describe("Create funds request", function () {
+         beforeEach(async function () {
+            [admin, researcher1, researcher2, researcher3] =
+               await ethers.getSigners();
+            let FundsFactory = await ethers.getContractFactory("FundsFactory");
+            fundsFactory = await FundsFactory.deploy();
+            await fundsFactory.addResearcher(
+               researcher1.address,
+               "dupont",
+               "david",
+               "archeon"
+            );
+            await fundsFactory.changeResearcherStatus(
+               researcher1.address,
+               true
+            );
+            await fundsFactory
+               .connect(researcher1)
+               .addResearchProject(
+                  "projet1",
+                  "description1",
+                  "image1",
+                  100,
+                  "uri1"
+               );
+            await fundsFactory
+               .connect(researcher1)
+               .addResearchProject(
+                  "projet2",
+                  "description2",
+                  "image2",
+                  200,
+                  "uri2"
+               );
+            await fundsFactory.validResearchProject(0);
+            await fundsFactory.validResearchProject(1);
+         });
+
+         it("emit an event when creating a funds request", async function () {
+            const project1 = await fundsFactory
+               .connect(researcher1)
+               .getResearchProject(0);
+            await expect(
+               fundsFactory
+                  .connect(researcher1)
+                  .createFundsRequest(project1.id, 10, "description1")
+            )
+               .to.emit(fundsFactory, "FundsRequestCreated")
+               .withArgs(0, researcher1.address);
+
+            const project2 = await fundsFactory
+               .connect(researcher1)
+               .getResearchProject(0);
+            await expect(
+               fundsFactory
+                  .connect(researcher1)
+                  .createFundsRequest(project2.id, 10, "description2")
+            )
+               .to.emit(fundsFactory, "FundsRequestCreated")
+               .withArgs(1, researcher1.address);
+         });
+      });
    });
 
    describe("Investor functions", function () {

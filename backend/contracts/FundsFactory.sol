@@ -204,6 +204,40 @@ contract FundsFactory is Ownable {
         researchProjects[id].fundNFT = nft;
     }
 
+    //  FUNDS REQUEST FUNCTIONS
+
+    function createFundsRequest(
+        uint id,
+        uint amount,
+        string memory requestDetailsUri
+    ) external belongToResearcher(id) {
+        require(
+            researchProjects[id].status ==
+                ResearchProjectStatus.validated,
+            "Project not ready for funding"
+        );
+        require(
+            keccak256(abi.encode(requestDetailsUri)) !=
+                keccak256(abi.encode("")),
+            "Request detail is mandatory"
+        );
+        FundRequest memory request;
+        request.id = researchProjects[id].fundRequestListIds.length;
+        request.creationTime = block.timestamp;
+        request.amountAsked = amount;
+        request.isAccepted = false;
+        request.requestDetailsUri = requestDetailsUri;
+        request.status = FundStatus.created;
+        request.projectId = id;
+        researchProjects[id].fundRequestListIds.push(
+            researchProjects[id].fundRequestListIds.length
+        );
+        emit FundsRequestCreated(
+            researchProjects[id].fundRequestListIds.length - 1,
+            msg.sender
+        );
+    }
+
     ////////////////////////////////
     // INVESTOR FUNCTIONS
     ////////////////////////////////
