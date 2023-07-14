@@ -211,6 +211,10 @@ contract FundsFactory is Ownable {
         uint amount,
         string memory requestDetailsUri
     ) external belongToResearcher(id) {
+        // test if project id exist
+        console.log("createFundsRequest id:", id);
+        console.log("createFundsRequest researchProjects.length:", researchProjects.length);
+        require(id < researchProjects.length, "Project id dont exist");
         require(
             researchProjects[id].status ==
                 ResearchProjectStatus.validated,
@@ -221,6 +225,12 @@ contract FundsFactory is Ownable {
                 keccak256(abi.encode("")),
             "Request detail is mandatory"
         );
+        require(amount != 0, "Amount asked should not be 0");    
+        require(
+            amount <= researchProjects[id].amountAsked,
+            "Amount asked should be less than amount asked"
+        );
+
         FundRequest memory request;
         request.id = researchProjects[id].fundRequestListIds.length;
         request.creationTime = block.timestamp;

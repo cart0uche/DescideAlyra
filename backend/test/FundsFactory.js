@@ -318,6 +318,15 @@ describe("FundsFactory Contract", function () {
                   200,
                   "uri2"
                );
+            await fundsFactory
+               .connect(researcher1)
+               .addResearchProject(
+                  "projet3",
+                  "description3",
+                  "image3",
+                  300,
+                  "uri3"
+               );
             await fundsFactory.validResearchProject(0);
             await fundsFactory.validResearchProject(1);
          });
@@ -345,6 +354,51 @@ describe("FundsFactory Contract", function () {
                .to.emit(fundsFactory, "FundsRequestCreated")
                .withArgs(1, researcher1.address);
          });
+
+         it("should fail if amount is 0", async function () {
+            const project1 = await fundsFactory
+               .connect(researcher1)
+               .getResearchProject(0);
+            await expect(
+               fundsFactory
+                  .connect(researcher1)
+                  .createFundsRequest(project1.id, 0, "description1")
+            ).to.be.revertedWith("Amount asked should not be 0");
+         });
+
+         it("should fail if description is empty", async function () {
+            const project1 = await fundsFactory
+               .connect(researcher1)
+               .getResearchProject(0);
+            await expect(
+               fundsFactory
+                  .connect(researcher1)
+                  .createFundsRequest(project1.id, 10, "")
+            ).to.be.revertedWith("Request detail is mandatory");
+         });
+
+         it("should fail if get unknown project", async function () {
+            await expect(
+               fundsFactory
+                  .connect(researcher1)
+                  .createFundsRequest(4, 10, "description1")
+            ).to.be.revertedWith("Project id dont exist");
+         });
+
+         // test it should failes if the project is not validated
+         it("should fail if the project is not validated", async function () {
+            const project3 = await fundsFactory
+               .connect(researcher1)
+               .getResearchProject(2);
+            console.log(project3);
+            await expect(
+               fundsFactory
+                  .connect(researcher1)
+                  .createFundsRequest(project3.id, 10, "description3")
+            ).to.be.revertedWith("Project not ready for funding");
+         });
+
+
       });
    });
 
