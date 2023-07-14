@@ -703,6 +703,14 @@ describe("FundsFactory Contract", function () {
                .buyNFT(0, CLASSIC, { value: ethers.parseEther("0.09") })
          ).to.be.revertedWith("Not enaugh paid");
       });
+
+      it("should revert if unknown NFT type", async function () {
+         await expect(
+            fundsFactory
+               .connect(investor1)
+               .buyNFT(0, 5, { value: ethers.parseEther("1") })
+         ).to.be.revertedWith("NFT type dont exist");
+      });
    });
 
    describe("Anyone functions", function () {

@@ -17,8 +17,9 @@ contract FundsFactory is Ownable {
     event ResearchProjectCreated(uint projectId, address reasearcher);
     event ResearchProjectValidated(uint projectId);
     event ResearchProjectRemoved(uint projectId, address reasearcher);
-    event FundsRequestCreated(uint fundRequestId, address reasearcher);
+    event FundsRequestCreated(uint requestId, address reasearcher);
     event FundsAdded(uint amount, uint projectId);
+    event VoteAdded(address investor, uint projectId, uint requestId, bool vote);
 
     /******************ENUMS *************/ 
 
@@ -264,9 +265,26 @@ contract FundsFactory is Ownable {
         return nft.getNumberNFTMinted();
     }
 
-    function buyNFT(uint id, uint typeNFT) external payable readyToFund(id) {
-        FundNFT nft = FundNFT(researchProjects[id].fundNFT);
-        nft.safeMint(msg.sender, msg.value, researchProjects[id].title, researchProjects[id].imageUrl, typeNFT);
+    function buyNFT(uint projectId, uint typeNFT) external payable readyToFund(projectId) {
+        require(typeNFT < 4, "NFT type dont exist");
+        FundNFT nft = FundNFT(researchProjects[projectId].fundNFT);
+        nft.safeMint(msg.sender, msg.value, researchProjects[projectId].title, researchProjects[projectId].imageUrl, typeNFT);
+        dao.addInvestorVoteWeight(projectId, msg.sender, msg.value);
+
+    }
+
+    function addVote(
+        uint requestId,
+        bool vote
+    ) external {
+        (uint projectId,,,,,) =  dao.getFundRequestDetails(requestId);
+        require(
+            FundNFT(researchProjects[projectId].fundNFT).balanceOf(msg.sender) > 0,
+            "You need to buy NFT to vote"
+        );
+
+        dao.voteForFundRequest(requestId, vote);
+        emit VoteAdded(msg.sender, projectId, requestId, vote);
     }
 
     ////////////////////////////////

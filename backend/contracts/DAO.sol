@@ -15,7 +15,7 @@ contract DAO {
     }
 
     struct FundRequest {
-        uint id;
+        uint requestId;
         uint creationTime;
         uint amountAsked;
         bool isAccepted;
@@ -27,6 +27,9 @@ contract DAO {
 
     FundRequest[] private fundRequests;
 
+    mapping(uint => mapping(address => uint)) public investorsVoteWeight;
+    mapping(uint => mapping(address => bool)) public investorsVotes;
+
     constructor() {
     }
 
@@ -35,7 +38,7 @@ contract DAO {
         uint amount,
         string memory description) public{
         FundRequest memory fundRequest;
-        fundRequest.id = requestId;
+        fundRequest.requestId = requestId;
         fundRequest.creationTime = block.timestamp;
         fundRequest.amountAsked = amount;
         fundRequest.isAccepted = false;
@@ -57,46 +60,39 @@ contract DAO {
         ;
     }
 
-/*
+
         // create a function for voting for a fund request
     function voteForFundRequest(
-        uint fundRequestId,
-        uint vote
+        uint requestId,
+        bool vote
     ) external payable {
         require(
-            fundRequestId < fundRequestLists.length,
+            requestId < fundRequests.length,
             "Fund request id dont exist"
         );
         require(
-            fundRequestLists[fundRequestId].status ==
+            fundRequests[requestId].status ==
                 FundStatus.inProgress,
             "Fund request is not in progress"
         );
         require(
-            fundRequestLists[fundRequestId].isAccepted == false,
+            fundRequests[requestId].isAccepted == false,
             "Fund request is already accepted"
         );
+  
         require(
-           vote == 0 || vote == 1,
-            "Vote should be 0 or 1"            
-        );
-        require(
-            FundNFT(researchProjects[fundRequestLists[fundRequestId].projectId].fundNFT).balanceOf(msg.sender) > 0,
-            "You need to buy NFT to vote"
-        );
-        require(
-            investorsVotes[fundRequestId][msg.sender] == false,
+            investorsVotes[requestId][msg.sender] == false,
             "You already vote for this fund request"
         );
-        // check if investor buy NFT
 
+        if(vote == false){
+            fundRequests[requestId].vote.no++;
+        } else {
+            fundRequests[requestId].vote.yes++;
+        }
+    }   
 
-        fundRequestLists[fundRequestId].isAccepted = true;
-        researchProjects[fundRequestLists[fundRequestId].projectId]
-            .status = ResearchProjectStatus.ended;
-        fundRequestLists[fundRequestId].status = FundStatus.ended;
-
-    }
-
-    */
+    function addInvestorVoteWeight(uint projectId, address investor, uint weight) external {
+        investorsVoteWeight[projectId][investor] += weight;
+    } 
 }
