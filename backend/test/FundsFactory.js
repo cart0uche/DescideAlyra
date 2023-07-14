@@ -420,6 +420,30 @@ describe("FundsFactory Contract", function () {
          expect(Number(vip)).to.be.equal(0);
       });
 
+      it("has attribute Classic", async function () {
+         const project1 = await fundsFactory
+            .connect(researcher1)
+            .getResearchProject(0);
+         const nftAddress = project1.fundNFT;
+
+         await fundsFactory.connect(investor1).buyNFT(project1.id, CLASSIC, {
+            value: ethers.parseEther("0.1"),
+         });
+
+         const uri =
+            '{"name": "projet1","image": "ipfs://image1","attributes": [{"type": "CLASSIC"}]}';
+
+         // encode the json with base64
+         const uriBase64 =
+            "data:application/json;base64," +
+            Buffer.from(uri).toString("base64");
+
+         // test the NFT tokenuri is
+         const nftContract = await ethers.getContractAt("FundNFT", nftAddress);
+         const tokenURI = await nftContract.tokenURI(0);
+         expect(tokenURI).to.be.equal(uriBase64);
+      });
+
       it("should revert if not enaugh pay for classic NFT", async function () {
          await expect(
             fundsFactory

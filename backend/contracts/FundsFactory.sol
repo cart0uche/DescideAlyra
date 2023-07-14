@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 import "./FundNFT.sol";
+import "hardhat/console.sol";
 
 contract FundsFactory is Ownable {
     // EVENTS
@@ -229,15 +230,36 @@ contract FundsFactory is Ownable {
         return nft.getNumberNFTMinted();
     }
 
+    function labelTypeNFT(uint typeNFT) internal pure returns (string memory) {
+        if (typeNFT == uint(NftType.classic)) {
+            return "CLASSIC";
+        } else if (typeNFT == uint(NftType.plus)) {
+            return "PLUS";
+        } else if (typeNFT == uint(NftType.premium)) {
+            return "PREMIUM";
+        } else if (typeNFT == uint(NftType.vip)) {
+            return "VIP";
+        } else {
+            revert("NFT type not exist");
+        }
+    }
+
     function buyNFT(uint id, uint typeNFT) external payable readyToFund(id) {
         investors[msg.sender] += msg.value;
         FundNFT nft = FundNFT(researchProjects[id].fundNFT);
         bytes memory uri = abi.encodePacked(
-        '{',
-            '"name": "', researchProjects[id].title, '",',
-            '"image": "ipfs://', researchProjects[id].imageUrl, '"',
-        '}'
+            '{',
+                '"name": "', researchProjects[id].title, '",',
+                '"image": "ipfs://', researchProjects[id].imageUrl, '",', // Ajout d'une virgule manquante
+                '"attributes": [',
+                    '{',
+                        '"type": "', labelTypeNFT(typeNFT), '"', // Correction de l'utilisation de la fonction labelTypeNFT
+                    '}', // Ajout d'une virgule manquante
+                ']',
+            '}'
         );
+
+        console.log("buyNFT uri:", string(uri));
 
         string memory dataURI = string(
             abi.encodePacked(
@@ -245,6 +267,7 @@ contract FundsFactory is Ownable {
                 Base64.encode(uri)
             )
         );
+        
 
         if (typeNFT == uint(NftType.classic)) {
                 nft.safeMintClassic(msg.sender, msg.value, dataURI);
