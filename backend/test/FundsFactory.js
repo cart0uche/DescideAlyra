@@ -1,8 +1,7 @@
 const { expect } = require("chai");
-//const ethers = require("hardhat");
+const { time } = require("@nomicfoundation/hardhat-network-helpers");
 const { ethers } = require("hardhat");
 const BN = require("bn.js");
-
 
 const CLASSIC = 0;
 const PLUS = 1;
@@ -402,6 +401,7 @@ describe("FundsFactory Contract", function () {
       });
 
       describe("Get funds request", function () {
+         let timestamp1, timestamp2, timestamp3;
          beforeEach(async function () {
             [admin, researcher1, researcher2, researcher3] =
                await ethers.getSigners();
@@ -442,15 +442,18 @@ describe("FundsFactory Contract", function () {
             await fundsFactory
                .connect(researcher1)
                .createFundsRequest(0, 10, "description1");
+            timestamp1 = await time.latest();
 
             await fundsFactory
                .connect(researcher1)
                .createFundsRequest(0, 20, "description2");
+            timestamp2 = await time.latest();
 
             // add 1 request for project 2
             await fundsFactory
                .connect(researcher1)
                .createFundsRequest(1, 30, "description3");
+            timestamp3 = await time.latest();
          });
 
          it("get funds request info from request id", async function () {
@@ -462,6 +465,7 @@ describe("FundsFactory Contract", function () {
             expect(request1.projectId).to.be.equal(0);
             expect(request1.isAccepted).to.be.false;
             expect(request1.status).to.be.equal(FUNDS_STATE_IN_PROGRESS);
+            expect(request1.creationTime).to.be.equal(timestamp1);
 
             const request2 = await fundsFactory
                .connect(researcher1)
@@ -471,6 +475,7 @@ describe("FundsFactory Contract", function () {
             expect(request2.projectId).to.be.equal(0);
             expect(request2.isAccepted).to.be.false;
             expect(request2.status).to.be.equal(FUNDS_STATE_IN_PROGRESS);
+            expect(request2.creationTime).to.be.equal(timestamp2);
 
             const request3 = await fundsFactory
                .connect(researcher1)
@@ -480,6 +485,7 @@ describe("FundsFactory Contract", function () {
             expect(request3.projectId).to.be.equal(1);
             expect(request3.isAccepted).to.be.false;
             expect(request3.status).to.be.equal(FUNDS_STATE_IN_PROGRESS);
+            expect(request3.creationTime).to.be.equal(timestamp3);
          });
 
          it("should fail if request id dont exist", async function () {
