@@ -19,8 +19,10 @@ describe("FundsFactory Contract", function () {
          beforeEach(async function () {
             [admin, researcher1, researcher2, investor1, investor2] =
                await ethers.getSigners();
+            let DAO = await ethers.getContractFactory("DAO");
+            let dao = await DAO.deploy();
             let FundsFactory = await ethers.getContractFactory("FundsFactory");
-            fundsFactory = await FundsFactory.deploy();
+            fundsFactory = await FundsFactory.deploy(dao.target);
             await fundsFactory.addResearcher(
                researcher1.address,
                "dupont",
@@ -55,8 +57,10 @@ describe("FundsFactory Contract", function () {
          beforeEach(async function () {
             [admin, researcher1, researcher2, investor1, investor2] =
                await ethers.getSigners();
+            let DAO = await ethers.getContractFactory("DAO");
+            let dao = await DAO.deploy();
             let FundsFactory = await ethers.getContractFactory("FundsFactory");
-            fundsFactory = await FundsFactory.deploy();
+            fundsFactory = await FundsFactory.deploy(dao.target);
             await fundsFactory.addResearcher(
                researcher1.address,
                "dupont",
@@ -97,8 +101,10 @@ describe("FundsFactory Contract", function () {
          beforeEach(async function () {
             [admin, researcher1, researcher2, researcher3] =
                await ethers.getSigners();
+            let DAO = await ethers.getContractFactory("DAO");
+            let dao = await DAO.deploy();
             let FundsFactory = await ethers.getContractFactory("FundsFactory");
-            fundsFactory = await FundsFactory.deploy();
+            fundsFactory = await FundsFactory.deploy(dao.target);
             await fundsFactory.addResearcher(
                researcher1.address,
                "dupont",
@@ -247,8 +253,10 @@ describe("FundsFactory Contract", function () {
          beforeEach(async function () {
             [admin, researcher1, researcher2, researcher3] =
                await ethers.getSigners();
+            let DAO = await ethers.getContractFactory("DAO");
+            let dao = await DAO.deploy();
             let FundsFactory = await ethers.getContractFactory("FundsFactory");
-            fundsFactory = await FundsFactory.deploy();
+            fundsFactory = await FundsFactory.deploy(dao.target);
             await fundsFactory.addResearcher(
                researcher1.address,
                "dupont",
@@ -289,8 +297,10 @@ describe("FundsFactory Contract", function () {
          beforeEach(async function () {
             [admin, researcher1, researcher2, researcher3] =
                await ethers.getSigners();
+            let DAO = await ethers.getContractFactory("DAO");
+            let dao = await DAO.deploy();
             let FundsFactory = await ethers.getContractFactory("FundsFactory");
-            fundsFactory = await FundsFactory.deploy();
+            fundsFactory = await FundsFactory.deploy(dao.target);
             await fundsFactory.addResearcher(
                researcher1.address,
                "dupont",
@@ -391,7 +401,6 @@ describe("FundsFactory Contract", function () {
             const project3 = await fundsFactory
                .connect(researcher1)
                .getResearchProject(2);
-            console.log(project3);
             await expect(
                fundsFactory
                   .connect(researcher1)
@@ -405,8 +414,13 @@ describe("FundsFactory Contract", function () {
          beforeEach(async function () {
             [admin, researcher1, researcher2, researcher3] =
                await ethers.getSigners();
+
+            let DAO = await ethers.getContractFactory("DAO");
+            let dao = await DAO.deploy();
+
             let FundsFactory = await ethers.getContractFactory("FundsFactory");
-            fundsFactory = await FundsFactory.deploy();
+            fundsFactory = await FundsFactory.deploy(dao.target);
+
             await fundsFactory.addResearcher(
                researcher1.address,
                "dupont",
@@ -456,36 +470,60 @@ describe("FundsFactory Contract", function () {
             timestamp3 = await time.latest();
          });
 
-         it("get funds request info from request id", async function () {
-            const request1 = await fundsFactory
+         it("get funds request details", async function () {
+            let [
+               projectId,
+               amountAsked,
+               description,
+               creationTime,
+               isAccepted,
+               status,
+            ] = await fundsFactory
                .connect(researcher1)
                .getFundsRequestDetails(0);
-            expect(request1.amountAsked).to.be.equal(new BN(10));
-            expect(request1.description).to.be.equal("description1");
-            expect(request1.projectId).to.be.equal(0);
-            expect(request1.isAccepted).to.be.false;
-            expect(request1.status).to.be.equal(FUNDS_STATE_IN_PROGRESS);
-            expect(request1.creationTime).to.be.equal(timestamp1);
 
-            const request2 = await fundsFactory
+            expect(projectId).to.be.equal(0);
+            expect(amountAsked).to.be.equal(10);
+            expect(description).to.be.equal("description1");
+            expect(creationTime).to.be.equal(timestamp1);
+            expect(isAccepted).to.be.false;
+            expect(status).to.be.equal(FUNDS_STATE_IN_PROGRESS);
+
+            [
+               projectId,
+               amountAsked,
+               description,
+               creationTime,
+               isAccepted,
+               status,
+            ] = await fundsFactory
                .connect(researcher1)
                .getFundsRequestDetails(1);
-            expect(request2.amountAsked).to.be.equal(new BN(20));
-            expect(request2.description).to.be.equal("description2");
-            expect(request2.projectId).to.be.equal(0);
-            expect(request2.isAccepted).to.be.false;
-            expect(request2.status).to.be.equal(FUNDS_STATE_IN_PROGRESS);
-            expect(request2.creationTime).to.be.equal(timestamp2);
 
-            const request3 = await fundsFactory
+            expect(projectId).to.be.equal(0);
+            expect(amountAsked).to.be.equal(20);
+            expect(description).to.be.equal("description2");
+            expect(creationTime).to.be.equal(timestamp2);
+            expect(isAccepted).to.be.false;
+            expect(status).to.be.equal(FUNDS_STATE_IN_PROGRESS);
+
+            [
+               projectId,
+               amountAsked,
+               description,
+               creationTime,
+               isAccepted,
+               status,
+            ] = await fundsFactory
                .connect(researcher1)
                .getFundsRequestDetails(2);
-            expect(request3.amountAsked).to.be.equal(new BN(30));
-            expect(request3.description).to.be.equal("description3");
-            expect(request3.projectId).to.be.equal(1);
-            expect(request3.isAccepted).to.be.false;
-            expect(request3.status).to.be.equal(FUNDS_STATE_IN_PROGRESS);
-            expect(request3.creationTime).to.be.equal(timestamp3);
+
+            expect(projectId).to.be.equal(1);
+            expect(amountAsked).to.be.equal(30);
+            expect(description).to.be.equal("description3");
+            expect(creationTime).to.be.equal(timestamp3);
+            expect(isAccepted).to.be.false;
+            expect(status).to.be.equal(FUNDS_STATE_IN_PROGRESS);
          });
 
          it("should fail if request id dont exist", async function () {
@@ -500,8 +538,10 @@ describe("FundsFactory Contract", function () {
       beforeEach(async function () {
          [admin, researcher1, researcher2, investor1, investor2] =
             await ethers.getSigners();
+         let DAO = await ethers.getContractFactory("DAO");
+         let dao = await DAO.deploy();
          let FundsFactory = await ethers.getContractFactory("FundsFactory");
-         fundsFactory = await FundsFactory.deploy();
+         fundsFactory = await FundsFactory.deploy(dao.target);
          await fundsFactory.addResearcher(
             researcher1.address,
             "dupont",
@@ -669,8 +709,10 @@ describe("FundsFactory Contract", function () {
       describe("Adding researchers", function () {
          beforeEach(async function () {
             [admin, researcher1] = await ethers.getSigners();
+            let DAO = await ethers.getContractFactory("DAO");
+            let dao = await DAO.deploy();
             let FundsFactory = await ethers.getContractFactory("FundsFactory");
-            fundsFactory = await FundsFactory.deploy();
+            fundsFactory = await FundsFactory.deploy(dao.target);
          });
 
          it("add a researcher", async function () {
@@ -706,33 +748,6 @@ describe("FundsFactory Contract", function () {
                   "archeon"
                )
             ).to.be.revertedWith("Researcher already exist");
-         });
-      });
-
-      describe("Test if researcher exist", function () {
-         beforeEach(async function () {
-            [admin, researcher1] = await ethers.getSigners();
-            let FundsFactory = await ethers.getContractFactory("FundsFactory");
-            fundsFactory = await FundsFactory.deploy();
-         });
-
-         it("dont exist before and exist after adding", async function () {
-            let result = await fundsFactory
-               .connect(researcher1)
-               .isRegisterExist(researcher1.address);
-            expect(result).to.be.false;
-            await fundsFactory
-               .connect(researcher1)
-               .addResearcher(
-                  researcher1.address,
-                  "dupont",
-                  "david",
-                  "archeon"
-               );
-            result = await fundsFactory
-               .connect(researcher1)
-               .isRegisterExist(researcher1.address);
-            expect(result).to.be.true;
          });
       });
    });

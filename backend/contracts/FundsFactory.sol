@@ -2,10 +2,9 @@
 pragma solidity 0.8.17;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/utils/Base64.sol";
-import "./FundNFT.sol";
 import "hardhat/console.sol";
+import "./FundNFT.sol";
+import "./DAO.sol";
 
 contract FundsFactory is Ownable {
     // EVENTS
@@ -36,12 +35,6 @@ contract FundsFactory is Ownable {
         ended
     }
 
-    // ENUMS
-    enum FundStatus {
-        inProgress,
-        ended
-    }
-
     /************************************/ 
 
     
@@ -56,14 +49,8 @@ contract FundsFactory is Ownable {
         uint[] projectListIds;
     }
 
-    struct FundRequest {
-        uint id;
-        uint creationTime;
-        uint amountAsked;
-        bool isAccepted;
-        string description;
-        FundStatus status;
-        uint projectId;
+    struct Investor {
+        uint[] fundRequestListsIds;
     }
 
     struct ResearchProject {
@@ -86,11 +73,14 @@ contract FundsFactory is Ownable {
     // VARIABLES
     mapping(address => Researcher) researchers;
     mapping(address => ResearchProject[]) researchProjectByResearcher;
-    mapping(address => uint) investors;
     ResearchProject[] researchProjects;
-    FundRequest[] fundRequestLists;
 
-    constructor() {}
+    DAO dao;
+    uint requestIdNumber;
+
+    constructor(address _dao) {
+        dao = DAO(_dao);
+    }
 
     ////////////////////////////////
     // ADMIN FUNCTIONS
@@ -173,9 +163,6 @@ contract FundsFactory is Ownable {
         );
 
         string memory idStr =  Strings.toString(researchProjects.length - 1);
-
-
-
         addNFT(researchProjects.length - 1, string.concat("DESCIDE", idStr), string.concat("DSC", idStr));
 
         emit ResearchProjectCreated(researchProjects.length - 1, msg.sender);
@@ -206,10 +193,8 @@ contract FundsFactory is Ownable {
     function createFundsRequest(
         uint id,
         uint amount,
-        string memory requestDetailsUri
+        string memory description
     ) external belongToResearcher(id) {
-
-        console.log("createFundsRequest researchProjects.length:", researchProjects.length);
         require(id < researchProjects.length, "Project id dont exist");
         require(
             researchProjects[id].status ==
@@ -217,7 +202,7 @@ contract FundsFactory is Ownable {
             "Project not ready for funding"
         );
         require(
-            keccak256(abi.encode(requestDetailsUri)) !=
+            keccak256(abi.encode(description)) !=
                 keccak256(abi.encode("")),
             "Request detail is mandatory"
         );
@@ -227,18 +212,16 @@ contract FundsFactory is Ownable {
             "Amount asked should be less than amount asked"
         );
 
-        FundRequest memory request;
-        request.id = researchProjects[id].fundRequestListsIds.length;
-        request.creationTime = block.timestamp;
-        request.amountAsked = amount;
-        request.isAccepted = false;
-        request.description = requestDetailsUri;
-        request.status = FundStatus.inProgress;
-        request.projectId = id;
+        uint requestId = requestIdNumber;
+   
         researchProjects[id].fundRequestListsIds.push(
-            researchProjects[id].fundRequestListsIds.length
+            requestId
         );
-        fundRequestLists.push(request);
+
+        dao.addDao(id, requestId ,amount, description);
+
+        requestIdNumber++;
+
         emit FundsRequestCreated(
             researchProjects[id].fundRequestListsIds.length - 1,
             msg.sender
@@ -248,13 +231,10 @@ contract FundsFactory is Ownable {
     // get funds request details from funds request id
     function getFundsRequestDetails(
         uint fundRequestId
-    ) external view returns (FundRequest memory) {
-        require(
-            fundRequestId < fundRequestLists.length,
-            "Fund request id dont exist"
-        );
+    ) external view returns (uint, uint256, string memory, uint256, bool, uint) {
+        require(fundRequestId < requestIdNumber, "Fund request id dont exist");
         return
-            fundRequestLists[fundRequestId];
+            dao.getFundRequestDetails(fundRequestId);
     }
    
 
@@ -284,56 +264,9 @@ contract FundsFactory is Ownable {
         return nft.getNumberNFTMinted();
     }
 
-    function labelTypeNFT(uint typeNFT) internal pure returns (string memory) {
-        if (typeNFT == uint(NftType.classic)) {
-            return "CLASSIC";
-        } else if (typeNFT == uint(NftType.plus)) {
-            return "PLUS";
-        } else if (typeNFT == uint(NftType.premium)) {
-            return "PREMIUM";
-        } else if (typeNFT == uint(NftType.vip)) {
-            return "VIP";
-        } else {
-            revert("NFT type not exist");
-        }
-    }
-
     function buyNFT(uint id, uint typeNFT) external payable readyToFund(id) {
-        investors[msg.sender] += msg.value;
         FundNFT nft = FundNFT(researchProjects[id].fundNFT);
-        bytes memory uri = abi.encodePacked(
-            '{',
-                '"name": "', researchProjects[id].title, '",',
-                '"image": "ipfs://', researchProjects[id].imageUrl, '",', // Ajout d'une virgule manquante
-                '"attributes": [',
-                    '{',
-                        '"type": "', labelTypeNFT(typeNFT), '"', // Correction de l'utilisation de la fonction labelTypeNFT
-                    '}', // Ajout d'une virgule manquante
-                ']',
-            '}'
-        );
-
-        console.log("buyNFT uri:", string(uri));
-
-        string memory dataURI = string(
-            abi.encodePacked(
-                "data:application/json;base64,",
-                Base64.encode(uri)
-            )
-        );
-        
-
-        if (typeNFT == uint(NftType.classic)) {
-                nft.safeMintClassic(msg.sender, msg.value, dataURI);
-        } else if (typeNFT == uint(NftType.plus)) {
-                nft.safeMintPlus(msg.sender, msg.value, dataURI);
-        } else if (typeNFT == uint(NftType.premium)) {
-                nft.safeMintPremium(msg.sender, msg.value, dataURI);
-        } else if (typeNFT == uint(NftType.vip)) {
-                nft.safeMintVIP(msg.sender, msg.value, dataURI);
-        } else {
-            revert("NFT type not exist");
-        }
+        nft.safeMint(msg.sender, msg.value, researchProjects[id].title, researchProjects[id].imageUrl, typeNFT);
     }
 
     ////////////////////////////////
@@ -355,10 +288,6 @@ contract FundsFactory is Ownable {
         r.exist = true;
         researchers[addr] = r;
         emit ResearcherAdded(addr, lastname, forname, company);
-    }
-
-    function isRegisterExist(address addr) external view returns (bool) {
-        return researchers[addr].exist;
     }
 
     receive() external payable {} // to support receiving ETH by default

@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/Base64.sol";
 
 import "hardhat/console.sol";
 
@@ -78,11 +79,65 @@ contract FundNFT is
         _;
     }
 
+    function labelTypeNFT(uint typeNFT) internal pure returns (string memory) {
+        if (typeNFT == uint(nftType.CLASSIC)) {
+            return "CLASSIC";
+        } else if (typeNFT == uint(nftType.PLUS)) {
+            return "PLUS";
+        } else if (typeNFT == uint(nftType.PREMIUM)) {
+            return "PREMIUM";
+        } else if (typeNFT == uint(nftType.VIP)) {
+            return "VIP";
+        } else {
+            revert("NFT type not exist");
+        }
+    }
+
+    function safeMint(
+        address to,
+        uint amount,
+       string memory projectTitle,
+       string memory projectImageUrl,
+       uint typeNFT
+    ) public onlyOwner {
+
+        bytes memory uri = abi.encodePacked(
+            '{',
+                '"name": "', projectTitle, '",',
+                '"image": "ipfs://', projectImageUrl, '",', // Ajout d'une virgule manquante
+                '"attributes": [',
+                    '{',
+                        '"type": "', labelTypeNFT(typeNFT), '"', // Correction de l'utilisation de la fonction labelTypeNFT
+                    '}', // Ajout d'une virgule manquante
+                ']',
+            '}'
+        );
+
+        string memory dataURI = string(
+            abi.encodePacked(
+                "data:application/json;base64,",
+                Base64.encode(uri)
+            )
+        );
+        
+        if (typeNFT == uint(nftType.CLASSIC)) {
+                safeMintClassic(to, amount, dataURI);
+        } else if (typeNFT == uint(nftType.PLUS)) {
+                safeMintPlus(to, amount, dataURI);
+        } else if (typeNFT == uint(nftType.PREMIUM)) {
+                safeMintPremium(to, amount, dataURI);
+        } else if (typeNFT == uint(nftType.VIP)) {
+                safeMintVIP(to, amount, dataURI);
+        } else {
+            revert("NFT type not exist");
+        }
+    }
+
     function safeMintClassic(
         address to,
         uint amount,
        string memory uri
-    ) public onlyOwner checkSupply(nftType.CLASSIC, amount) {
+    ) internal checkSupply(nftType.CLASSIC, amount) {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
          nftConfs[nftType.CLASSIC].number++;
@@ -96,7 +151,7 @@ contract FundNFT is
         address to,
         uint amount,
         string memory uri
-    ) public onlyOwner checkSupply(nftType.PLUS, amount) {
+    ) internal checkSupply(nftType.PLUS, amount) {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         nftConfs[nftType.PLUS].number++;
@@ -110,7 +165,7 @@ contract FundNFT is
         address to,
         uint amount,
         string memory uri
-    ) public onlyOwner checkSupply(nftType.PREMIUM, amount) {
+    ) internal checkSupply(nftType.PREMIUM, amount) {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         nftConfs[nftType.PREMIUM].number++;
@@ -124,7 +179,7 @@ contract FundNFT is
         address to,
         uint amount,
         string memory uri
-    ) public onlyOwner checkSupply(nftType.VIP, amount) {
+    ) internal checkSupply(nftType.VIP, amount) {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         nftConfs[nftType.VIP].number++;
