@@ -25,14 +25,10 @@ jobs:
               cache: yarn
 
          - name: Install dependencies
-           with:
-              path: backend/
-           run: yarn install
+           run: cd backend/ && yarn install
 
          - name: Run harhat unit test
-           with:
-              path: backend/
-           run: yarn hardhat coverage
+           run: cd backend/ && yarn hardhat coverage
 
          - name: Codecov
            uses: codecov/codecov-action@v3
