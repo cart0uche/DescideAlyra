@@ -9,6 +9,9 @@ const PLUS = 1;
 const PREMIUM = 2;
 const VIP = 3;
 
+const FUNDS_STATE_IN_PROGRESS = 0;
+const FUNDS_STATE_ENDED = 1;
+
 describe("FundsFactory Contract", function () {
    let fundsFactory;
 
@@ -283,7 +286,6 @@ describe("FundsFactory Contract", function () {
          });
       });
 
-      // test the function createFundsRequest
       describe("Create funds request", function () {
          beforeEach(async function () {
             [admin, researcher1, researcher2, researcher3] =
@@ -397,8 +399,94 @@ describe("FundsFactory Contract", function () {
                   .createFundsRequest(project3.id, 10, "description3")
             ).to.be.revertedWith("Project not ready for funding");
          });
+      });
 
+      describe("Get funds request", function () {
+         beforeEach(async function () {
+            [admin, researcher1, researcher2, researcher3] =
+               await ethers.getSigners();
+            let FundsFactory = await ethers.getContractFactory("FundsFactory");
+            fundsFactory = await FundsFactory.deploy();
+            await fundsFactory.addResearcher(
+               researcher1.address,
+               "dupont",
+               "david",
+               "archeon"
+            );
+            await fundsFactory.changeResearcherStatus(
+               researcher1.address,
+               true
+            );
+            await fundsFactory
+               .connect(researcher1)
+               .addResearchProject(
+                  "projet1",
+                  "description1",
+                  "image1",
+                  100,
+                  "uri1"
+               );
+            await fundsFactory
+               .connect(researcher1)
+               .addResearchProject(
+                  "projet2",
+                  "description2",
+                  "image2",
+                  200,
+                  "uri2"
+               );
+            await fundsFactory.validResearchProject(0);
+            await fundsFactory.validResearchProject(1);
 
+            // add 2 requests for project 1
+            await fundsFactory
+               .connect(researcher1)
+               .createFundsRequest(0, 10, "description1");
+
+            await fundsFactory
+               .connect(researcher1)
+               .createFundsRequest(0, 20, "description2");
+
+            // add 1 request for project 2
+            await fundsFactory
+               .connect(researcher1)
+               .createFundsRequest(1, 30, "description3");
+         });
+
+         it("get funds request info from request id", async function () {
+            const request1 = await fundsFactory
+               .connect(researcher1)
+               .getFundsRequestDetails(0);
+            expect(request1.amountAsked).to.be.equal(new BN(10));
+            expect(request1.description).to.be.equal("description1");
+            expect(request1.projectId).to.be.equal(0);
+            expect(request1.isAccepted).to.be.false;
+            expect(request1.status).to.be.equal(FUNDS_STATE_IN_PROGRESS);
+
+            const request2 = await fundsFactory
+               .connect(researcher1)
+               .getFundsRequestDetails(1);
+            expect(request2.amountAsked).to.be.equal(new BN(20));
+            expect(request2.description).to.be.equal("description2");
+            expect(request2.projectId).to.be.equal(0);
+            expect(request2.isAccepted).to.be.false;
+            expect(request2.status).to.be.equal(FUNDS_STATE_IN_PROGRESS);
+
+            const request3 = await fundsFactory
+               .connect(researcher1)
+               .getFundsRequestDetails(2);
+            expect(request3.amountAsked).to.be.equal(new BN(30));
+            expect(request3.description).to.be.equal("description3");
+            expect(request3.projectId).to.be.equal(1);
+            expect(request3.isAccepted).to.be.false;
+            expect(request3.status).to.be.equal(FUNDS_STATE_IN_PROGRESS);
+         });
+
+         it("should fail if request id dont exist", async function () {
+            await expect(
+               fundsFactory.connect(researcher1).getFundsRequestDetails(5)
+            ).to.be.revertedWith("Fund request id dont exist");
+         });
       });
    });
 

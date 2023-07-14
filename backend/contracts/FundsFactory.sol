@@ -21,7 +21,7 @@ contract FundsFactory is Ownable {
     event FundsRequestCreated(uint fundRequestId, address reasearcher);
     event FundsAdded(uint amount, uint projectId);
 
-    // ENUMS
+    /******************ENUMS *************/ 
 
     enum NftType {
         classic,
@@ -38,11 +38,14 @@ contract FundsFactory is Ownable {
 
     // ENUMS
     enum FundStatus {
-        created,
+        inProgress,
         ended
     }
 
-    // STRUCTS
+    /************************************/ 
+
+    
+    /****************** STRUCTS *************/ 
     struct Researcher {
         string lastname;
         string forname;
@@ -51,6 +54,16 @@ contract FundsFactory is Ownable {
         bool exist;
         bool isValidated;
         uint[] projectListIds;
+    }
+
+    struct FundRequest {
+        uint id;
+        uint creationTime;
+        uint amountAsked;
+        bool isAccepted;
+        string description;
+        FundStatus status;
+        uint projectId;
     }
 
     struct ResearchProject {
@@ -65,24 +78,17 @@ contract FundsFactory is Ownable {
         string projectDetailsUri;
         FundNFT fundNFT;
         ResearchProjectStatus status;
-        uint[] fundRequestListIds;
+        uint[] fundRequestListsIds;
     }
 
-    struct FundRequest {
-        uint id;
-        uint creationTime;
-        uint amountAsked;
-        bool isAccepted;
-        string requestDetailsUri;
-        FundStatus status;
-        uint projectId;
-    }
+    /************************************/ 
 
     // VARIABLES
     mapping(address => Researcher) researchers;
     mapping(address => ResearchProject[]) researchProjectByResearcher;
     mapping(address => uint) investors;
     ResearchProject[] researchProjects;
+    FundRequest[] fundRequestLists;
 
     constructor() {}
 
@@ -182,15 +188,6 @@ contract FundsFactory is Ownable {
         return researchProjects[id];
     }
 
-    function removeResearchProject(uint id) external belongToResearcher(id) {}
-
-    function askFundsRequest(
-        uint id,
-        uint amount
-    ) external belongToResearcher(id) {}
-
-    function getFunds(uint id) external onlyResearcher {}
-
     function addNFT(
         uint id,
         string memory tokenName,
@@ -211,8 +208,7 @@ contract FundsFactory is Ownable {
         uint amount,
         string memory requestDetailsUri
     ) external belongToResearcher(id) {
-        // test if project id exist
-        console.log("createFundsRequest id:", id);
+
         console.log("createFundsRequest researchProjects.length:", researchProjects.length);
         require(id < researchProjects.length, "Project id dont exist");
         require(
@@ -232,21 +228,35 @@ contract FundsFactory is Ownable {
         );
 
         FundRequest memory request;
-        request.id = researchProjects[id].fundRequestListIds.length;
+        request.id = researchProjects[id].fundRequestListsIds.length;
         request.creationTime = block.timestamp;
         request.amountAsked = amount;
         request.isAccepted = false;
-        request.requestDetailsUri = requestDetailsUri;
-        request.status = FundStatus.created;
+        request.description = requestDetailsUri;
+        request.status = FundStatus.inProgress;
         request.projectId = id;
-        researchProjects[id].fundRequestListIds.push(
-            researchProjects[id].fundRequestListIds.length
+        researchProjects[id].fundRequestListsIds.push(
+            researchProjects[id].fundRequestListsIds.length
         );
+        fundRequestLists.push(request);
         emit FundsRequestCreated(
-            researchProjects[id].fundRequestListIds.length - 1,
+            researchProjects[id].fundRequestListsIds.length - 1,
             msg.sender
         );
     }
+
+    // get funds request details from funds request id
+    function getFundsRequestDetails(
+        uint fundRequestId
+    ) external view returns (FundRequest memory) {
+        require(
+            fundRequestId < fundRequestLists.length,
+            "Fund request id dont exist"
+        );
+        return
+            fundRequestLists[fundRequestId];
+    }
+   
 
     ////////////////////////////////
     // INVESTOR FUNCTIONS
@@ -350,8 +360,6 @@ contract FundsFactory is Ownable {
     function isRegisterExist(address addr) external view returns (bool) {
         return researchers[addr].exist;
     }
-
-    // votes, see https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/governance/extensions/GovernorCountingSimple.sol
 
     receive() external payable {} // to support receiving ETH by default
 
