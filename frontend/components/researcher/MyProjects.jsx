@@ -1,14 +1,15 @@
 import { Card, SimpleGrid, Flex } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { useProject } from "@/hooks/useProject";
+import { fetchProject } from "@/components/fetchData";
 import CardProject from "./CardProject";
 import { v4 as uuidv4 } from "uuid";
 
 function MyProjects() {
-   const { projects } = useProject();
+   const [projects, setProjects] = useState([]);
 
-   console.log("myProjects: ");
-   console.log(projects);
+   useEffect(() => {
+      fetchProject(setProjects);
+   }, []);
 
    return (
       <div>

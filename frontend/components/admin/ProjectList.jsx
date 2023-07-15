@@ -8,15 +8,17 @@ import {
    Th,
    TableContainer,
 } from "@chakra-ui/react";
-import { useProject } from "@/hooks/useProject";
+import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import OneProject from "./OneProject";
+import { fetchProject } from "@/components/fetchData";
 
 function ProjectList() {
-   const { projects } = useProject();
+   const [projects, setProjects] = useState([]);
 
-   console.log("projects :");
-   console.log(projects);
+   useEffect(() => {
+      fetchProject(setProjects);
+   }, []);
 
    return (
       <div>

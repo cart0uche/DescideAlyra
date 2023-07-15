@@ -1,3 +1,4 @@
+"use client";
 import { HStack, Flex } from "@chakra-ui/react";
 import Action from "./Action";
 

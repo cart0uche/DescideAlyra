@@ -6,6 +6,7 @@ const FundsContext = createContext({});
 
 export const FundsContextProvider = ({ children }) => {
    const [projectInfoContext, setProjectInfoContext] = useState(null);
+
    const toast = useToast();
 
    return (

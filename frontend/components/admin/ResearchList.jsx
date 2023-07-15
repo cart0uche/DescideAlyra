@@ -11,10 +11,15 @@ import {
 
 import OneResearcher from "./OneResearcher";
 import { v4 as uuidv4 } from "uuid";
-import { useResearcher } from "@/hooks/useResearcher";
+import { fetchResearcher } from "@/components/fetchData";
+import { useEffect, useState } from "react";
 
 function ResearchList() {
-   const { researchers } = useResearcher();
+   const [researchers, setResearchers] = useState([]);
+
+   useEffect(() => {
+      fetchResearcher(setResearchers);
+   }, []);
 
    return (
       <div>

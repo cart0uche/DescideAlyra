@@ -1,14 +1,22 @@
+"use client";
 import React from "react";
-import Subscribe from "./researcher/Subscribe";
+import { useState, useEffect } from "react";
 import SelectAction from "./SelectAction";
-import { useContractRead, useAccount } from "wagmi";
+import { useAccount } from "wagmi";
 
 function Main() {
    const { address: addrAccount, isConnected } = useAccount();
+   const [mounted, setMounted] = useState(false);
+
+   useEffect(() => {
+      setMounted(true);
+   }, []);
 
    if (!isConnected) {
       return <div></div>;
    }
+
+   if (!mounted) return <></>;
 
    return (
       <div>

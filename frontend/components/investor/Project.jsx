@@ -2,9 +2,12 @@ import { useFundsContext } from "@/context/fundsContext";
 import { Box, Flex, Heading, Image, Link, Text } from "@chakra-ui/react";
 import { FaEthereum, FaClock, FaCheckCircle } from "react-icons/fa";
 import Mints from "./Mints";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 function Project() {
    const { projectInfoContext } = useFundsContext();
+   const router = useRouter();
 
    const getStatusProject = (status) => {
       switch (status) {
@@ -20,6 +23,11 @@ function Project() {
             return "";
       }
    };
+
+   if (projectInfoContext === null) {
+      router.push("/");
+      return(<div/>);
+   }
 
    return (
       <Flex direction="column" p={8} alignItems="center">

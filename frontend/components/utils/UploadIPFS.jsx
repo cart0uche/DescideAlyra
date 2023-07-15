@@ -24,7 +24,9 @@ const UploadIPFS = ({ setFileUrl }) => {
    };
 
    useEffect(() => {
+      if (img.length !== 0){
       upload();
+      }
    }, [img]);
 
    return (
