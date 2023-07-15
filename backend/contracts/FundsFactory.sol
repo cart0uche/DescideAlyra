@@ -18,6 +18,7 @@ contract FundsFactory is Ownable {
     event ResearchProjectValidated(uint projectId);
     event ResearchProjectRemoved(uint projectId, address reasearcher);
     event FundsRequestCreated(uint requestId, address reasearcher);
+    event FundsRequestClosed(uint requestId, address reasearcher);
     event FundsAdded(uint amount, uint projectId);
     event VoteAdded(address investor, uint projectId, uint requestId, bool vote);
 
@@ -225,6 +226,24 @@ contract FundsFactory is Ownable {
 
         emit FundsRequestCreated(
             researchProjects[id].fundRequestListsIds.length - 1,
+            msg.sender
+        );
+    }
+
+    function closeFundsRequest(
+        uint requestId
+    ) external  {
+        (uint projectId,,,,,) =  dao.getFundRequestDetails(requestId);
+        require(
+            researchProjects[projectId].researcher == msg.sender,
+            "Project is not yours"
+        );
+        dao.closeFundRequest(
+            requestId
+        );
+
+        emit FundsRequestClosed(
+            requestId,
             msg.sender
         );
     }

@@ -312,6 +312,48 @@ describe("FundsFactory Contract", function () {
          });
       });
 
+      describe("Close funds request", function () {
+         beforeEach(async function () {
+            [admin, researcher1, researcher2, researcher3] =
+               await ethers.getSigners();
+            fundsFactory = await deployProject();
+            await addResearcher(fundsFactory, researcher1);
+            await addResearchProject(fundsFactory, researcher1, 0, "100");
+            await addResearchProject(fundsFactory, researcher1, 1, "200");
+            await addRequest(fundsFactory, researcher1, 0, "10");
+            await addRequest(fundsFactory, researcher1, 0, "20");
+            await addRequest(fundsFactory, researcher1, 1, "30");
+         });
+
+         it("emit an event when closing a funds request", async function () {
+            await expect(fundsFactory.connect(researcher1).closeFundsRequest(0))
+               .to.emit(fundsFactory, "FundsRequestClosed")
+               .withArgs(0, researcher1.address);
+         });
+
+         it("should fail if request id dont exist", async function () {
+            await expect(
+               fundsFactory.connect(researcher1).closeFundsRequest(5)
+            ).to.be.revertedWith("Fund request id dont exist");
+         });
+
+         it("should fail if request is already closed", async function () {
+            await fundsFactory.connect(researcher1).closeFundsRequest(0);
+            await expect(
+               fundsFactory.connect(researcher1).closeFundsRequest(0)
+            ).to.be.revertedWith("Fund request is not in progress");
+         });
+
+         it("should fail if another researcher try to close the request", async function () {
+            await expect(
+               fundsFactory.connect(researcher2).closeFundsRequest(0)
+            ).to.be.revertedWith("Project is not yours");
+         });
+
+         // TODO
+         it("should fail if the request is already accepted", async function () {});
+      });
+
       describe("Get funds request details", function () {
          let timestamp1, timestamp2, timestamp3;
          beforeEach(async function () {

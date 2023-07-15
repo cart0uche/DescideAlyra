@@ -120,7 +120,6 @@ contract DAO {
             fundRequests[requestId].isAccepted == false,
             "Fund request is already accepted"
         );
-        require(block.timestamp > fundRequests[requestId].creationTime + 30 days, "Fund request is not expired");
 
         if(fundRequests[requestId].vote.yes > fundRequests[requestId].vote.no){
             fundRequests[requestId].isAccepted = true;
