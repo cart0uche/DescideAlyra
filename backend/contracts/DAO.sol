@@ -89,6 +89,9 @@ contract DAO {
             "You already vote for this fund request"
         );
 
+        require(block.timestamp < fundRequests[requestId].creationTime + 30 days, "Fund request is expired");
+ 
+
         if(vote == false){
             fundRequests[requestId].vote.no++;
         } else {
@@ -101,4 +104,30 @@ contract DAO {
     function addInvestorVoteWeight(uint projectId, address investor, uint weight) external {
         investorsVoteWeight[projectId][investor] += weight;
     } 
+
+    // add a function to close a request
+    function closeFundRequest(uint requestId) external {
+        require(
+            requestId < fundRequests.length,
+            "Fund request id dont exist"
+        );
+        require(
+            fundRequests[requestId].status ==
+                FundStatus.inProgress,
+            "Fund request is not in progress"
+        );
+        require(
+            fundRequests[requestId].isAccepted == false,
+            "Fund request is already accepted"
+        );
+        require(block.timestamp > fundRequests[requestId].creationTime + 30 days, "Fund request is not expired");
+
+        if(fundRequests[requestId].vote.yes > fundRequests[requestId].vote.no){
+            fundRequests[requestId].isAccepted = true;
+        } else {
+            fundRequests[requestId].isAccepted = false;
+        }
+
+        fundRequests[requestId].status = FundStatus.ended;
+    }
 }

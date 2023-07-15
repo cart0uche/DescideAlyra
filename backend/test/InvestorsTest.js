@@ -22,7 +22,7 @@ describe("FundsFactory Contract", function () {
             await ethers.getSigners();
          fundsFactory = await deployProject();
          await addResearcher(fundsFactory, researcher1);
-         await addResearchProject(fundsFactory, researcher1, 0);
+         await addResearchProject(fundsFactory, researcher1, 0, "10");
       });
 
       it("get NFT prices", async function () {
@@ -183,8 +183,8 @@ describe("FundsFactory Contract", function () {
             await ethers.getSigners();
          fundsFactory = await deployProject();
          await addResearcher(fundsFactory, researcher1);
-         await addResearchProject(fundsFactory, researcher1, 0);
-         await addRequest(fundsFactory, researcher1, 0);
+         await addResearchProject(fundsFactory, researcher1, 0, "10");
+         await addRequest(fundsFactory, researcher1, 0, "10");
          await buyNFT(
             fundsFactory,
             investor1,
@@ -230,5 +230,14 @@ describe("FundsFactory Contract", function () {
 
       // TODO
       it("should fail if request is already accepted", async function () {});
+
+      it("should fail if request is expired", async function () {
+         const oneMonth = 2629743; // seconds in 1 month
+         await ethers.provider.send("evm_increaseTime", [oneMonth]);
+         await ethers.provider.send("evm_mine");
+         await expect(
+            fundsFactory.connect(investor1).addVote(0, true)
+         ).to.be.revertedWith("Fund request is expired");
+      });
    });
 });

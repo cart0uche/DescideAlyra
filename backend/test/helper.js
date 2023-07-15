@@ -19,27 +19,23 @@ async function addResearcher(fundsFactory, researcher) {
    await fundsFactory.changeResearcherStatus(researcher.address, true);
 }
 
-async function addResearchProject(fundsFactory, researcher, index) {
+async function addResearchProject(fundsFactory, researcher, index, amount) {
    await fundsFactory
       .connect(researcher)
       .addResearchProject(
          "projet" + (index + 1),
          "description" + (index + 1),
          "image" + (index + 1),
-         ethers.parseEther("10"),
+         ethers.parseEther(amount),
          "uri" + (index + 1)
       );
    await fundsFactory.validResearchProject(index);
 }
 
-async function addRequest(fundsFactory, researcher, index) {
+async function addRequest(fundsFactory, researcher, index, amount) {
    await fundsFactory
       .connect(researcher)
-      .createFundsRequest(
-         index,
-         ethers.parseEther("10"),
-         "description" + (index + 1)
-      );
+      .createFundsRequest(index, ethers.parseEther(amount), "description");
 }
 
 async function buyNFT(fundsFactory, investor, projectIndex, nftType, value) {

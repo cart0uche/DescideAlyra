@@ -2,6 +2,12 @@ const { expect } = require("chai");
 const { time } = require("@nomicfoundation/hardhat-network-helpers");
 const { ethers } = require("hardhat");
 const BN = require("bn.js");
+const {
+   deployProject,
+   addResearcher,
+   addResearchProject,
+   addRequest,
+} = require("./helper");
 
 const CLASSIC = 0;
 const PLUS = 1;
@@ -19,30 +25,9 @@ describe("FundsFactory Contract", function () {
          beforeEach(async function () {
             [admin, researcher1, researcher2, researcher3] =
                await ethers.getSigners();
-            let DAO = await ethers.getContractFactory("DAO");
-            let dao = await DAO.deploy();
-            let FundsFactory = await ethers.getContractFactory("FundsFactory");
-            fundsFactory = await FundsFactory.deploy(dao.target);
-            await fundsFactory.addResearcher(
-               researcher1.address,
-               "dupont",
-               "david",
-               "archeon"
-            );
-            await fundsFactory.addResearcher(
-               researcher2.address,
-               "dupond",
-               "kevin",
-               "parkeon"
-            );
-            await fundsFactory.changeResearcherStatus(
-               researcher1.address,
-               true
-            );
-            await fundsFactory.changeResearcherStatus(
-               researcher2.address,
-               true
-            );
+            fundsFactory = await deployProject();
+            await addResearcher(fundsFactory, researcher1);
+            await addResearcher(fundsFactory, researcher2);
          });
 
          it("emit an event when adding a project", async function () {
@@ -327,64 +312,22 @@ describe("FundsFactory Contract", function () {
          });
       });
 
-      describe("Get funds request", function () {
+      describe("Get funds request details", function () {
          let timestamp1, timestamp2, timestamp3;
          beforeEach(async function () {
             [admin, researcher1, researcher2, researcher3] =
                await ethers.getSigners();
 
-            let DAO = await ethers.getContractFactory("DAO");
-            let dao = await DAO.deploy();
+            fundsFactory = await deployProject();
+            await addResearcher(fundsFactory, researcher1);
+            await addResearchProject(fundsFactory, researcher1, 0, "100");
+            await addResearchProject(fundsFactory, researcher1, 1, "200");
 
-            let FundsFactory = await ethers.getContractFactory("FundsFactory");
-            fundsFactory = await FundsFactory.deploy(dao.target);
-
-            await fundsFactory.addResearcher(
-               researcher1.address,
-               "dupont",
-               "david",
-               "archeon"
-            );
-            await fundsFactory.changeResearcherStatus(
-               researcher1.address,
-               true
-            );
-            await fundsFactory
-               .connect(researcher1)
-               .addResearchProject(
-                  "projet1",
-                  "description1",
-                  "image1",
-                  100,
-                  "uri1"
-               );
-            await fundsFactory
-               .connect(researcher1)
-               .addResearchProject(
-                  "projet2",
-                  "description2",
-                  "image2",
-                  200,
-                  "uri2"
-               );
-            await fundsFactory.validResearchProject(0);
-            await fundsFactory.validResearchProject(1);
-
-            // add 2 requests for project 1
-            await fundsFactory
-               .connect(researcher1)
-               .createFundsRequest(0, 10, "description1");
+            await addRequest(fundsFactory, researcher1, 0, "10");
             timestamp1 = await time.latest();
-
-            await fundsFactory
-               .connect(researcher1)
-               .createFundsRequest(0, 20, "description2");
+            await addRequest(fundsFactory, researcher1, 0, "20");
             timestamp2 = await time.latest();
-
-            // add 1 request for project 2
-            await fundsFactory
-               .connect(researcher1)
-               .createFundsRequest(1, 30, "description3");
+            await addRequest(fundsFactory, researcher1, 1, "30");
             timestamp3 = await time.latest();
          });
 
@@ -401,8 +344,8 @@ describe("FundsFactory Contract", function () {
                .getFundsRequestDetails(0);
 
             expect(projectId).to.be.equal(0);
-            expect(amountAsked).to.be.equal(10);
-            expect(description).to.be.equal("description1");
+            expect(amountAsked).to.be.equal(ethers.parseEther("10"));
+            expect(description).to.be.equal("description");
             expect(creationTime).to.be.equal(timestamp1);
             expect(isAccepted).to.be.false;
             expect(status).to.be.equal(FUNDS_STATE_IN_PROGRESS);
@@ -419,8 +362,8 @@ describe("FundsFactory Contract", function () {
                .getFundsRequestDetails(1);
 
             expect(projectId).to.be.equal(0);
-            expect(amountAsked).to.be.equal(20);
-            expect(description).to.be.equal("description2");
+            expect(amountAsked).to.be.equal(ethers.parseEther("20"));
+            expect(description).to.be.equal("description");
             expect(creationTime).to.be.equal(timestamp2);
             expect(isAccepted).to.be.false;
             expect(status).to.be.equal(FUNDS_STATE_IN_PROGRESS);
@@ -437,8 +380,8 @@ describe("FundsFactory Contract", function () {
                .getFundsRequestDetails(2);
 
             expect(projectId).to.be.equal(1);
-            expect(amountAsked).to.be.equal(30);
-            expect(description).to.be.equal("description3");
+            expect(amountAsked).to.be.equal(ethers.parseEther("30"));
+            expect(description).to.be.equal("description");
             expect(creationTime).to.be.equal(timestamp3);
             expect(isAccepted).to.be.false;
             expect(status).to.be.equal(FUNDS_STATE_IN_PROGRESS);
