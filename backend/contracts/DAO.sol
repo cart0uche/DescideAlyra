@@ -28,6 +28,7 @@ contract DAO {
     FundRequest[] private fundRequests;
 
     mapping(uint => mapping(address => uint)) public investorsVoteWeight;
+    mapping(uint => uint) public totalVoteWeight;
     mapping(uint => mapping(address => bool)) public investorsVotes;
 
     constructor() {
@@ -105,6 +106,7 @@ contract DAO {
 
     function addInvestorVoteWeight(uint projectId, address investor, uint weight) external {
         investorsVoteWeight[projectId][investor] += weight;
+        totalVoteWeight[projectId] += weight;
     } 
 
     // add a function to close a request
@@ -143,5 +145,27 @@ contract DAO {
             fundRequests[requestId].vote.yes,
             fundRequests[requestId].vote.no
         );
+    }
+
+    function shouldClaimFunds(uint requestId) external view returns(uint) {
+        require(
+            requestId < fundRequests.length,
+            "Fund request id dont exist"
+        );
+        require(
+            fundRequests[requestId].status ==
+                FundStatus.ended,
+            "Fund request is not ended"
+        );
+        require(
+            fundRequests[requestId].isAccepted == true,
+            "Fund request is not accepted"
+        );
+        require(
+            fundRequests[requestId].amountAsked <= address(this).balance,
+            "Not enough funds"
+        );
+
+        return fundRequests[requestId].amountAsked;
     }
 }

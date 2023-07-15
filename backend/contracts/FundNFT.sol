@@ -38,7 +38,6 @@ contract FundNFT is
     }
 
     // VARIABLES
-    uint256 public constant MAX_SUPPLY = 75;
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIdCounter;
     mapping(nftType => nftConf) nftConfs;
@@ -100,6 +99,19 @@ contract FundNFT is
        string memory projectImageUrl,
        uint typeNFT
     ) public onlyOwner {
+        // check that typeNft is correct
+        require(
+            typeNFT == uint(nftType.CLASSIC) ||
+            typeNFT == uint(nftType.PLUS) ||
+            typeNFT == uint(nftType.PREMIUM) ||
+            typeNFT == uint(nftType.VIP),
+            "NFT type not exist"
+        );
+        require(
+            nftConfs[nftType(typeNFT)].number < nftConfs[nftType(typeNFT)].max,
+            "Maximum supply reached"
+        );
+        require(amount * 1000 >= nftConfs[nftType(typeNFT)].amount, "Not enaugh paid");
 
         bytes memory uri = abi.encodePacked(
             '{',
@@ -119,76 +131,16 @@ contract FundNFT is
                 Base64.encode(uri)
             )
         );
-        
-        if (typeNFT == uint(nftType.CLASSIC)) {
-                safeMintClassic(to, amount, dataURI);
-        } else if (typeNFT == uint(nftType.PLUS)) {
-                safeMintPlus(to, amount, dataURI);
-        } else if (typeNFT == uint(nftType.PREMIUM)) {
-                safeMintPremium(to, amount, dataURI);
-        } else if (typeNFT == uint(nftType.VIP)) {
-                safeMintVIP(to, amount, dataURI);
-        } else {
-            revert("NFT type not exist");
-        }
-    }
 
-    function safeMintClassic(
-        address to,
-        uint amount,
-       string memory uri
-    ) internal checkSupply(nftType.CLASSIC, amount) {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
-         nftConfs[nftType.CLASSIC].number++;
+         nftConfs[nftType(typeNFT)].number++;
         _safeMint(to, tokenId);
-        _setTokenURI(tokenId, uri);
+        _setTokenURI(tokenId, dataURI);
 
-        emit fundNFTMinted(to, tokenId, uint(nftType.CLASSIC));
+        emit fundNFTMinted(to, tokenId, typeNFT);
+       
     }
-
-    function safeMintPlus(
-        address to,
-        uint amount,
-        string memory uri
-    ) internal checkSupply(nftType.PLUS, amount) {
-        uint256 tokenId = _tokenIdCounter.current();
-        _tokenIdCounter.increment();
-        nftConfs[nftType.PLUS].number++;
-        _safeMint(to, tokenId);
-        _setTokenURI(tokenId, uri);
-
-        emit fundNFTMinted(to, tokenId, uint(nftType.PLUS));
-    }
-
-    function safeMintPremium(
-        address to,
-        uint amount,
-        string memory uri
-    ) internal checkSupply(nftType.PREMIUM, amount) {
-        uint256 tokenId = _tokenIdCounter.current();
-        _tokenIdCounter.increment();
-        nftConfs[nftType.PREMIUM].number++;
-        _safeMint(to, tokenId);
-        _setTokenURI(tokenId, uri);
-
-        emit fundNFTMinted(to, tokenId, uint(nftType.PREMIUM));
-    }
-
-    function safeMintVIP(
-        address to,
-        uint amount,
-        string memory uri
-    ) internal checkSupply(nftType.VIP, amount) {
-        uint256 tokenId = _tokenIdCounter.current();
-        _tokenIdCounter.increment();
-        nftConfs[nftType.VIP].number++;
-        _safeMint(to, tokenId);
-        _setTokenURI(tokenId, uri);
-
-        emit fundNFTMinted(to, tokenId, uint(nftType.VIP));
-    }
-
     function _beforeTokenTransfer(
         address from,
         address to,

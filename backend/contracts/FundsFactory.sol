@@ -20,6 +20,7 @@ contract FundsFactory is Ownable {
     event FundsRequestClosed(uint requestId, address reasearcher);
     event VoteAdded(address investor, uint projectId, uint requestId, bool vote);
 
+
     /******************ENUMS *************/ 
 
     enum ResearchProjectStatus {
@@ -46,22 +47,22 @@ contract FundsFactory is Ownable {
 
     struct ResearchProject {
         uint id;
+        uint creationTime;
+        uint amountAsked;
         string title;
         string description;
         string imageUrl;
-        uint creationTime;
-        bool isAccepted;
-        address researcher;
-        uint amountAsked;
         string projectDetailsUri;
+        address researcher;       
         FundNFT fundNFT;
         ResearchProjectStatus status;
         uint[] fundRequestListsIds;
+        bool isAccepted;
     }
 
     /****************** VARIABLES *************/ 
     mapping(address => Researcher) researchers;
-    mapping(address => ResearchProject[]) researchProjectByResearcher;
+    //mapping(address => ResearchProject[]) researchProjectByResearcher;
     ResearchProject[] researchProjects;
 
     DAO dao;
@@ -235,6 +236,19 @@ contract FundsFactory is Ownable {
         );
     }
 
+    function claimFunds(
+        uint requestId
+    ) external {
+        (uint projectId,,,,,) =  dao.getFundRequestDetails(requestId);
+        require(
+            researchProjects[projectId].researcher == msg.sender,
+            "Project is not yours"
+        );
+        uint amount = dao.shouldClaimFunds(requestId);
+         (bool sent, ) = msg.sender.call{value: amount}("");
+        require(sent, "Failed to send Ether");
+    }
+
     // get funds request details from funds request id
     function getFundsRequestDetails(
         uint fundRequestId
@@ -256,6 +270,7 @@ contract FundsFactory is Ownable {
         );
         _;
     }
+
 
     function getNFT_Prices(
         uint id
