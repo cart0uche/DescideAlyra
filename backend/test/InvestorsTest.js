@@ -109,6 +109,21 @@ describe("FundsFactory Contract", function () {
          expect(await nftContract.balanceOf(investor1)).to.be.equal(1);
       });
 
+      // check that the contrat balance is incremented
+      it("increment contract balance", async function () {
+         const project1 = await fundsFactory
+            .connect(researcher1)
+            .getResearchProject(0);
+
+         let balance = await ethers.provider.getBalance(fundsFactory.target);
+         expect(balance).to.be.equal(0);
+         await fundsFactory.connect(investor1).buyNFT(project1.id, CLASSIC, {
+            value: ethers.parseEther("0.1"),
+         });
+         balance = await ethers.provider.getBalance(fundsFactory.target);
+         expect(balance).to.be.equal(ethers.parseEther("0.1"));
+      });
+
       it("increment minted NFTs", async function () {
          const project1 = await fundsFactory
             .connect(researcher1)
