@@ -220,6 +220,20 @@ contract FundNFT is
         );
     }
 
+    function getWeight(uint _type) external pure returns (uint) {
+        if (_type == uint(nftType.CLASSIC)) {
+            return 10;
+        } else if (_type == uint(nftType.PLUS)) {
+            return 25;
+        } else if (_type == uint(nftType.PREMIUM)) {
+            return 50;
+        } else if (_type == uint(nftType.VIP)) {
+            return 100;
+        } else {
+            revert("NFT type not exist");
+        }
+    }
+
     // The following functions are overrides required by Solidity.
 
     function _burn(

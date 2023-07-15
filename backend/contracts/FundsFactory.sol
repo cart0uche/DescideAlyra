@@ -269,7 +269,8 @@ contract FundsFactory is Ownable {
         require(typeNFT < 4, "NFT type dont exist");
         FundNFT nft = FundNFT(researchProjects[projectId].fundNFT);
         nft.safeMint(msg.sender, msg.value, researchProjects[projectId].title, researchProjects[projectId].imageUrl, typeNFT);
-        dao.addInvestorVoteWeight(projectId, msg.sender, msg.value);
+        uint weightVote = nft.getWeight(typeNFT);
+        dao.addInvestorVoteWeight(projectId, msg.sender, weightVote);
 
     }
 
