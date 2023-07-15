@@ -10,6 +10,7 @@ async function main() {
    ]);
    await fundsFactory.waitForDeployment();
 
+   await dao.setFactory(fundsFactory.target);
    console.log(`FundsFactory deployed to ${fundsFactory.target}`);
 }
 

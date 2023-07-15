@@ -1,5 +1,10 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
+const {
+   deployProject,
+   addResearcher,
+   addResearchProject,
+} = require("./helper");
 
 describe("FundsFactory Contract", function () {
    let fundsFactory;
@@ -9,28 +14,26 @@ describe("FundsFactory Contract", function () {
          beforeEach(async function () {
             [admin, researcher1, researcher2, investor1, investor2] =
                await ethers.getSigners();
-            let DAO = await ethers.getContractFactory("DAO");
-            let dao = await DAO.deploy();
-            let FundsFactory = await ethers.getContractFactory("FundsFactory");
-            fundsFactory = await FundsFactory.deploy(dao.target);
+            fundsFactory = await deployProject();
+            await addResearcher(fundsFactory, researcher1);
+         });
+
+         it("change researcher status", async function () {
             await fundsFactory.addResearcher(
-               researcher1.address,
+               researcher2.address,
                "dupont",
                "david",
                "archeon"
             );
-         });
-
-         it("change researcher status", async function () {
             let researcher = await fundsFactory.getResearcher(
-               researcher1.address
+               researcher2.address
             );
             expect(researcher.isValidated).to.be.false;
             await fundsFactory.changeResearcherStatus(
-               researcher1.address,
+               researcher2.address,
                true
             );
-            researcher = await fundsFactory.getResearcher(researcher1.address);
+            researcher = await fundsFactory.getResearcher(researcher2.address);
             expect(researcher.isValidated).to.be.true;
          });
 
@@ -47,29 +50,9 @@ describe("FundsFactory Contract", function () {
          beforeEach(async function () {
             [admin, researcher1, researcher2, investor1, investor2] =
                await ethers.getSigners();
-            let DAO = await ethers.getContractFactory("DAO");
-            let dao = await DAO.deploy();
-            let FundsFactory = await ethers.getContractFactory("FundsFactory");
-            fundsFactory = await FundsFactory.deploy(dao.target);
-            await fundsFactory.addResearcher(
-               researcher1.address,
-               "dupont",
-               "david",
-               "archeon"
-            );
-            await fundsFactory.changeResearcherStatus(
-               researcher1.address,
-               true
-            );
-            await fundsFactory
-               .connect(researcher1)
-               .addResearchProject(
-                  "projet1",
-                  "description1",
-                  "image1",
-                  100,
-                  "uri1"
-               );
+            fundsFactory = await deployProject();
+            await addResearcher(fundsFactory, researcher1);
+            await addResearchProject(fundsFactory, researcher1, 0, "100");
          });
 
          it("emit an event when validate a project", async function () {

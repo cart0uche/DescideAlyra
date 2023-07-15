@@ -25,6 +25,7 @@ contract DAO {
         Vote vote;
     }
 
+    address private factoryAddress;
     FundRequest[] private fundRequests;
 
     mapping(uint => mapping(address => uint)) public investorsVoteWeight;
@@ -34,10 +35,23 @@ contract DAO {
     constructor() {
     }
 
+    function setFactoryAddress(address _factoryAddress) external {
+        factoryAddress = _factoryAddress;
+    }
+
+    modifier onlyFactory() {
+        require(
+            msg.sender ==
+                factoryAddress,
+            "Caller is not factory"
+        );
+        _;
+    }
+
     function addDao( uint projectId,
         uint requestId,
         uint amount,
-        string memory description) public{
+        string memory description) external onlyFactory{
         FundRequest memory fundRequest;
         fundRequest.requestId = requestId;
         fundRequest.creationTime = block.timestamp;
@@ -50,7 +64,7 @@ contract DAO {
         fundRequests.push(fundRequest);
     }
 
-    function getFundRequestDetails(uint requestId) public view returns(uint, uint256, string memory, uint256, bool, uint){
+    function getFundRequestDetails(uint requestId) public view onlyFactory returns(uint, uint256, string memory, uint256, bool, uint){
          require(
             requestId < fundRequests.length,
             "Fund request id dont exist"
@@ -72,7 +86,7 @@ contract DAO {
         uint projectId,
         bool vote,
         address investor
-    ) external payable {
+    ) external payable onlyFactory{
         require(
             requestId < fundRequests.length,
             "Fund request id dont exist"
@@ -104,13 +118,13 @@ contract DAO {
         investorsVotes[requestId][investor] = true;
     }   
 
-    function addInvestorVoteWeight(uint projectId, address investor, uint weight) external {
+    function addInvestorVoteWeight(uint projectId, address investor, uint weight) external onlyFactory{
         investorsVoteWeight[projectId][investor] += weight;
         totalVoteWeight[projectId] += weight;
     } 
 
     // add a function to close a request
-    function closeFundRequest(uint requestId) external {
+    function closeFundRequest(uint requestId) external onlyFactory{
         require(
             requestId < fundRequests.length,
             "Fund request id dont exist"
@@ -139,7 +153,7 @@ contract DAO {
     }
 
     // create a function to get the vote results
-    function getVoteResult(uint requestId) external view returns(bool, uint, uint, uint){
+    function getVoteResult(uint requestId) external view onlyFactory returns(bool, uint, uint, uint){
         require(
             requestId < fundRequests.length,
             "Fund request id dont exist"
@@ -152,7 +166,7 @@ contract DAO {
         );
     }
 
-    function shouldClaimFunds(uint requestId) external view returns(uint) {
+    function shouldClaimFunds(uint requestId) external view onlyFactory returns(uint) {
         require(
             requestId < fundRequests.length,
             "Fund request id dont exist"

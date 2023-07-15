@@ -157,30 +157,9 @@ describe("FundsFactory Contract", function () {
          beforeEach(async function () {
             [admin, researcher1, researcher2, researcher3] =
                await ethers.getSigners();
-            let DAO = await ethers.getContractFactory("DAO");
-            let dao = await DAO.deploy();
-            let FundsFactory = await ethers.getContractFactory("FundsFactory");
-            fundsFactory = await FundsFactory.deploy(dao.target);
-            await fundsFactory.addResearcher(
-               researcher1.address,
-               "dupont",
-               "david",
-               "archeon"
-            );
-            await fundsFactory.changeResearcherStatus(
-               researcher1.address,
-               true
-            );
-            await fundsFactory
-               .connect(researcher1)
-               .addResearchProject(
-                  "projet1",
-                  "description1",
-                  "image1",
-                  100,
-                  "uri1"
-               );
-            await fundsFactory.validResearchProject(0);
+            fundsFactory = await deployProject();
+            await addResearcher(fundsFactory, researcher1);
+            await addResearchProject(fundsFactory, researcher1, 0, "100");
          });
 
          it("deploy NFT", async function () {
@@ -201,38 +180,10 @@ describe("FundsFactory Contract", function () {
          beforeEach(async function () {
             [admin, researcher1, researcher2, researcher3] =
                await ethers.getSigners();
-            let DAO = await ethers.getContractFactory("DAO");
-            let dao = await DAO.deploy();
-            let FundsFactory = await ethers.getContractFactory("FundsFactory");
-            fundsFactory = await FundsFactory.deploy(dao.target);
-            await fundsFactory.addResearcher(
-               researcher1.address,
-               "dupont",
-               "david",
-               "archeon"
-            );
-            await fundsFactory.changeResearcherStatus(
-               researcher1.address,
-               true
-            );
-            await fundsFactory
-               .connect(researcher1)
-               .addResearchProject(
-                  "projet1",
-                  "description1",
-                  "image1",
-                  100,
-                  "uri1"
-               );
-            await fundsFactory
-               .connect(researcher1)
-               .addResearchProject(
-                  "projet2",
-                  "description2",
-                  "image2",
-                  200,
-                  "uri2"
-               );
+            fundsFactory = await deployProject();
+            await addResearcher(fundsFactory, researcher1);
+            await addResearchProject(fundsFactory, researcher1, 0, "100");
+            await addResearchProject(fundsFactory, researcher1, 1, "200");
             await fundsFactory
                .connect(researcher1)
                .addResearchProject(

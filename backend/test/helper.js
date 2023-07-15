@@ -5,6 +5,7 @@ async function deployProject() {
    let dao = await DAO.deploy();
    let FundsFactory = await ethers.getContractFactory("FundsFactory");
    let fundsFactory = await FundsFactory.deploy(dao.target);
+   await dao.setFactoryAddress(fundsFactory.target);
    return fundsFactory;
 }
 
