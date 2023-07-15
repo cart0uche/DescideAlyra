@@ -50,6 +50,10 @@ contract DAO {
     }
 
     function getFundRequestDetails(uint requestId) public view returns(uint, uint256, string memory, uint256, bool, uint){
+         require(
+            requestId < fundRequests.length,
+            "Fund request id dont exist"
+        );
         return (
             fundRequests[requestId].projectId,
             fundRequests[requestId].amountAsked,
@@ -90,6 +94,8 @@ contract DAO {
         } else {
             fundRequests[requestId].vote.yes++;
         }
+
+        investorsVotes[requestId][msg.sender] = true;
     }   
 
     function addInvestorVoteWeight(uint projectId, address investor, uint weight) external {

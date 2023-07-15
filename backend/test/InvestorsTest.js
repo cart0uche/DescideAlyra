@@ -1,5 +1,12 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
+const {
+   deployProject,
+   addResearcher,
+   addResearchProject,
+   addRequest,
+   buyNFT,
+} = require("./helper");
 
 const CLASSIC = 0;
 const PLUS = 1;
@@ -13,27 +20,9 @@ describe("FundsFactory Contract", function () {
       beforeEach(async function () {
          [admin, researcher1, researcher2, investor1, investor2] =
             await ethers.getSigners();
-         let DAO = await ethers.getContractFactory("DAO");
-         let dao = await DAO.deploy();
-         let FundsFactory = await ethers.getContractFactory("FundsFactory");
-         fundsFactory = await FundsFactory.deploy(dao.target);
-         await fundsFactory.addResearcher(
-            researcher1.address,
-            "dupont",
-            "david",
-            "archeon"
-         );
-         await fundsFactory.changeResearcherStatus(researcher1.address, true);
-         await fundsFactory
-            .connect(researcher1)
-            .addResearchProject(
-               "projet1",
-               "description1",
-               "image1",
-               ethers.parseEther("10"),
-               "uri1"
-            );
-         await fundsFactory.validResearchProject(0);
+         fundsFactory = await deployProject();
+         await addResearcher(fundsFactory, researcher1);
+         await addResearchProject(fundsFactory, researcher1, 0);
       });
 
       it("get NFT prices", async function () {
@@ -192,27 +181,54 @@ describe("FundsFactory Contract", function () {
       beforeEach(async function () {
          [admin, researcher1, researcher2, investor1, investor2] =
             await ethers.getSigners();
-         let DAO = await ethers.getContractFactory("DAO");
-         let dao = await DAO.deploy();
-         let FundsFactory = await ethers.getContractFactory("FundsFactory");
-         fundsFactory = await FundsFactory.deploy(dao.target);
-         await fundsFactory.addResearcher(
-            researcher1.address,
-            "dupont",
-            "david",
-            "archeon"
+         fundsFactory = await deployProject();
+         await addResearcher(fundsFactory, researcher1);
+         await addResearchProject(fundsFactory, researcher1, 0);
+         await addRequest(fundsFactory, researcher1, 0);
+         await buyNFT(
+            fundsFactory,
+            investor1,
+            0,
+            CLASSIC,
+            ethers.parseEther("0.1")
          );
-         await fundsFactory.changeResearcherStatus(researcher1.address, true);
-         await fundsFactory
-            .connect(researcher1)
-            .addResearchProject(
-               "projet1",
-               "description1",
-               "image1",
-               ethers.parseEther("10"),
-               "uri1"
-            );
-         await fundsFactory.validResearchProject(0);
       });
+
+      it("emit an event of + vote for funds request", async function () {
+         await expect(await fundsFactory.connect(investor1).addVote(0, true))
+            .to.emit(fundsFactory, "VoteAdded")
+            .withArgs(investor1.address, 0, 0, true);
+      });
+
+      it("emit an event of - vote for funds request", async function () {
+         await expect(await fundsFactory.connect(investor1).addVote(0, false))
+            .to.emit(fundsFactory, "VoteAdded")
+            .withArgs(investor1.address, 0, 0, false);
+      });
+
+      it("should fail if not buy NFT", async function () {
+         await expect(
+            fundsFactory.connect(investor2).addVote(0, true)
+         ).to.be.revertedWith("You need to buy NFT to vote");
+      });
+
+      it("should fail if already vote", async function () {
+         await fundsFactory.connect(investor1).addVote(0, true);
+         await expect(
+            fundsFactory.connect(investor1).addVote(0, true)
+         ).to.be.revertedWith("You already vote for this fund request");
+      });
+
+      it("should fail if request id dont exist", async function () {
+         await expect(
+            fundsFactory.connect(investor1).addVote(1, true)
+         ).to.be.revertedWith("Fund request id dont exist");
+      });
+
+      // TODO
+      it("should fail if request is not in progress", async function () {});
+
+      // TODO
+      it("should fail if request is already accepted", async function () {});
    });
 });
