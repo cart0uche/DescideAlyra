@@ -26,9 +26,3 @@ jobs:
 
       - name: Run hardhat unit test
         run: cd backend && yarn hardhat coverage --network hardhat
-
-      - name: Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          path: backend/
-          token: ${{ secrets.CODECOV_TOKEN }}
