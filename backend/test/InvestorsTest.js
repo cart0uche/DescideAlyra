@@ -272,21 +272,27 @@ describe("FundsFactory Contract", function () {
       it("get vote results with 1 one from investor1", async function () {
          await fundsFactory.connect(investor1).addVote(0, true);
          await fundsFactory.connect(researcher1).closeFundRequest(0);
-         const [isAccepted, yes, no] = await fundsFactory.getVoteResult(0);
-         expect(isAccepted).to.be.equal(true);
+         const [isAccepted, yes, no, total] = await fundsFactory.getVoteResult(
+            0
+         );
+         expect(isAccepted).to.be.equal(false);
          expect(Number(yes)).to.be.equal(10);
          expect(Number(no)).to.be.equal(0);
+         expect(Number(total)).to.be.equal(235);
       });
 
       it("get vote resuls with 3 investors votes", async function () {
-         await fundsFactory.connect(investor1).addVote(0, true);
+         await fundsFactory.connect(investor1).addVote(0, false);
          await fundsFactory.connect(investor2).addVote(0, true);
-         await fundsFactory.connect(investor3).addVote(0, false);
+         await fundsFactory.connect(investor3).addVote(0, true);
          await fundsFactory.connect(researcher1).closeFundRequest(0);
-         const [isAccepted, yes, no] = await fundsFactory.getVoteResult(0);
-         expect(isAccepted).to.be.equal(false);
-         expect(Number(yes)).to.be.equal(110); // sum : 10 + 2*25 + 50 = 110
-         expect(Number(no)).to.be.equal(125); // sum : 100 + 25 = 125
+         const [isAccepted, yes, no, total] = await fundsFactory.getVoteResult(
+            0
+         );
+         expect(isAccepted).to.be.equal(true); // 100 *(225/235) = 95.74468085106383 > 80%
+         expect(Number(yes)).to.be.equal(225);
+         expect(Number(no)).to.be.equal(10);
+         expect(Number(total)).to.be.equal(235);
       });
    });
 });

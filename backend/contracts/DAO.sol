@@ -125,8 +125,12 @@ contract DAO {
             "Fund request is already accepted"
         );
 
-        if(fundRequests[requestId].vote.yes > fundRequests[requestId].vote.no){
-            fundRequests[requestId].isAccepted = true;
+        if (totalVoteWeight[fundRequests[requestId].projectId] != 0){
+            if (100 * fundRequests[requestId].vote.yes / totalVoteWeight[fundRequests[requestId].projectId] > 80){
+                fundRequests[requestId].isAccepted = true;
+            } else {
+                fundRequests[requestId].isAccepted = false;
+            }
         } else {
             fundRequests[requestId].isAccepted = false;
         }
@@ -135,7 +139,7 @@ contract DAO {
     }
 
     // create a function to get the vote results
-    function getVoteResult(uint requestId) external view returns(bool, uint, uint){
+    function getVoteResult(uint requestId) external view returns(bool, uint, uint, uint){
         require(
             requestId < fundRequests.length,
             "Fund request id dont exist"
@@ -143,7 +147,8 @@ contract DAO {
         return (
             fundRequests[requestId].isAccepted,
             fundRequests[requestId].vote.yes,
-            fundRequests[requestId].vote.no
+            fundRequests[requestId].vote.no,
+            totalVoteWeight[fundRequests[requestId].projectId]
         );
     }
 

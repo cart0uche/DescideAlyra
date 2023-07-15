@@ -333,7 +333,7 @@ contract FundsFactory is Ownable {
     // create a function to get the vote result from DAO
     function getVoteResult(
         uint requestId
-    ) external view returns (bool, uint, uint) {
+    ) external view returns (bool, uint, uint, uint) {
         return dao.getVoteResult(requestId);
     }
 
