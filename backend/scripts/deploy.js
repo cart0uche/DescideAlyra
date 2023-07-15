@@ -6,11 +6,12 @@ async function main() {
    console.log(`DAO deployed to ${dao.target}`);
 
    const fundsFactory = await hre.ethers.deployContract("FundsFactory", [
-      dao.address,
+      dao.target,
    ]);
    await fundsFactory.waitForDeployment();
 
-   await dao.setFactory(fundsFactory.target);
+   daoContract = await hre.ethers.getContractAt("DAO", dao.target);
+   await daoContract.setFactoryAddress(fundsFactory.target);
    console.log(`FundsFactory deployed to ${fundsFactory.target}`);
 }
 
