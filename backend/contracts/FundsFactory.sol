@@ -16,28 +16,17 @@ contract FundsFactory is Ownable {
     );
     event ResearchProjectCreated(uint projectId, address reasearcher);
     event ResearchProjectValidated(uint projectId);
-    event ResearchProjectRemoved(uint projectId, address reasearcher);
     event FundsRequestCreated(uint requestId, address reasearcher);
     event FundsRequestClosed(uint requestId, address reasearcher);
-    event FundsAdded(uint amount, uint projectId);
     event VoteAdded(address investor, uint projectId, uint requestId, bool vote);
 
     /******************ENUMS *************/ 
-
-    enum NftType {
-        classic,
-        plus,
-        premium,
-        vip
-    }
 
     enum ResearchProjectStatus {
         created,
         validated,
         ended
     }
-
-    /************************************/ 
 
     
     /****************** STRUCTS *************/ 
@@ -70,9 +59,7 @@ contract FundsFactory is Ownable {
         uint[] fundRequestListsIds;
     }
 
-    /************************************/ 
-
-    // VARIABLES
+    /****************** VARIABLES *************/ 
     mapping(address => Researcher) researchers;
     mapping(address => ResearchProject[]) researchProjectByResearcher;
     ResearchProject[] researchProjects;
@@ -230,7 +217,7 @@ contract FundsFactory is Ownable {
         );
     }
 
-    function closeFundsRequest(
+    function closeFundRequest(
         uint requestId
     ) external  {
         (uint projectId,,,,,) =  dao.getFundRequestDetails(requestId);
@@ -303,12 +290,12 @@ contract FundsFactory is Ownable {
             "You need to buy NFT to vote"
         );
 
-        dao.voteForFundRequest(requestId, vote);
+        dao.voteForFundRequest(requestId, projectId, vote, msg.sender);
         emit VoteAdded(msg.sender, projectId, requestId, vote);
     }
 
     ////////////////////////////////
-    // NO RESTRICTION FUNCTIONS
+    // ANYONE FUNCTIONS
     ////////////////////////////////
 
     function addResearcher(
@@ -326,6 +313,13 @@ contract FundsFactory is Ownable {
         r.exist = true;
         researchers[addr] = r;
         emit ResearcherAdded(addr, lastname, forname, company);
+    }
+
+    // create a function to get the vote result from DAO
+    function getVoteResult(
+        uint requestId
+    ) external view returns (bool, uint, uint) {
+        return dao.getVoteResult(requestId);
     }
 
     receive() external payable {} // to support receiving ETH by default

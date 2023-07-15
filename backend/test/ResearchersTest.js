@@ -326,27 +326,27 @@ describe("FundsFactory Contract", function () {
          });
 
          it("emit an event when closing a funds request", async function () {
-            await expect(fundsFactory.connect(researcher1).closeFundsRequest(0))
+            await expect(fundsFactory.connect(researcher1).closeFundRequest(0))
                .to.emit(fundsFactory, "FundsRequestClosed")
                .withArgs(0, researcher1.address);
          });
 
          it("should fail if request id dont exist", async function () {
             await expect(
-               fundsFactory.connect(researcher1).closeFundsRequest(5)
+               fundsFactory.connect(researcher1).closeFundRequest(5)
             ).to.be.revertedWith("Fund request id dont exist");
          });
 
          it("should fail if request is already closed", async function () {
-            await fundsFactory.connect(researcher1).closeFundsRequest(0);
+            await fundsFactory.connect(researcher1).closeFundRequest(0);
             await expect(
-               fundsFactory.connect(researcher1).closeFundsRequest(0)
+               fundsFactory.connect(researcher1).closeFundRequest(0)
             ).to.be.revertedWith("Fund request is not in progress");
          });
 
          it("should fail if another researcher try to close the request", async function () {
             await expect(
-               fundsFactory.connect(researcher2).closeFundsRequest(0)
+               fundsFactory.connect(researcher2).closeFundRequest(0)
             ).to.be.revertedWith("Project is not yours");
          });
 

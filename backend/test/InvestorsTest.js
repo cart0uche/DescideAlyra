@@ -240,4 +240,53 @@ describe("FundsFactory Contract", function () {
          ).to.be.revertedWith("Fund request is expired");
       });
    });
+
+   describe("Get vote results", function () {
+      beforeEach(async function () {
+         [admin, researcher1, researcher2, investor1, investor2, investor3] =
+            await ethers.getSigners();
+         fundsFactory = await deployProject();
+         await addResearcher(fundsFactory, researcher1);
+         await addResearchProject(fundsFactory, researcher1, 0, "10");
+         await addRequest(fundsFactory, researcher1, 0, "10");
+         await buyNFT(
+            fundsFactory,
+            investor1,
+            0,
+            CLASSIC,
+            ethers.parseEther("0.1")
+         );
+         await buyNFT(fundsFactory, investor2, 0, PLUS, ethers.parseEther("1"));
+         await buyNFT(fundsFactory, investor2, 0, PLUS, ethers.parseEther("1"));
+         await buyNFT(
+            fundsFactory,
+            investor2,
+            0,
+            PREMIUM,
+            ethers.parseEther("1")
+         );
+         await buyNFT(fundsFactory, investor3, 0, VIP, ethers.parseEther("1"));
+         await buyNFT(fundsFactory, investor3, 0, PLUS, ethers.parseEther("1"));
+      });
+
+      it("get vote results with 1 one from investor1", async function () {
+         await fundsFactory.connect(investor1).addVote(0, true);
+         await fundsFactory.connect(researcher1).closeFundRequest(0);
+         const [isAccepted, yes, no] = await fundsFactory.getVoteResult(0);
+         expect(isAccepted).to.be.equal(true);
+         expect(Number(yes)).to.be.equal(10);
+         expect(Number(no)).to.be.equal(0);
+      });
+
+      it("get vote resuls with 3 investors votes", async function () {
+         await fundsFactory.connect(investor1).addVote(0, true);
+         await fundsFactory.connect(investor2).addVote(0, true);
+         await fundsFactory.connect(investor3).addVote(0, false);
+         await fundsFactory.connect(researcher1).closeFundRequest(0);
+         const [isAccepted, yes, no] = await fundsFactory.getVoteResult(0);
+         expect(isAccepted).to.be.equal(false);
+         expect(Number(yes)).to.be.equal(110); // sum : 10 + 2*25 + 50 = 110
+         expect(Number(no)).to.be.equal(125); // sum : 100 + 25 = 125
+      });
+   });
 });

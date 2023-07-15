@@ -65,10 +65,12 @@ contract DAO {
     }
 
 
-        // create a function for voting for a fund request
+    // create a function for voting for a fund request
     function voteForFundRequest(
         uint requestId,
-        bool vote
+        uint projectId,
+        bool vote,
+        address investor
     ) external payable {
         require(
             requestId < fundRequests.length,
@@ -85,7 +87,7 @@ contract DAO {
         );
   
         require(
-            investorsVotes[requestId][msg.sender] == false,
+            investorsVotes[requestId][investor] == false,
             "You already vote for this fund request"
         );
 
@@ -93,12 +95,12 @@ contract DAO {
  
 
         if(vote == false){
-            fundRequests[requestId].vote.no++;
+            fundRequests[requestId].vote.no += investorsVoteWeight[projectId][investor];
         } else {
-            fundRequests[requestId].vote.yes++;
+            fundRequests[requestId].vote.yes += investorsVoteWeight[projectId][investor];
         }
 
-        investorsVotes[requestId][msg.sender] = true;
+        investorsVotes[requestId][investor] = true;
     }   
 
     function addInvestorVoteWeight(uint projectId, address investor, uint weight) external {
@@ -128,5 +130,18 @@ contract DAO {
         }
 
         fundRequests[requestId].status = FundStatus.ended;
+    }
+
+    // create a function to get the vote results
+    function getVoteResult(uint requestId) external view returns(bool, uint, uint){
+        require(
+            requestId < fundRequests.length,
+            "Fund request id dont exist"
+        );
+        return (
+            fundRequests[requestId].isAccepted,
+            fundRequests[requestId].vote.yes,
+            fundRequests[requestId].vote.no
+        );
     }
 }
