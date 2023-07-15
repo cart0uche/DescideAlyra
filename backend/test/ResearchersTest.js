@@ -7,6 +7,7 @@ const {
    addResearcher,
    addResearchProject,
    addRequest,
+   buyNFT,
 } = require("./helper");
 
 const CLASSIC = 0;
@@ -433,6 +434,65 @@ describe("FundsFactory Contract", function () {
             await expect(
                fundsFactory.connect(researcher1).getFundsRequestDetails(5)
             ).to.be.revertedWith("Fund request id dont exist");
+         });
+      });
+
+      describe("Claim funds request", function () {
+         beforeEach(async function () {
+            [admin, researcher1, researcher2, investor1] =
+               await ethers.getSigners();
+            fundsFactory = await deployProject();
+            await addResearcher(fundsFactory, researcher1);
+            await addResearchProject(fundsFactory, researcher1, 0, "100");
+            await addRequest(fundsFactory, researcher1, 0, "10");
+            await buyNFT(
+               fundsFactory,
+               investor1,
+               0,
+               VIP,
+               ethers.parseEther("10")
+            );
+            await fundsFactory.connect(investor1).addVote(0, true);
+            await fundsFactory.connect(researcher1).closeFundRequest(0);
+         });
+
+         it("increase the balance of the researcher", async function () {
+            const balanceBefore = await ethers.provider.getBalance(
+               researcher1.address
+            );
+            const tx = await fundsFactory.connect(researcher1).claimFunds(0);
+            const receipt = await tx.wait();
+            const balanceAfter = await ethers.provider.getBalance(
+               researcher1.address
+            );
+            expect(Number(balanceAfter - balanceBefore)).to.eq(
+               Number(ethers.parseEther("10")) -
+                  Number(receipt.gasUsed) * Number(receipt.gasPrice)
+            );
+         });
+
+         it("should revert if the researcher is not the owner of the project", async function () {
+            await expect(
+               fundsFactory.connect(researcher2).claimFunds(0)
+            ).to.be.revertedWith("Project is not yours");
+         });
+
+         it("should revert if the request is not ended", async function () {
+            await addRequest(fundsFactory, researcher1, 0, "10");
+            await fundsFactory.connect(investor1).addVote(1, true);
+            //await fundsFactory.connect(researcher1).closeFundRequest(0);
+            await expect(
+               fundsFactory.connect(researcher1).claimFunds(1)
+            ).to.be.revertedWith("Fund request is not ended");
+         });
+
+         it("should revert if the request is not accepted", async function () {
+            await addRequest(fundsFactory, researcher1, 0, "10");
+            await fundsFactory.connect(investor1).addVote(1, false);
+            await fundsFactory.connect(researcher1).closeFundRequest(1);
+            await expect(
+               fundsFactory.connect(researcher1).claimFunds(1)
+            ).to.be.revertedWith("Fund request is not accepted");
          });
       });
    });

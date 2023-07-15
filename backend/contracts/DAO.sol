@@ -166,10 +166,6 @@ contract DAO {
             fundRequests[requestId].isAccepted == true,
             "Fund request is not accepted"
         );
-        require(
-            fundRequests[requestId].amountAsked <= address(this).balance,
-            "Not enough funds"
-        );
 
         return fundRequests[requestId].amountAsked;
     }

@@ -245,6 +245,10 @@ contract FundsFactory is Ownable {
             "Project is not yours"
         );
         uint amount = dao.shouldClaimFunds(requestId);
+        require(
+            amount <= address(this).balance,
+            "Not enough funds"
+        );
          (bool sent, ) = msg.sender.call{value: amount}("");
         require(sent, "Failed to send Ether");
     }
