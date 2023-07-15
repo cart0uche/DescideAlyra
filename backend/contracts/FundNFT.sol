@@ -42,12 +42,12 @@ contract FundNFT is
     Counters.Counter private _tokenIdCounter;
     mapping(nftType => nftConf) nftConfs;
 
+
     constructor(
         string memory _tokenName,
         string memory _symbol,
-        uint amountAsked
+        uint amountAsked        
     ) ERC721(_tokenName, _symbol) {
-
 
         // set max supply for each type of NFT
         nftConfs[nftType.CLASSIC].max = 40;
@@ -98,7 +98,7 @@ contract FundNFT is
        string memory projectTitle,
        string memory projectImageUrl,
        uint typeNFT
-    ) public onlyOwner {
+    ) external onlyOwner {
         // check that typeNft is correct
         require(
             typeNFT == uint(nftType.CLASSIC) ||
@@ -154,7 +154,7 @@ contract FundNFT is
      * @notice  .Get different prices of NFT
      * @dev     .Have to devise price with 100
      */
-    function getPrices() external view returns (uint, uint, uint, uint) {
+    function getPrices() external view onlyOwner returns (uint, uint, uint, uint) {
         return (
             nftConfs[nftType.CLASSIC].amount,
             nftConfs[nftType.PLUS].amount,
@@ -163,7 +163,7 @@ contract FundNFT is
         );
     }
     
-    function getNumberNFTMinted() external view returns (uint, uint, uint, uint) {
+    function getNumberNFTMinted() external view onlyOwner returns (uint, uint, uint, uint) {
         return (
             nftConfs[nftType.CLASSIC].number,
             nftConfs[nftType.PLUS].number,
@@ -172,7 +172,7 @@ contract FundNFT is
         );
     }
 
-    function getWeight(uint _type) external pure returns (uint) {
+    function getWeight(uint _type) external view onlyOwner  returns (uint) {
         if (_type == uint(nftType.CLASSIC)) {
             return 10;
         } else if (_type == uint(nftType.PLUS)) {
