@@ -1,3 +1,4 @@
+"use client";
 import { useFundsContext } from "@/context/fundsContext";
 import { Box, Flex, Heading, Image, Link, Text } from "@chakra-ui/react";
 import { FaEthereum, FaClock } from "react-icons/fa";
@@ -9,6 +10,7 @@ import { ethers } from "ethers";
 import ChangeProjectStatus from "../researcher/ChangeProjectStatus";
 import FundsRequestList from "../FundsRequestList";
 import FundRequestCreation from "../FundRequestCreation";
+import { useEffect } from "react";
 
 function Project() {
    const { projectInfoContext } = useFundsContext();
@@ -32,8 +34,13 @@ function Project() {
       }
    };
 
+   useEffect(() => {
+      if (projectInfoContext === null) {
+         router.push("/investor");
+      }
+   }, []);
+
    if (projectInfoContext === null) {
-      router.push("/");
       return <div />;
    }
 
