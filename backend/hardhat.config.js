@@ -9,7 +9,7 @@ module.exports = {
          optimizer: {
             enabled: true,
             // https://docs.soliditylang.org/en/latest/using-the-compiler.html#optimizer-options
-            runs: 200,
+            runs: 1,
          },
       },
    },
@@ -23,6 +23,11 @@ module.exports = {
    etherscan: {
       apiKey: {
          sepolia: process.env.ETHERSCAN_API_KEY,
+      },
+   },
+   networks: {
+      hardhat: {
+         allowUnlimitedContractSize: true,
       },
    },
 };
