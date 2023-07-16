@@ -121,7 +121,7 @@ describe("FundsFactory Contract", function () {
                      0,
                      "uri1"
                   )
-            ).to.be.revertedWith("Amount asked should not be 0");
+            ).to.be.revertedWith("Amount not 0");
          });
 
          it("should fail if details is empty", async function () {
@@ -135,7 +135,7 @@ describe("FundsFactory Contract", function () {
                      100,
                      ""
                   )
-            ).to.be.revertedWith("Project detail is mandatory");
+            ).to.be.revertedWith("Detail is mandatory");
          });
 
          it("should fail if get unknown project", async function () {
@@ -150,7 +150,7 @@ describe("FundsFactory Contract", function () {
                );
             await expect(
                fundsFactory.connect(researcher1).getResearchProject(1)
-            ).to.be.revertedWith("Project id dont exist");
+            ).to.be.revertedWith("Id dont exist");
          });
       });
       describe("Create NFT", function () {
@@ -229,7 +229,7 @@ describe("FundsFactory Contract", function () {
                fundsFactory
                   .connect(researcher1)
                   .createFundsRequest(project1.id, 0, "description1")
-            ).to.be.revertedWith("Amount asked should not be 0");
+            ).to.be.revertedWith("Amount not 0");
          });
 
          it("should fail if description is empty", async function () {
@@ -240,7 +240,7 @@ describe("FundsFactory Contract", function () {
                fundsFactory
                   .connect(researcher1)
                   .createFundsRequest(project1.id, 10, "")
-            ).to.be.revertedWith("Request detail is mandatory");
+            ).to.be.revertedWith("Detail is mandatory");
          });
 
          it("should fail if get unknown project", async function () {
@@ -248,7 +248,7 @@ describe("FundsFactory Contract", function () {
                fundsFactory
                   .connect(researcher1)
                   .createFundsRequest(4, 10, "description1")
-            ).to.be.revertedWith("Project id dont exist");
+            ).to.be.revertedWith("Id dont exist");
          });
 
          // test it should failes if the project is not validated
@@ -260,7 +260,7 @@ describe("FundsFactory Contract", function () {
                fundsFactory
                   .connect(researcher1)
                   .createFundsRequest(project3.id, 10, "description3")
-            ).to.be.revertedWith("Project not ready for funding");
+            ).to.be.revertedWith("Not ready for funding");
          });
       });
 
@@ -286,7 +286,7 @@ describe("FundsFactory Contract", function () {
          it("should fail if request id dont exist", async function () {
             await expect(
                fundsFactory.connect(researcher1).closeFundRequest(5)
-            ).to.be.revertedWith("Fund request id dont exist");
+            ).to.be.revertedWith("Id dont exist");
          });
 
          it("should fail if request is already closed", async function () {
@@ -299,7 +299,7 @@ describe("FundsFactory Contract", function () {
          it("should fail if another researcher try to close the request", async function () {
             await expect(
                fundsFactory.connect(researcher2).closeFundRequest(0)
-            ).to.be.revertedWith("Project is not yours");
+            ).to.be.revertedWith("Project not yours");
          });
 
          // TODO
@@ -384,7 +384,7 @@ describe("FundsFactory Contract", function () {
          it("should fail if request id dont exist", async function () {
             await expect(
                fundsFactory.connect(researcher1).getFundsRequestDetails(5)
-            ).to.be.revertedWith("Fund request id dont exist");
+            ).to.be.revertedWith("Id dont exist");
          });
       });
 
@@ -425,7 +425,7 @@ describe("FundsFactory Contract", function () {
          it("should revert if the researcher is not the owner of the project", async function () {
             await expect(
                fundsFactory.connect(researcher2).claimFunds(0)
-            ).to.be.revertedWith("Project is not yours");
+            ).to.be.revertedWith("Project not yours");
          });
 
          it("should revert if the request is not ended", async function () {

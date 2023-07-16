@@ -49,6 +49,7 @@ contract FundsFactory is Ownable {
         uint id;
         uint creationTime;
         uint amountAsked;
+        uint amountAlreayRaised;  // here we store the amount already raised or asked in request
         string title;
         string description;
         string imageUrl;
@@ -105,10 +106,10 @@ contract FundsFactory is Ownable {
     }
 
     modifier belongToResearcher(uint projectId) {
-        require(projectId < researchProjects.length, "Project id dont exist");
+        require(projectId < researchProjects.length, "Id dont exist");
         require(
             researchProjects[projectId].researcher == msg.sender,
-            "Project is not yours"
+            "Project not yours"
         );
         _;
     }
@@ -131,11 +132,11 @@ contract FundsFactory is Ownable {
         uint amountAsked,
         string memory projectDetailsUri
     ) external onlyResearcher {
-        require(amountAsked != 0, "Amount asked should not be 0");
+        require(amountAsked != 0, "Amount not 0");
         require(
             keccak256(abi.encode(projectDetailsUri)) !=
                 keccak256(abi.encode("")),
-            "Project detail is mandatory"
+            "Detail is mandatory"
         );
         ResearchProject memory project;
         project.id = researchProjects.length;
@@ -161,7 +162,7 @@ contract FundsFactory is Ownable {
     function getResearchProject(
         uint id
     ) external view returns (ResearchProject memory) {
-        require(id < researchProjects.length, "Project id dont exist");
+        require(id < researchProjects.length, "Id dont exist");
         return researchProjects[id];
     }
 
@@ -185,21 +186,21 @@ contract FundsFactory is Ownable {
         uint amount,
         string memory description
     ) external belongToResearcher(id) {
-        require(id < researchProjects.length, "Project id dont exist");
+        require(id < researchProjects.length, "Id dont exist");
         require(
             researchProjects[id].status ==
                 ResearchProjectStatus.validated,
-            "Project not ready for funding"
+            "Not ready for funding"
         );
         require(
             keccak256(abi.encode(description)) !=
                 keccak256(abi.encode("")),
-            "Request detail is mandatory"
+            "Detail is mandatory"
         );
-        require(amount != 0, "Amount asked should not be 0");    
+        require(amount != 0, "Amount not 0");    
         require(
-            amount <= researchProjects[id].amountAsked,
-            "Amount asked should be less than amount asked"
+            amount + researchProjects[id].amountAlreayRaised <= researchProjects[id].amountAsked,
+            "Amount should be less than amount asked"
         );
 
         uint requestId = requestIdNumber;
@@ -210,6 +211,8 @@ contract FundsFactory is Ownable {
 
         dao.addDao(id, requestId ,amount, description);
 
+
+        researchProjects[id].amountAlreayRaised += amount;
         requestIdNumber++;
 
         emit FundsRequestCreated(
@@ -224,7 +227,7 @@ contract FundsFactory is Ownable {
         (uint projectId,,,,,) =  dao.getFundRequestDetails(requestId);
         require(
             researchProjects[projectId].researcher == msg.sender,
-            "Project is not yours"
+            "Project not yours"
         );
         dao.closeFundRequest(
             requestId
@@ -242,7 +245,7 @@ contract FundsFactory is Ownable {
         (uint projectId,,,,,) =  dao.getFundRequestDetails(requestId);
         require(
             researchProjects[projectId].researcher == msg.sender,
-            "Project is not yours"
+            "Project not yours"
         );
         uint amount = dao.shouldClaimFunds(requestId);
         require(
@@ -257,7 +260,7 @@ contract FundsFactory is Ownable {
     function getFundsRequestDetails(
         uint fundRequestId
     ) external view returns (uint, uint256, string memory, uint256, bool, uint) {
-        require(fundRequestId < requestIdNumber, "Fund request id dont exist");
+        require(fundRequestId < requestIdNumber, "Id dont exist");
         return
             dao.getFundRequestDetails(fundRequestId);
     }
@@ -270,7 +273,7 @@ contract FundsFactory is Ownable {
         require(
             researchProjects[id].status ==
                 ResearchProjectStatus.validated,
-            "Project not ready for funding"
+            "Not ready for funding"
         );
         _;
     }
@@ -291,7 +294,7 @@ contract FundsFactory is Ownable {
     }
 
     function buyNFT(uint projectId, uint typeNFT) external payable readyToFund(projectId) {
-        require(typeNFT < 4, "NFT type dont exist");
+        require(typeNFT < 4, "Type dont exist");
         FundNFT nft = FundNFT(researchProjects[projectId].fundNFT);
         nft.safeMint(msg.sender, msg.value, researchProjects[projectId].title, researchProjects[projectId].imageUrl, typeNFT);
         uint weightVote = nft.getWeight(typeNFT);

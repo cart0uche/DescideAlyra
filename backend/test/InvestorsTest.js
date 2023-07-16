@@ -188,7 +188,7 @@ describe("FundsFactory Contract", function () {
             fundsFactory
                .connect(investor1)
                .buyNFT(0, 5, { value: ethers.parseEther("1") })
-         ).to.be.revertedWith("NFT type dont exist");
+         ).to.be.revertedWith("Type dont exist");
       });
    });
 
@@ -237,7 +237,7 @@ describe("FundsFactory Contract", function () {
       it("should fail if request id dont exist", async function () {
          await expect(
             fundsFactory.connect(investor1).addVote(1, true)
-         ).to.be.revertedWith("Fund request id dont exist");
+         ).to.be.revertedWith("Id dont exist");
       });
 
       // TODO

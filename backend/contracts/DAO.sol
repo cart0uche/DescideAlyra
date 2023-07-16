@@ -67,7 +67,7 @@ contract DAO {
     function getFundRequestDetails(uint requestId) public view onlyFactory returns(uint, uint256, string memory, uint256, bool, uint){
          require(
             requestId < fundRequests.length,
-            "Fund request id dont exist"
+            "Id dont exist"
         );
         return (
             fundRequests[requestId].projectId,
@@ -89,7 +89,7 @@ contract DAO {
     ) external payable onlyFactory{
         require(
             requestId < fundRequests.length,
-            "Fund request id dont exist"
+            "Id dont exist"
         );
         require(
             fundRequests[requestId].status ==
@@ -127,7 +127,7 @@ contract DAO {
     function closeFundRequest(uint requestId) external onlyFactory{
         require(
             requestId < fundRequests.length,
-            "Fund request id dont exist"
+            "Id dont exist"
         );
         require(
             fundRequests[requestId].status ==
@@ -156,7 +156,7 @@ contract DAO {
     function getVoteResult(uint requestId) external view onlyFactory returns(bool, uint, uint, uint){
         require(
             requestId < fundRequests.length,
-            "Fund request id dont exist"
+            "Id dont exist"
         );
         return (
             fundRequests[requestId].isAccepted,
@@ -169,7 +169,7 @@ contract DAO {
     function shouldClaimFunds(uint requestId) external view onlyFactory returns(uint) {
         require(
             requestId < fundRequests.length,
-            "Fund request id dont exist"
+            "Id dont exist"
         );
         require(
             fundRequests[requestId].status ==
