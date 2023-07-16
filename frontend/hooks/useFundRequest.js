@@ -6,6 +6,7 @@ import { readContract } from "@wagmi/core";
 
 export function useFundRequest() {
    const { isConnected, address: addressAccount } = useAccount();
+   const [fundsRequestDetail, setFundsRequestDetail] = useState();
    const toast = useToast();
 
    // Create project
@@ -20,7 +21,7 @@ export function useFundRequest() {
                status: "error",
                isClosable: true,
                position: "top-middle",
-               title: "createFundsRequest failed",
+               title: "openFundsRequest failed",
                description: error.message,
             });
          },
@@ -29,13 +30,58 @@ export function useFundRequest() {
                status: "info",
                isClosable: true,
                position: "top-middle",
-               title: "Projet crée",
+               title: "openFundsRequest success",
             });
          },
       });
 
+   const { write: createFundsRequest, isLoadingCreateFundsRequest } =
+         useContractWrite({
+            address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+            abi: Contract.abi,
+            functionName: "createFundsRequest",
+            onError: (error) => {
+               console.log(error);
+               toast({
+                  status: "error",
+                  isClosable: true,
+                  position: "top-middle",
+                  title: "createFundsRequest failed",
+                  description: error.message,
+               });
+            },
+            onSuccess: (data) => {
+               toast({
+                  status: "info",
+                  isClosable: true,
+                  position: "top-middle",
+                  title: "createFundsRequest success",
+               });
+            },
+         });      
+
+      const getFundsRequestDetails = async (fundRequestId) => {
+         const data = await readContract({
+            address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+            abi: Contract.abi,
+            functionName: "getFundsRequestDetails",
+            onError(error) {
+               console.log("Error", error);
+            },
+            onSuccess(data) {},
+            args: [Number(fundRequestId)],
+            account: addressAccount,
+         });
+         setFundsRequestDetail(data);
+      };
+   
+
    return {
       openFundsRequest,
       isLoadingOpenFundsRequest,
+      createFundsRequest,
+      isLoadingCreateFundsRequest,
+      getFundsRequestDetails,
+      fundsRequestDetail,
    };
 }

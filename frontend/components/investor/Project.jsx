@@ -1,13 +1,14 @@
 import { useFundsContext } from "@/context/fundsContext";
 import { Box, Flex, Heading, Image, Link, Text } from "@chakra-ui/react";
-import { FaEthereum, FaClock, FaCheckCircle } from "react-icons/fa";
+import { FaEthereum, FaClock } from "react-icons/fa";
 import Mints from "./Mints";
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import ProjectStatus from "../utils/ProjectStatus";
 import { ethers } from "ethers";
 import ChangeProjectStatus from "../researcher/ChangeProjectStatus";
+import FundsRequestList from "../FundsRequestList";
+import FundRequestCreation from "../FundRequestCreation";
 
 function Project() {
    const { projectInfoContext } = useFundsContext();
@@ -154,9 +155,20 @@ function Project() {
                <ChangeProjectStatus projectInfoContext={projectInfoContext} />
             ) : null}
 
-            <Flex alignItems="center" mb={4}>
-               <Mints projectInfoContext={projectInfoContext} />
-            </Flex>
+            {projectInfoContext.status == 1 ? (
+               <Flex alignItems="center" mb={4}>
+                  <Mints projectInfoContext={projectInfoContext} />
+               </Flex>
+            ) : null}
+
+            {projectInfoContext.status == 2 ? (
+               <Flex alignItems="center" mb={4} direction="column" mt={10}>
+                  <FundRequestCreation
+                     projectInfoContext={projectInfoContext}
+                  />
+                  <FundsRequestList projectInfoContext={projectInfoContext} />
+               </Flex>
+            ) : null}
          </Box>
       </Flex>
    );

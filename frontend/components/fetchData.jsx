@@ -54,3 +54,28 @@ export async function fetchProject(setter) {
    });
    setter(parsedProjects);
 }
+
+
+export async function fetchFundsRequests(setter) {
+   console.log("--------> fetchFundsRequests");
+   const blockNumber = BigInt(
+      Number(await publicClient.getBlockNumber()) - 15000
+   );
+   const filter = await publicClient.createEventFilter({
+      address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+      event: parseAbiItem("event FundsRequestCreated(uint256, address)"),
+      fromBlock: blockNumber < 0 ? 0n : blockNumber,
+   });
+
+   const logs = await publicClient.getFilterLogs({ filter });
+
+   const parsedProjects = logs.map((log, index) => {
+      const fundsRequestId = log.args[0];
+      const researcherAddress = log.args[1];
+      return {
+         fundsRequestId,
+         researcherAddress,
+      };
+   });
+   setter(parsedProjects);
+}
