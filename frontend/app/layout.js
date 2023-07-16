@@ -11,7 +11,10 @@ import { FundsContextProvider } from "@/context/fundsContext";
 
 const { chains, publicClient } = configureChains(
    [hardhat, sepolia],
-   [alchemyProvider({ apiKey: process.env.ALCHEMY_ID }), publicProvider()]
+   [
+      //alchemyProvider({ apiKey: process.env.ALCHEMY_ID }),
+      publicProvider(),
+   ]
 );
 
 const { connectors } = getDefaultWallets({
