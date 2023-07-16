@@ -23,7 +23,7 @@ function Mints({ projectInfoContext }) {
          type: "Plus",
          price: 0,
          quantitySold: 0,
-         quantity: 30,
+         quantity: 10,
          typeNFT: 1,
       },
       {
@@ -81,7 +81,7 @@ function Mints({ projectInfoContext }) {
                <Mint
                   key={nft.type}
                   type={nft.type}
-                  price={nft.price / 100}
+                  price={nft.price / 1000}
                   quantitySold={nft.quantitySold}
                   quantity={nft.quantity}
                   typeNFT={nft.typeNFT}

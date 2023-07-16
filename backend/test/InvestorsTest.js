@@ -29,10 +29,10 @@ describe("FundsFactory Contract", function () {
          const [classic, plus, premium, vip] = await fundsFactory
             .connect(investor1)
             .getNFT_Prices(0);
-         expect(ethers.formatEther(classic) / 100).to.be.equal(1);
-         expect(ethers.formatEther(plus) / 100).to.be.equal(2.5);
-         expect(ethers.formatEther(premium) / 100).to.be.equal(5);
-         expect(ethers.formatEther(vip) / 100).to.be.equal(10);
+         expect(ethers.formatEther(classic) / 1000).to.be.equal(0.1);
+         expect(ethers.formatEther(plus) / 1000).to.be.equal(0.3);
+         expect(ethers.formatEther(premium) / 1000).to.be.equal(0.5);
+         expect(ethers.formatEther(vip) / 1000).to.be.equal(1);
       });
 
       it("emit an event of mint NFT when buy classic NFT", async function () {

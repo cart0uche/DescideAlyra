@@ -52,7 +52,7 @@ contract FundNFT is
         // set max supply for each type of NFT
         
         nftConfs[nftType.CLASSIC].max = 40;
-        nftConfs[nftType.PLUS].max = 30;
+        nftConfs[nftType.PLUS].max = 10;
         nftConfs[nftType.PREMIUM].max = 4;
         nftConfs[nftType.VIP].max = 1;
 
@@ -64,14 +64,14 @@ contract FundNFT is
 */
         // set amount
         /*
-            40 NFT CLASSIC : 1%
-            30 NFT PLUS : 2.5%
-            4 NFT PREMIUM : 5%
-            1 NFT VIP : 10%
+            40 NFT CLASSIC : 1% -> 40%
+            10 NFT PLUS : 3% -> 30%
+            4 NFT PREMIUM : 5% -> 20%
+            1 NFT VIP : 10% -> 10%
         */
         // frontend will divise by 1000
         nftConfs[nftType.CLASSIC].amount = amountAsked * 10;
-        nftConfs[nftType.PLUS].amount = amountAsked * 25;
+        nftConfs[nftType.PLUS].amount = amountAsked * 30;
         nftConfs[nftType.PREMIUM].amount = amountAsked * 50;
         nftConfs[nftType.VIP].amount = amountAsked * 100;
     }
