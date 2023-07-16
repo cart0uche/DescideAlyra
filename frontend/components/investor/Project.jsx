@@ -6,20 +6,24 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
 import ProjectStatus from "../utils/ProjectStatus";
+import { ethers } from "ethers";
+import ChangeProjectStatus from "../researcher/ChangeProjectStatus";
 
 function Project() {
    const { projectInfoContext } = useFundsContext();
    const router = useRouter();
    const { address } = useAccount();
 
+   console.log("projectInfoContext ", projectInfoContext);
+
    const getStatusProject = (status) => {
       switch (status) {
          case 0:
             return "Waiting for validation";
          case 1:
-            return "Available for funding";
+            return "NFT Sale Open";
          case 2:
-            return "Ready for funding";
+            return "Fund request open";
          case 3:
             return "Ended";
          default:
@@ -99,6 +103,20 @@ function Project() {
                   </Flex>
 
                   <Flex alignItems="center" mb={4}>
+                     <FaEthereum size={24} color="gray.500" />
+                     <Text fontSize="xl" fontWeight="bold" ml={2}>
+                        Funded:
+                     </Text>
+
+                     <Text fontSize="xl">
+                        {ethers.utils.formatEther(
+                           projectInfoContext.amountReceived
+                        )}
+                        ETH
+                     </Text>
+                  </Flex>
+
+                  <Flex alignItems="center" mb={4}>
                      <FaClock size={24} color="gray.500" />
                      <Text fontSize="xl" fontWeight="bold" ml={2}>
                         Status:
@@ -123,9 +141,6 @@ function Project() {
                         View Litepaper
                      </Text>
                   </Link>
-                  {isMineProject(projectInfoContext.researcher) ? (
-                     <>CLOSE</>
-                  ) : null}
                </Flex>
             </Flex>
 
@@ -134,6 +149,10 @@ function Project() {
             </Text>
 
             <ProjectStatus projectInfoContext={projectInfoContext} />
+
+            {isMineProject(projectInfoContext.researcher) ? (
+               <ChangeProjectStatus projectInfoContext={projectInfoContext} />
+            ) : null}
 
             <Flex alignItems="center" mb={4}>
                <Mints projectInfoContext={projectInfoContext} />

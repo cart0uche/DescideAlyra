@@ -50,6 +50,7 @@ contract FundsFactory is Ownable {
         uint id;
         uint creationTime;
         uint amountAsked;
+        uint amountReceived;
         uint amountAlreayRaised;  // here we store the amount already raised or asked in request
         string title;
         string description;
@@ -212,7 +213,7 @@ contract FundsFactory is Ownable {
         );
         require(amount != 0, "Amount not 0");    
         require(
-            amount + researchProjects[id].amountAlreayRaised <= researchProjects[id].amountAsked,
+            amount + researchProjects[id].amountAlreayRaised <= researchProjects[id].amountReceived,
             "Amount should be less than amount asked"
         );
 
@@ -311,6 +312,7 @@ contract FundsFactory is Ownable {
         require(typeNFT < 4, "Type dont exist");
         FundNFT nft = FundNFT(researchProjects[projectId].fundNFT);
         nft.safeMint(msg.sender, msg.value, researchProjects[projectId].title, researchProjects[projectId].imageUrl, typeNFT);
+        researchProjects[projectId].amountReceived += msg.value;
         uint weightVote = nft.getWeight(typeNFT);
         dao.addInvestorVoteWeight(projectId, msg.sender, weightVote);
 
