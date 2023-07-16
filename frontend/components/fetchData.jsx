@@ -7,7 +7,7 @@ export async function fetchResearcher(setter) {
       Number(await publicClient.getBlockNumber()) - 15000
    );
    const filter = await publicClient.createEventFilter({
-      address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+      address: process.env.NEXT_PUBLIC_CONTRACT_RESEARCHER_ADDRESS,
       event: parseAbiItem(
          "event ResearcherAdded(address, string, string, string)"
       ),

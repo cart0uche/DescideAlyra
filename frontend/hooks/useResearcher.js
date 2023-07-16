@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAccount, useContractWrite } from "wagmi";
 import Contract from "@/public/FundsFactory.json";
+import ContractResearcher from "@/public/ResearcherRegistry.json";
 import { useToast } from "@chakra-ui/react";
 import { readContract } from "@wagmi/core";
 
@@ -14,8 +15,8 @@ export function useResearcher() {
       write: changeResearcherStatus,
       isLoading: isLoadingChangeResearcherStatus,
    } = useContractWrite({
-      address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-      abi: Contract.abi,
+      address: process.env.NEXT_PUBLIC_CONTRACT_RESEARCHER_ADDRESS,
+      abi: ContractResearcher.abi,
       functionName: "changeResearcherStatus",
       account: addressAccount,
       onError(error) {
@@ -40,8 +41,8 @@ export function useResearcher() {
 
    const fetchResearcherInfo = async (address) => {
       const data = await readContract({
-         address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-         abi: Contract.abi,
+         address: process.env.NEXT_PUBLIC_CONTRACT_RESEARCHER_ADDRESS,
+         abi: ContractResearcher.abi,
          functionName: "getResearcher",
          onError(error) {
             console.log("Error", error);
@@ -54,8 +55,8 @@ export function useResearcher() {
    };
 
    const { write: subscribe, isLoadingSubscribe } = useContractWrite({
-      address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-      abi: Contract.abi,
+      address: process.env.NEXT_PUBLIC_CONTRACT_RESEARCHER_ADDRESS,
+      abi: ContractResearcher.abi,
       functionName: "addResearcher",
       onError: (error) => {
          console.log(error);

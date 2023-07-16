@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 import "./FundNFT.sol";
 import "./DAO.sol";
+import "./ResearcherRegistry.sol"; 
 
 contract FundsFactory is Ownable {
     // EVENTS
@@ -32,15 +33,6 @@ contract FundsFactory is Ownable {
 
     
     /****************** STRUCTS *************/ 
-    struct Researcher {
-        string lastname;
-        string forname;
-        string company;
-        address addr;
-        bool exist;
-        bool isValidated;
-        uint[] projectListIds;
-    }
 
     struct Investor {
         uint[] fundRequestListsIds;
@@ -64,27 +56,21 @@ contract FundsFactory is Ownable {
     }
 
     /****************** VARIABLES *************/ 
-    mapping(address => Researcher) researchers;
     //mapping(address => ResearchProject[]) researchProjectByResearcher;
     ResearchProject[] researchProjects;
 
     DAO dao;
+    ResearcherRegistry private researcherRegistry;
     uint requestIdNumber;
 
-    constructor(address _dao) {
+    constructor(address _dao, address _researcherRegistry) {
         dao = DAO(_dao);
+        researcherRegistry = ResearcherRegistry(_researcherRegistry);
     }
 
     ////////////////////////////////
     // ADMIN FUNCTIONS
     ////////////////////////////////
-
-    function changeResearcherStatus(
-        address addr,
-        bool status
-    ) external onlyOwner {
-        researchers[addr].isValidated = status;
-    }
 
     function validResearchProject(uint id) external onlyOwner {
         researchProjects[id].status = ResearchProjectStatus.nftSaleOpen;
@@ -95,7 +81,7 @@ contract FundsFactory is Ownable {
     // RESEARCHER FUNCTIONS
     ////////////////////////////////
     modifier onlyResearcher() {
-        require(researchers[msg.sender].isValidated, "You're not register");
+        require(researcherRegistry.isValid(msg.sender), "You're not registered");
         _;
     }
 
@@ -114,17 +100,6 @@ contract FundsFactory is Ownable {
             "Project not yours"
         );
         _;
-    }
-
-    function getResearcher(
-        address addr
-    )
-        external
-        view
-        onlyCurrentResearcherOrAdmin(addr)
-        returns (Researcher memory)
-    {
-        return researchers[addr];
     }
 
     function addResearchProject(
@@ -151,9 +126,7 @@ contract FundsFactory is Ownable {
         project.projectDetailsUri = projectDetailsUri;
         researchProjects.push(project);
 
-        researchers[msg.sender].projectListIds.push(
-            researchProjects.length - 1
-        );
+        researcherRegistry.addProjectToResearcher(msg.sender, researchProjects.length - 1);
 
         string memory idStr =  Strings.toString(researchProjects.length - 1);
         addNFT(researchProjects.length - 1, string.concat("DESCIDE", idStr), string.concat("DSC", idStr));
@@ -335,23 +308,6 @@ contract FundsFactory is Ownable {
     ////////////////////////////////
     // ANYONE FUNCTIONS
     ////////////////////////////////
-
-    function addResearcher(
-        address addr,
-        string calldata lastname,
-        string calldata forname,
-        string calldata company
-    ) external {
-        require(researchers[addr].exist == false, "Researcher already exist");
-        Researcher memory r;
-        r.lastname = lastname;
-        r.forname = forname;
-        r.company = company;
-        r.addr = addr;
-        r.exist = true;
-        researchers[addr] = r;
-        emit ResearcherAdded(addr, lastname, forname, company);
-    }
 
     // create a function to get the vote result from DAO
     function getVoteResult(

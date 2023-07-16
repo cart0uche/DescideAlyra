@@ -3,40 +3,45 @@ const hre = require("hardhat");
 async function main() {
    const fundsFactory = await ethers.getContractAt(
       "FundsFactory",
+      "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
+   );
+
+   const researcherResitry = await ethers.getContractAt(
+      "ResearcherRegistry",
       "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
    );
 
-   await fundsFactory.addResearcher(
+   await researcherResitry.addResearcher(
       "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
       "David",
       "Klein",
       "Sopra"
    );
-   await fundsFactory.addResearcher(
+   await researcherResitry.addResearcher(
       "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
       "Kevin",
       "Brun",
       "Altor"
    );
-   await fundsFactory.addResearcher(
+   await researcherResitry.addResearcher(
       "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
       "Julie",
       "Erié",
       "Suram"
    );
-   await fundsFactory.addResearcher(
+   await researcherResitry.addResearcher(
       "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
       "Claude",
       "Rian",
       "SMB"
    );
-   await fundsFactory.addResearcher(
+   await researcherResitry.addResearcher(
       "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
       "Fabien",
       "Laurent",
       "PSA"
    );
-   await fundsFactory.addResearcher(
+   await researcherResitry.addResearcher(
       "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
       "Pierre",
       "Roma",
@@ -44,7 +49,7 @@ async function main() {
    );
 
    // Valid first researcher
-   const transaction = await fundsFactory.changeResearcherStatus(
+   const transaction = await researcherResitry.changeResearcherStatus(
       "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
       true
    );
@@ -59,6 +64,7 @@ async function main() {
       10,
       "bafybeig3byiidfkljdaw2uwj6wq2nn36ejibffzvifxp2aucbyonw7igsa"
    );
+
    await fundsFactory.addResearchProject(
       "Creating a field dissection microscope that can be built in the field",
       "Microscopes are one of the most important scientific tools. There are no shortage of low-cost microscope designs. However, different experiments need different types of microscope. Field microscopes must be robust enough for tough conditions, ideally they should be repairable in the field.",
@@ -73,6 +79,7 @@ async function main() {
       10,
       "bafybeig3byiidfkljdaw2uwj6wq2nn36ejibffzvifxp2aucbyonw7igsa"
    );
+
 
    // Valid first project
    await fundsFactory.validResearchProject(0);
