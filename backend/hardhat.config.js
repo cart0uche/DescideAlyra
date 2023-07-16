@@ -1,4 +1,5 @@
 require("@nomicfoundation/hardhat-toolbox");
+require("dotenv").config();
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -9,25 +10,21 @@ module.exports = {
          optimizer: {
             enabled: true,
             // https://docs.soliditylang.org/en/latest/using-the-compiler.html#optimizer-options
-            runs: 1,
+            runs: 200,
          },
       },
    },
    defaultNetwork: "localhost",
-   namedAccounts: {
-      deployer: {
-         // By default, it will take the first Hardhat account as the deployer
-         default: 0,
+
+   networks: {
+      sepolia: {
+         url: "https://sepolia.infura.io/v3/" + process.env.INFURA_KEY,
+         accounts: [process.env.DEPLOYER_PRIVATE_KEY],
       },
    },
    etherscan: {
       apiKey: {
          sepolia: process.env.ETHERSCAN_API_KEY,
-      },
-   },
-   networks: {
-      hardhat: {
-         allowUnlimitedContractSize: true,
       },
    },
 };
