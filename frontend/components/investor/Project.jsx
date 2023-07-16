@@ -4,10 +4,13 @@ import { FaEthereum, FaClock, FaCheckCircle } from "react-icons/fa";
 import Mints from "./Mints";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAccount } from "wagmi";
+import ProjectStatus from "../utils/ProjectStatus";
 
 function Project() {
    const { projectInfoContext } = useFundsContext();
    const router = useRouter();
+   const { address } = useAccount();
 
    const getStatusProject = (status) => {
       switch (status) {
@@ -26,8 +29,16 @@ function Project() {
 
    if (projectInfoContext === null) {
       router.push("/");
-      return(<div/>);
+      return <div />;
    }
+
+   const isMineProject = () => {
+      if (projectInfoContext.researcher === address) {
+         return true;
+      } else {
+         return false;
+      }
+   };
 
    return (
       <Flex direction="column" p={8} alignItems="center">
@@ -38,7 +49,7 @@ function Project() {
             boxShadow="md"
             bg="white"
             width="100%"
-            maxWidth="900px"
+            maxWidth="1000px"
          >
             <Flex direction="column" alignItems="center" mb={6}>
                <Heading size="2xl" textAlign="center">
@@ -112,12 +123,17 @@ function Project() {
                         View Litepaper
                      </Text>
                   </Link>
+                  {isMineProject(projectInfoContext.researcher) ? (
+                     <>CLOSE</>
+                  ) : null}
                </Flex>
             </Flex>
 
             <Text fontSize="xl" mb={8} maxWidth="100%">
                {projectInfoContext.description}
             </Text>
+
+            <ProjectStatus projectInfoContext={projectInfoContext} />
 
             <Flex alignItems="center" mb={4}>
                <Mints projectInfoContext={projectInfoContext} />

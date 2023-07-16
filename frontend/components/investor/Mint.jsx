@@ -10,10 +10,16 @@ import React from "react";
 import { ethers } from "ethers";
 import { useNFT } from "@/hooks/useNFT";
 
-function Mint({ type, price, quantitySold, quantity, typeNFT, projectID }) {
-   const {   
-      buyNFT,
-   } = useNFT();
+function Mint({
+   type,
+   price,
+   quantitySold,
+   quantity,
+   typeNFT,
+   projectID,
+   projectStatus,
+}) {
+   const { buyNFT } = useNFT();
    const progress = (quantitySold / quantity) * 100;
    const remaining = quantity - quantitySold;
 
@@ -51,7 +57,7 @@ function Mint({ type, price, quantitySold, quantity, typeNFT, projectID }) {
                         args: [projectID, typeNFT],
                      })
                   }
-                  isDisabled={remaining === 0}
+                  isDisabled={remaining === 0 || projectStatus !== 1}
                >
                   Mint NFT
                </Button>

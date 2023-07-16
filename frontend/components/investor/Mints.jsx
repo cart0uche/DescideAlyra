@@ -86,6 +86,7 @@ function Mints({ projectInfoContext }) {
                   quantity={nft.quantity}
                   typeNFT={nft.typeNFT}
                   projectID={projectInfoContext.id}
+                  projectStatus={projectInfoContext.status}
                />
             ))}
          </SimpleGrid>
