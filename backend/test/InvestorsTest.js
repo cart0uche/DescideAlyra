@@ -199,7 +199,7 @@ describe("FundsFactory Contract", function () {
          fundsFactory = await deployProject();
          await addResearcher(fundsFactory, researcher1);
          await addResearchProject(fundsFactory, researcher1, 0, "10");
-         await addRequest(fundsFactory, researcher1, 0, "10");
+
          await buyNFT(
             fundsFactory,
             investor1,
@@ -207,6 +207,9 @@ describe("FundsFactory Contract", function () {
             CLASSIC,
             ethers.parseEther("0.1")
          );
+
+         await fundsFactory.connect(researcher1).openFundsRequest(0);
+         await addRequest(fundsFactory, researcher1, 0, "10");
       });
 
       it("emit an event of + vote for funds request", async function () {
@@ -263,7 +266,6 @@ describe("FundsFactory Contract", function () {
          fundsFactory = await deployProject();
          await addResearcher(fundsFactory, researcher1);
          await addResearchProject(fundsFactory, researcher1, 0, "10");
-         await addRequest(fundsFactory, researcher1, 0, "10");
          await buyNFT(
             fundsFactory,
             investor1,
@@ -282,6 +284,9 @@ describe("FundsFactory Contract", function () {
          );
          await buyNFT(fundsFactory, investor3, 0, VIP, ethers.parseEther("1"));
          await buyNFT(fundsFactory, investor3, 0, PLUS, ethers.parseEther("1"));
+
+         await fundsFactory.connect(researcher1).openFundsRequest(0);
+         await addRequest(fundsFactory, researcher1, 0, "10");
       });
 
       it("get vote results with 1 one from investor1", async function () {

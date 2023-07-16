@@ -195,6 +195,7 @@ describe("FundsFactory Contract", function () {
                );
             await fundsFactory.validResearchProject(0);
             await fundsFactory.validResearchProject(1);
+            await fundsFactory.connect(researcher1).openFundsRequest(0);
          });
 
          it("emit an event when creating a funds request", async function () {
@@ -262,6 +263,8 @@ describe("FundsFactory Contract", function () {
                   .createFundsRequest(project3.id, 10, "description3")
             ).to.be.revertedWith("Not ready for funding");
          });
+
+         //it();
       });
 
       describe("Close funds request", function () {
@@ -272,6 +275,8 @@ describe("FundsFactory Contract", function () {
             await addResearcher(fundsFactory, researcher1);
             await addResearchProject(fundsFactory, researcher1, 0, "100");
             await addResearchProject(fundsFactory, researcher1, 1, "200");
+            await fundsFactory.connect(researcher1).openFundsRequest(0);
+            await fundsFactory.connect(researcher1).openFundsRequest(1);
             await addRequest(fundsFactory, researcher1, 0, "10");
             await addRequest(fundsFactory, researcher1, 0, "20");
             await addRequest(fundsFactory, researcher1, 1, "30");
@@ -316,6 +321,8 @@ describe("FundsFactory Contract", function () {
             await addResearcher(fundsFactory, researcher1);
             await addResearchProject(fundsFactory, researcher1, 0, "100");
             await addResearchProject(fundsFactory, researcher1, 1, "200");
+            await fundsFactory.connect(researcher1).openFundsRequest(0);
+            await fundsFactory.connect(researcher1).openFundsRequest(1);
 
             await addRequest(fundsFactory, researcher1, 0, "10");
             timestamp1 = await time.latest();
@@ -395,7 +402,6 @@ describe("FundsFactory Contract", function () {
             fundsFactory = await deployProject();
             await addResearcher(fundsFactory, researcher1);
             await addResearchProject(fundsFactory, researcher1, 0, "100");
-            await addRequest(fundsFactory, researcher1, 0, "10");
             await buyNFT(
                fundsFactory,
                investor1,
@@ -403,6 +409,8 @@ describe("FundsFactory Contract", function () {
                VIP,
                ethers.parseEther("10")
             );
+            await fundsFactory.connect(researcher1).openFundsRequest(0);
+            await addRequest(fundsFactory, researcher1, 0, "10");
             await fundsFactory.connect(investor1).addVote(0, true);
             await fundsFactory.connect(researcher1).closeFundRequest(0);
          });

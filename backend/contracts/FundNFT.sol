@@ -50,11 +50,18 @@ contract FundNFT is
     ) ERC721(_tokenName, _symbol) {
 
         // set max supply for each type of NFT
+        
         nftConfs[nftType.CLASSIC].max = 40;
         nftConfs[nftType.PLUS].max = 30;
         nftConfs[nftType.PREMIUM].max = 4;
         nftConfs[nftType.VIP].max = 1;
 
+/*
+        nftConfs[nftType.CLASSIC].max = 1;
+        nftConfs[nftType.PLUS].max = 1;
+        nftConfs[nftType.PREMIUM].max = 1;
+        nftConfs[nftType.VIP].max = 1;
+*/
         // set amount
         /*
             40 NFT CLASSIC : 1%
@@ -72,7 +79,7 @@ contract FundNFT is
     modifier checkSupply(nftType _type, uint _amount) {
         require(
             nftConfs[_type].number < nftConfs[_type].max,
-            "Maximum supply reached"
+            "Max reached"
         );
         require(_amount * 1000 >= nftConfs[_type].amount, "Not enaugh paid");
         _;
@@ -163,12 +170,18 @@ contract FundNFT is
         );
     }
     
-    function getNumberNFTMinted() external view onlyOwner returns (uint, uint, uint, uint) {
+    function getNumberNFTMinted() external view onlyOwner returns (uint, uint, uint, uint, bool) {
         return (
             nftConfs[nftType.CLASSIC].number,
             nftConfs[nftType.PLUS].number,
             nftConfs[nftType.PREMIUM].number,
-            nftConfs[nftType.VIP].number
+            nftConfs[nftType.VIP].number,
+            (
+                nftConfs[nftType.CLASSIC].number >= nftConfs[nftType.CLASSIC].max &&
+                nftConfs[nftType.PLUS].number >= nftConfs[nftType.PLUS].max &&
+                nftConfs[nftType.PREMIUM].number >= nftConfs[nftType.PREMIUM].max &&
+                nftConfs[nftType.VIP].number >= nftConfs[nftType.VIP].max
+            )
         );
     }
 

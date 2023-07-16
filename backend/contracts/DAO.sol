@@ -124,7 +124,7 @@ contract DAO {
     } 
 
     // add a function to close a request
-    function closeFundRequest(uint requestId) external onlyFactory{
+    function closeFundRequest(uint requestId) external onlyFactory returns(uint, bool){
         require(
             requestId < fundRequests.length,
             "Id dont exist"
@@ -147,9 +147,11 @@ contract DAO {
             }
         } else {
             fundRequests[requestId].isAccepted = false;
-        }
+        }       
 
         fundRequests[requestId].status = FundStatus.ended;
+
+        return (fundRequests[requestId].amountAsked, fundRequests[requestId].isAccepted);
     }
 
     // create a function to get the vote results

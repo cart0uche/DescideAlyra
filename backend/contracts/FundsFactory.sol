@@ -24,8 +24,9 @@ contract FundsFactory is Ownable {
     /******************ENUMS *************/ 
 
     enum ResearchProjectStatus {
-        created,
-        validated,
+        waitingForValidation,
+        nftSaleOpen,
+        fundRequestOpen,
         ended
     }
 
@@ -85,7 +86,7 @@ contract FundsFactory is Ownable {
     }
 
     function validResearchProject(uint id) external onlyOwner {
-        researchProjects[id].status = ResearchProjectStatus.validated;
+        researchProjects[id].status = ResearchProjectStatus.nftSaleOpen;
         emit ResearchProjectValidated(id);
     }
 
@@ -181,6 +182,18 @@ contract FundsFactory is Ownable {
 
     //  FUNDS REQUEST FUNCTIONS
 
+    function openFundsRequest(
+        uint projectId
+    ) external belongToResearcher(projectId) {
+        require(projectId < researchProjects.length, "Id dont exist");
+        require(
+            researchProjects[projectId].status ==
+                ResearchProjectStatus.nftSaleOpen,
+            "Not ready for funding"
+        );
+        researchProjects[projectId].status = ResearchProjectStatus.fundRequestOpen;
+    }   
+
     function createFundsRequest(
         uint id,
         uint amount,
@@ -189,7 +202,7 @@ contract FundsFactory is Ownable {
         require(id < researchProjects.length, "Id dont exist");
         require(
             researchProjects[id].status ==
-                ResearchProjectStatus.validated,
+                ResearchProjectStatus.fundRequestOpen,
             "Not ready for funding"
         );
         require(
@@ -229,9 +242,14 @@ contract FundsFactory is Ownable {
             researchProjects[projectId].researcher == msg.sender,
             "Project not yours"
         );
-        dao.closeFundRequest(
+        (uint amount, bool isAccepted) = dao.closeFundRequest(
             requestId
         );
+
+        // if the request is not accepted, the research can re ask for the amount
+        if (isAccepted == false){
+            researchProjects[projectId].amountAlreayRaised -= amount;
+        } 
 
         emit FundsRequestClosed(
             requestId,
@@ -269,15 +287,6 @@ contract FundsFactory is Ownable {
     ////////////////////////////////
     // INVESTOR FUNCTIONS
     ////////////////////////////////
-    modifier readyToFund(uint id) {
-        require(
-            researchProjects[id].status ==
-                ResearchProjectStatus.validated,
-            "Not ready for funding"
-        );
-        _;
-    }
-
 
     function getNFT_Prices(
         uint id
@@ -288,12 +297,17 @@ contract FundsFactory is Ownable {
 
     function getNumberNFTMinted(
         uint id
-    ) external view returns (uint, uint, uint, uint) {
+    ) external view returns (uint, uint, uint, uint, bool) {
         FundNFT nft = FundNFT(researchProjects[id].fundNFT);
         return nft.getNumberNFTMinted();
     }
 
-    function buyNFT(uint projectId, uint typeNFT) external payable readyToFund(projectId) {
+    function buyNFT(uint projectId, uint typeNFT) external payable {
+        require(
+            researchProjects[projectId].status ==
+                ResearchProjectStatus.nftSaleOpen,
+            "Cannot buy NFT"
+        );
         require(typeNFT < 4, "Type dont exist");
         FundNFT nft = FundNFT(researchProjects[projectId].fundNFT);
         nft.safeMint(msg.sender, msg.value, researchProjects[projectId].title, researchProjects[projectId].imageUrl, typeNFT);
