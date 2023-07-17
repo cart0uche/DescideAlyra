@@ -12,13 +12,15 @@ import { useEffect, useState } from "react";
 import { fetchFundsRequests } from "@/components/fetchData";
 import { v4 as uuidv4 } from "uuid";
 import OneFundsRequest from "./OneFundsRequest";
+import { useFundsContext } from "@/context/fundsContext";
 
 function FundsRequestList({ projectInfoContext }) {
+   const { newFundsRequest } = useFundsContext();
    const [fundsRequests, setFundsRequests] = useState([]);
 
    useEffect(() => {
       fetchFundsRequests(setFundsRequests);
-   }, []);
+   }, [newFundsRequest]);
 
    return (
       <div>
