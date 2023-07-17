@@ -15,16 +15,24 @@ import {
    PopoverArrow,
    PopoverCloseButton,
    useDisclosure,
+   Text,
 } from "@chakra-ui/react";
 import { MdOutlineHowToVote } from "react-icons/md";
 
 function OneFundsRequest({ fundsRequest }) {
    const { isOpen, onToggle, onClose } = useDisclosure();
-   const { getFundsRequestDetails, fundsRequestDetail } = useFundRequest();
-   const { addVote, isLoadingAddVote } = useFundRequest();
+   const {
+      getFundsRequestDetails,
+      fundsRequestDetail,
+      addVote,
+      isLoadingAddVote,
+      voteResult,
+      getVoteResult,
+   } = useFundRequest();
 
    useEffect(() => {
       getFundsRequestDetails(fundsRequest.fundsRequestId);
+      getVoteResult(fundsRequest.fundsRequestId);
    }, []);
 
    useEffect(() => {
@@ -61,6 +69,25 @@ function OneFundsRequest({ fundsRequest }) {
             ETH
          </Td>
          <Td>
+            {voteResult ? (
+               <>
+                  <Text>
+                     Votes : {Number(voteResult.voted)} /{" "}
+                     {Number(voteResult.totalVoters)}
+                  </Text>
+                  <Text color="green">
+                     Yes : {Number(voteResult.yes)} (weight:{" "}
+                     {Number(voteResult.yesWeight)})
+                  </Text>
+                  <Text color="red">
+                     No : {Number(voteResult.no)} (weight:{" "}
+                     {Number(voteResult.noWeight)})
+                  </Text>
+               </>
+            ) : (
+               <Text> Loading ...</Text>
+            )}
+
             <Popover
                returnFocusOnClose={false}
                isOpen={isOpen}

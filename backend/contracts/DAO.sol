@@ -7,6 +7,10 @@ contract DAO {
     struct Vote {
         uint yes;
         uint no;
+        uint yesWeight;
+        uint noWeight;
+        uint totalVoters;
+        uint voted;
     }
 
     enum FundStatus {
@@ -31,6 +35,7 @@ contract DAO {
     mapping(uint => mapping(address => uint)) public investorsVoteWeight;
     mapping(uint => uint) public totalVoteWeight;
     mapping(uint => mapping(address => bool)) public investorsVotes;
+    mapping(uint => uint) public investorByProject;
 
     constructor() {
     }
@@ -108,19 +113,27 @@ contract DAO {
 
         require(block.timestamp < fundRequests[requestId].creationTime + 30 days, "Fund request is expired");
  
-
+        fundRequests[requestId].vote.voted ++;
         if(vote == false){
-            fundRequests[requestId].vote.no += investorsVoteWeight[projectId][investor];
+            fundRequests[requestId].vote.no++;
+            fundRequests[requestId].vote.noWeight += investorsVoteWeight[projectId][investor];
         } else {
-            fundRequests[requestId].vote.yes += investorsVoteWeight[projectId][investor];
+            fundRequests[requestId].vote.yes++;
+            fundRequests[requestId].vote.yesWeight += investorsVoteWeight[projectId][investor];
         }
 
         investorsVotes[requestId][investor] = true;
     }   
 
     function addInvestorVoteWeight(uint projectId, address investor, uint weight) external onlyFactory{
+        // count the number of investor for a project
+        if(investorsVoteWeight[projectId][investor] == 0)
+        {
+            investorByProject[projectId] ++;
+        }  
         investorsVoteWeight[projectId][investor] += weight;
         totalVoteWeight[projectId] += weight;
+      
     } 
 
     // add a function to close a request
@@ -155,17 +168,14 @@ contract DAO {
     }
 
     // create a function to get the vote results
-    function getVoteResult(uint requestId) external view onlyFactory returns(bool, uint, uint, uint){
+    function getVoteResult(uint requestId) external view onlyFactory returns(Vote memory){
         require(
             requestId < fundRequests.length,
             "Id dont exist"
         );
-        return (
-            fundRequests[requestId].isAccepted,
-            fundRequests[requestId].vote.yes,
-            fundRequests[requestId].vote.no,
-            totalVoteWeight[fundRequests[requestId].projectId]
-        );
+        Vote memory vote = fundRequests[requestId].vote;
+        vote.totalVoters = investorByProject[fundRequests[requestId].projectId];
+        return (vote);
     }
 
     function shouldClaimFunds(uint requestId) external view onlyFactory returns(uint) {

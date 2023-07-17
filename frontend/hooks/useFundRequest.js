@@ -7,6 +7,7 @@ import { readContract } from "@wagmi/core";
 export function useFundRequest() {
    const { isConnected, address: addressAccount } = useAccount();
    const [fundsRequestDetail, setFundsRequestDetail] = useState();
+   const [voteResult, setVoteResult] = useState();
    const toast = useToast();
 
    // Create project
@@ -100,6 +101,22 @@ export function useFundRequest() {
       },
    });
 
+   // call readContract to get vote result
+   const getVoteResult = async (fundRequestId) => {
+      const data = await readContract({
+         address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+         abi: Contract.abi,
+         functionName: "getVoteResult",
+         onError(error) {
+            console.log("Error", error);
+         },
+         onSuccess(data) {},
+         args: [Number(fundRequestId)],
+         account: addressAccount,
+      });
+      setVoteResult(data);
+   };
+
    return {
       openFundsRequest,
       isLoadingOpenFundsRequest,
@@ -109,5 +126,7 @@ export function useFundRequest() {
       fundsRequestDetail,
       addVote,
       isLoadingAddVote,
+      voteResult,
+      getVoteResult,
    };
 }
