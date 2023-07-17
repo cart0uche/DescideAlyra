@@ -12,7 +12,7 @@ export async function fetchResearcher(setter) {
          "event ResearcherAdded(address, string, string, string)"
       ),
       //fromBlock: blockNumber < 0 ? 0n : blockNumber,
-      fromBlock: 3908480n,
+      fromBlock: 3908436,
    });
 
    const logs = await publicClient.getFilterLogs({ filter });
