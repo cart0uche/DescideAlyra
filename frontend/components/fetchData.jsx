@@ -11,7 +11,8 @@ export async function fetchResearcher(setter) {
       event: parseAbiItem(
          "event ResearcherAdded(address, string, string, string)"
       ),
-      fromBlock: blockNumber < 0 ? 0n : blockNumber,
+      //fromBlock: blockNumber < 0 ? 0n : blockNumber,
+      fromBlock: 3908580n,
    });
 
    const logs = await publicClient.getFilterLogs({ filter });
