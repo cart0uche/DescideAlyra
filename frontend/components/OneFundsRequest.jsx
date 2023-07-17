@@ -34,6 +34,8 @@ function OneFundsRequest({ fundsRequest }) {
       getVoteResult,
       closeFundsRequest,
       isLoadingCloseFundsRequest,
+      claimFunds,
+      isLoadingClaimFunds,
    } = useFundRequest();
 
    useEffect(() => {
@@ -202,7 +204,25 @@ function OneFundsRequest({ fundsRequest }) {
                         </Button>
                      ) : null}
                   </>
-               ) : null}
+               ) : (
+                  <>
+                     {isMineProject(projectInfoContext.researcher) &&
+                     voteResult &&
+                     voteResult.isAccepted ? (
+                        <Button
+                           margin={3}
+                           isLoading={isLoadingClaimFunds}
+                           onClick={() =>
+                              claimFunds({
+                                 args: [fundsRequest.fundsRequestId],
+                              })
+                           }
+                        >
+                           Claim
+                        </Button>
+                     ) : null}
+                  </>
+               )}
             </Flex>
          </Td>
       </Tr>

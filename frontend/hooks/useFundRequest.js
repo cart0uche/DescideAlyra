@@ -142,18 +142,45 @@ export function useFundRequest() {
          },
       });
 
-   return {
-      openFundsRequest,
-      isLoadingOpenFundsRequest,
-      createFundsRequest,
-      isLoadingCreateFundsRequest,
-      getFundsRequestDetails,
-      fundsRequestDetail,
-      addVote,
-      isLoadingAddVote,
-      voteResult,
-      getVoteResult,
-      closeFundsRequest,
-      isLoadingCloseFundsRequest,
-   };
+      const { write: claimFunds, isLoading: isLoadingClaimFunds } =
+         useContractWrite({
+            address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+            abi: Contract.abi,
+            functionName: "claimFunds",
+            onError: (error) => {
+               console.log(error);
+               toast({
+                  status: "error",
+                  isClosable: true,
+                  position: "top-middle",
+                  title: "closeFundRequest failed",
+                  description: error.message,
+               });
+            },
+            onSuccess: (data) => {
+               toast({
+                  status: "info",
+                  isClosable: true,
+                  position: "top-middle",
+                  title: "closeFundRequest success",
+               });
+            },
+         });
+
+      return {
+         openFundsRequest,
+         isLoadingOpenFundsRequest,
+         createFundsRequest,
+         isLoadingCreateFundsRequest,
+         getFundsRequestDetails,
+         fundsRequestDetail,
+         addVote,
+         isLoadingAddVote,
+         voteResult,
+         getVoteResult,
+         closeFundsRequest,
+         isLoadingCloseFundsRequest,
+         claimFunds,
+         isLoadingClaimFunds,
+      };
 }
