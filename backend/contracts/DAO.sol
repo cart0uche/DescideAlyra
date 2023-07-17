@@ -11,6 +11,7 @@ contract DAO {
         uint noWeight;
         uint totalVoters;
         uint voted;
+        bool isAccepted;
     }
 
     enum FundStatus {
@@ -153,7 +154,7 @@ contract DAO {
         );
 
         if (totalVoteWeight[fundRequests[requestId].projectId] != 0){
-            if (100 * fundRequests[requestId].vote.yes / totalVoteWeight[fundRequests[requestId].projectId] > 80){
+            if (100 * fundRequests[requestId].vote.yesWeight / totalVoteWeight[fundRequests[requestId].projectId] > 80){
                 fundRequests[requestId].isAccepted = true;
             } else {
                 fundRequests[requestId].isAccepted = false;
@@ -175,6 +176,7 @@ contract DAO {
         );
         Vote memory vote = fundRequests[requestId].vote;
         vote.totalVoters = investorByProject[fundRequests[requestId].projectId];
+        vote.isAccepted = fundRequests[requestId].isAccepted;
         return (vote);
     }
 

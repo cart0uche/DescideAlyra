@@ -117,6 +117,31 @@ export function useFundRequest() {
       setVoteResult(data);
    };
 
+   const { write: closeFundsRequest, isLoading: isLoadingCloseFundsRequest } =
+      useContractWrite({
+         address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+         abi: Contract.abi,
+         functionName: "closeFundRequest",
+         onError: (error) => {
+            console.log(error);
+            toast({
+               status: "error",
+               isClosable: true,
+               position: "top-middle",
+               title: "closeFundRequest failed",
+               description: error.message,
+            });
+         },
+         onSuccess: (data) => {
+            toast({
+               status: "info",
+               isClosable: true,
+               position: "top-middle",
+               title: "closeFundRequest success",
+            });
+         },
+      });
+
    return {
       openFundsRequest,
       isLoadingOpenFundsRequest,
@@ -128,5 +153,7 @@ export function useFundRequest() {
       isLoadingAddVote,
       voteResult,
       getVoteResult,
+      closeFundsRequest,
+      isLoadingCloseFundsRequest,
    };
 }
