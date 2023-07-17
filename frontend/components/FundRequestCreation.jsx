@@ -35,11 +35,17 @@ function FundRequestCreation({ projectInfoContext }) {
             description.value,
          ],
       });
+      onClose();
    };
 
    return (
       <div>
-         <Button leftIcon={<AddIcon />} colorScheme="teal" onClick={onOpen}>
+         <Button
+            leftIcon={<AddIcon />}
+            colorScheme="teal"
+            onClick={onOpen}
+            isLoading={isLoadingCreateFundsRequest}
+         >
             Create funds request
          </Button>
          <Drawer
@@ -59,16 +65,12 @@ function FundRequestCreation({ projectInfoContext }) {
                   <Stack spacing="24px">
                      <Box>
                         <FormLabel htmlFor="description">Description</FormLabel>
-                        <Textarea id="description" />
+                        <Textarea ref={firstField} id="description" />
                      </Box>
 
                      <Box>
                         <FormLabel htmlFor="amount">Name</FormLabel>
-                        <Input
-                           ref={firstField}
-                           id="amount"
-                           placeholder="Amount needed"
-                        />
+                        <Input id="amount" placeholder="Amount needed" />
                      </Box>
                   </Stack>
                </DrawerBody>
@@ -77,11 +79,7 @@ function FundRequestCreation({ projectInfoContext }) {
                   <Button variant="outline" mr={3} onClick={onClose}>
                      Cancel
                   </Button>
-                  <Button
-                     isLoading={isLoadingCreateFundsRequest}
-                     colorScheme="blue"
-                     onClick={handleSubmit}
-                  >
+                  <Button colorScheme="blue" onClick={handleSubmit}>
                      Submit
                   </Button>
                </DrawerFooter>

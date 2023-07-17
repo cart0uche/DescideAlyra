@@ -11,7 +11,7 @@ export function useFundRequest() {
    const toast = useToast();
 
    // Create project
-   const { write: openFundsRequest, isLoadingOpenFundsRequest } =
+   const { write: openFundsRequest, isLoading: isLoadingOpenFundsRequest } =
       useContractWrite({
          address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
          abi: Contract.abi,
@@ -36,7 +36,7 @@ export function useFundRequest() {
          },
       });
 
-   const { write: createFundsRequest, isLoadingCreateFundsRequest } =
+   const { write: createFundsRequest, isLoading: isLoadingCreateFundsRequest } =
       useContractWrite({
          address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
          abi: Contract.abi,
@@ -77,7 +77,7 @@ export function useFundRequest() {
    };
 
    // créer une fonction pour voter
-   const { write: addVote, isLoadingAddVote } = useContractWrite({
+   const { write: addVote, isLoading: isLoadingAddVote } = useContractWrite({
       address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
       abi: Contract.abi,
       functionName: "addVote",
