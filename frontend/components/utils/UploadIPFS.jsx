@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { NFTStorage } from "nft.storage";
+import { Spinner } from "@chakra-ui/react";
 
 const UploadIPFS = ({ setFileUrl, setUploaded }) => {
   const [img, setImg] = useState([]);
@@ -32,16 +33,16 @@ const UploadIPFS = ({ setFileUrl, setUploaded }) => {
 
   return (
     <div>
-      <div>
-        <label>
-          <input
-            type="file"
-            onChange={(e) => {
-              setImg(e.target.files[0]);
-            }}
-          ></input>
-        </label>
-      </div>
+      {isUploading && <Spinner />}
+
+      <label>
+        <input
+          type="file"
+          onChange={(e) => {
+            setImg(e.target.files[0]);
+          }}
+        ></input>
+      </label>
     </div>
   );
 };
