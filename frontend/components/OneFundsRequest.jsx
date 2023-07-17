@@ -66,7 +66,9 @@ function OneFundsRequest({ fundsRequest }) {
          case 0:
             return "In progress";
          case 1:
-            return "Ended";
+            return "Closed";
+         case 2:
+            return "Claimed";
          default:
             return "Unkown" + status;
       }
@@ -102,7 +104,7 @@ function OneFundsRequest({ fundsRequest }) {
                      </Text>
 
                      {fundsRequestDetail &&
-                     getStatus(Number(fundsRequestDetail[5])) === "Ended" ? (
+                     getStatus(Number(fundsRequestDetail[5])) === "Closed" ? (
                         <>
                            {voteResult.isAccepted ? (
                               <Text fontSize="xl" color="green">

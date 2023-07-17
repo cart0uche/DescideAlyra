@@ -16,7 +16,8 @@ contract DAO {
 
     enum FundStatus {
         inProgress,
-        ended
+        closed,
+        claimed
     }
 
     struct FundRequest {
@@ -163,7 +164,7 @@ contract DAO {
             fundRequests[requestId].isAccepted = false;
         }       
 
-        fundRequests[requestId].status = FundStatus.ended;
+        fundRequests[requestId].status = FundStatus.closed;
 
         return (fundRequests[requestId].amountAsked, fundRequests[requestId].isAccepted);
     }
@@ -187,8 +188,8 @@ contract DAO {
         );
         require(
             fundRequests[requestId].status ==
-                FundStatus.ended,
-            "Fund request is not ended"
+                FundStatus.closed,
+            "Fund request is not closed"
         );
         require(
             fundRequests[requestId].isAccepted == true,
@@ -197,4 +198,22 @@ contract DAO {
 
         return fundRequests[requestId].amountAsked;
     }
+
+    function claimFunds(uint requestId) external onlyFactory {
+        require(
+            requestId < fundRequests.length,
+            "Id dont exist"
+        );
+        require(
+            fundRequests[requestId].status ==
+                FundStatus.closed,
+            "Fund request is not closed"
+        );
+        require(
+            fundRequests[requestId].isAccepted == true,
+            "Fund request is not accepted"
+        );
+
+        fundRequests[requestId].status = FundStatus.claimed;
+    }   
 }
