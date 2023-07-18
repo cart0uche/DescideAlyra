@@ -223,7 +223,7 @@ describe("FundsFactory Contract", function () {
                   )
             )
                .to.emit(fundsFactory, "FundsRequestCreated")
-               .withArgs(0, researcher1.address);
+               .withArgs(0, 0, researcher1.address);
 
             const project1 = await fundsFactory
                .connect(researcher1)
@@ -238,7 +238,7 @@ describe("FundsFactory Contract", function () {
                   )
             )
                .to.emit(fundsFactory, "FundsRequestCreated")
-               .withArgs(1, researcher1.address);
+               .withArgs(1, 1, researcher1.address);
          });
 
          it("should fail if amount is 0", async function () {

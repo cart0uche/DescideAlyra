@@ -56,27 +56,36 @@ export async function fetchProject(setter) {
    setter(parsedProjects);
 }
 
-
-export async function fetchFundsRequests(setter) {
-   console.log("--------> fetchFundsRequests");
+export async function fetchFundsRequests(setter, projectId) {
    const blockNumber = BigInt(
       Number(await publicClient.getBlockNumber()) - 15000
    );
    const filter = await publicClient.createEventFilter({
       address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-      event: parseAbiItem("event FundsRequestCreated(uint256, address)"),
-      fromBlock: blockNumber < 0 ? 0n : blockNumber,
+      event: parseAbiItem(
+         "event FundsRequestCreated(uint256, uint256, address)"
+      ),
+      fromBlock: 0n,
    });
 
    const logs = await publicClient.getFilterLogs({ filter });
+   console.log("logs", logs);
 
-   const parsedProjects = logs.map((log, index) => {
-      const fundsRequestId = log.args[0];
-      const researcherAddress = log.args[1];
+   // add a filter on projectId
+   const filteredLogs = logs.filter((log) => {
+      return log.args[0] === projectId;
+   });
+
+   const parsedProjects = filteredLogs.map((log, index) => {
+      const fundsProjectId = log.args[0];
+      const fundsRequestId = log.args[1];
+      const researcherAddress = log.args[2];
       return {
+         fundsProjectId,
          fundsRequestId,
          researcherAddress,
       };
    });
+
    setter(parsedProjects);
 }

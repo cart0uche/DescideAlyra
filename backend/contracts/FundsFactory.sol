@@ -17,7 +17,7 @@ contract FundsFactory is Ownable {
     );
     event ResearchProjectCreated(uint projectId, address reasearcher);
     event ResearchProjectValidated(uint projectId);
-    event FundsRequestCreated(uint requestId, address reasearcher);
+    event FundsRequestCreated(uint projectId, uint requestId, address researcher);
     event FundsRequestClosed(uint requestId, address reasearcher);
     event VoteAdded(address investor, uint projectId, uint requestId, bool vote);
 
@@ -202,7 +202,11 @@ contract FundsFactory is Ownable {
         researchProjects[id].amountAlreayRaised += amount;
         requestIdNumber++;
 
+        console.log("id", id);
+        console.log("requestId", requestId);
+        console.log("msg.sender", msg.sender);
         emit FundsRequestCreated(
+            id,
             requestId,
             msg.sender
         );
