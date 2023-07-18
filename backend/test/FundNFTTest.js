@@ -9,7 +9,7 @@ const {
 let nftContract;
 let researcherRegistry;
 
-describe.only("FundNFT Contract", function () {
+describe("FundNFT Contract", function () {
    beforeEach(async function () {
       let fundsFactory;
       [admin, researcher1] = await ethers.getSigners();

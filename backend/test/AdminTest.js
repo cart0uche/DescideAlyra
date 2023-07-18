@@ -10,7 +10,7 @@ describe("FundsFactory Contract", function () {
    let fundsFactory;
    let researcherRegistry;
 
-   describe.only("Admin functions", function () {
+   describe("Admin functions", function () {
       describe("Valid researcher", function () {
          beforeEach(async function () {
             [admin, researcher1, researcher2, investor1, investor2] =

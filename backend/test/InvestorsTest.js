@@ -15,13 +15,14 @@ const VIP = 3;
 
 describe("FundsFactory Contract", function () {
    let fundsFactory;
+   let researcherRegistry;
 
    describe("Investor functions : buy NFT", function () {
       beforeEach(async function () {
          [admin, researcher1, researcher2, investor1, investor2] =
             await ethers.getSigners();
-         fundsFactory = await deployProject();
-         await addResearcher(fundsFactory, researcher1);
+         [fundsFactory, researcherRegistry] = await deployProject();
+         await addResearcher(researcherRegistry, researcher1);
          await addResearchProject(fundsFactory, researcher1, 0, "10");
       });
 
@@ -196,20 +197,14 @@ describe("FundsFactory Contract", function () {
       beforeEach(async function () {
          [admin, researcher1, researcher2, investor1, investor2] =
             await ethers.getSigners();
-         fundsFactory = await deployProject();
-         await addResearcher(fundsFactory, researcher1);
+         [fundsFactory, researcherRegistry] = await deployProject();
+         await addResearcher(researcherRegistry, researcher1);
          await addResearchProject(fundsFactory, researcher1, 0, "10");
 
-         await buyNFT(
-            fundsFactory,
-            investor1,
-            0,
-            CLASSIC,
-            ethers.parseEther("0.1")
-         );
+         await buyNFT(fundsFactory, investor1, 0, CLASSIC, "0.1");
 
          await fundsFactory.connect(researcher1).openFundsRequest(0);
-         await addRequest(fundsFactory, researcher1, 0, "10");
+         await addRequest(fundsFactory, researcher1, 0, "0.1");
       });
 
       it("emit an event of + vote for funds request", async function () {
@@ -263,42 +258,28 @@ describe("FundsFactory Contract", function () {
       beforeEach(async function () {
          [admin, researcher1, researcher2, investor1, investor2, investor3] =
             await ethers.getSigners();
-         fundsFactory = await deployProject();
-         await addResearcher(fundsFactory, researcher1);
+         [fundsFactory, researcherRegistry] = await deployProject();
+         await addResearcher(researcherRegistry, researcher1);
          await addResearchProject(fundsFactory, researcher1, 0, "10");
-         await buyNFT(
-            fundsFactory,
-            investor1,
-            0,
-            CLASSIC,
-            ethers.parseEther("0.1")
-         );
-         await buyNFT(fundsFactory, investor2, 0, PLUS, ethers.parseEther("1"));
-         await buyNFT(fundsFactory, investor2, 0, PLUS, ethers.parseEther("1"));
-         await buyNFT(
-            fundsFactory,
-            investor2,
-            0,
-            PREMIUM,
-            ethers.parseEther("1")
-         );
-         await buyNFT(fundsFactory, investor3, 0, VIP, ethers.parseEther("1"));
-         await buyNFT(fundsFactory, investor3, 0, PLUS, ethers.parseEther("1"));
+         await buyNFT(fundsFactory, investor1, 0, CLASSIC, "0.1");
+         await buyNFT(fundsFactory, investor2, 0, PLUS, "1");
+         await buyNFT(fundsFactory, investor2, 0, PLUS, "1");
+         await buyNFT(fundsFactory, investor2, 0, PREMIUM, "1");
+         await buyNFT(fundsFactory, investor3, 0, VIP, "1");
+         await buyNFT(fundsFactory, investor3, 0, PLUS, "1");
 
          await fundsFactory.connect(researcher1).openFundsRequest(0);
-         await addRequest(fundsFactory, researcher1, 0, "10");
+         await addRequest(fundsFactory, researcher1, 0, "1");
       });
 
       it("get vote results with 1 one from investor1", async function () {
          await fundsFactory.connect(investor1).addVote(0, true);
          await fundsFactory.connect(researcher1).closeFundRequest(0);
-         const [isAccepted, yes, no, total] = await fundsFactory.getVoteResult(
-            0
-         );
-         expect(isAccepted).to.be.equal(false);
-         expect(Number(yes)).to.be.equal(10);
-         expect(Number(no)).to.be.equal(0);
-         expect(Number(total)).to.be.equal(235);
+         const vote = await fundsFactory.getVoteResult(0);
+         expect(vote.isAccepted).to.be.false;
+         expect(Number(vote.yes)).to.be.equal(1);
+         expect(Number(vote.no)).to.be.equal(0);
+         expect(Number(vote.totalVoters)).to.be.equal(3);
       });
 
       it("get vote resuls with 3 investors votes", async function () {
@@ -306,13 +287,14 @@ describe("FundsFactory Contract", function () {
          await fundsFactory.connect(investor2).addVote(0, true);
          await fundsFactory.connect(investor3).addVote(0, true);
          await fundsFactory.connect(researcher1).closeFundRequest(0);
-         const [isAccepted, yes, no, total] = await fundsFactory.getVoteResult(
-            0
-         );
-         expect(isAccepted).to.be.equal(true); // 100 *(225/235) = 95.74468085106383 > 80%
-         expect(Number(yes)).to.be.equal(225);
-         expect(Number(no)).to.be.equal(10);
-         expect(Number(total)).to.be.equal(235);
+         const vote = await fundsFactory.getVoteResult(0);
+
+         expect(vote.isAccepted).to.be.true; // 100 *(225/235) = 95.74468085106383 > 80%
+         expect(Number(vote.yes)).to.be.equal(2);
+         expect(Number(vote.no)).to.be.equal(1);
+         expect(Number(vote.yesWeight)).to.be.equal(225);
+         expect(Number(vote.noWeight)).to.be.equal(10);
+         expect(Number(vote.totalVoters)).to.be.equal(3);
       });
    });
 });

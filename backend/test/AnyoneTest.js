@@ -16,7 +16,7 @@ const VIP = 3;
 const FUNDS_STATE_IN_PROGRESS = 0;
 const FUNDS_STATE_ENDED = 1;
 
-describe.only("FundsFactory Contract", function () {
+describe("FundsFactory Contract", function () {
    let fundsFactory;
    let researcherRegistry;
 
