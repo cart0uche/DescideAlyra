@@ -9,6 +9,7 @@ const FundsContext = createContext({});
 export const FundsContextProvider = ({ children }) => {
    const [newFundsRequest, setNewFundsRequest] = useState(0);
    const [projectInfoContext, setProjectInfoContext] = useState(null);
+   const [newVoteAddedForRequestId, setNewVoteAdded] = useState(null);
 
    const toast = useToast();
 
@@ -23,12 +24,24 @@ export const FundsContextProvider = ({ children }) => {
       },
    });
 
+   const unwatchVoteAdded = useContractEvent({
+      address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+      abi: Contract.abi,
+      eventName: "VoteAdded",
+      listener: (event) => {
+         console.log("VoteAdded");
+         setNewVoteAdded(event[0].args.requestId);
+         unwatchVoteAdded();
+      },
+   });
+
    return (
       <FundsContext.Provider
          value={{
             projectInfoContext,
             setProjectInfoContext,
             newFundsRequest,
+            newVoteAddedForRequestId,
          }}
       >
          {children}

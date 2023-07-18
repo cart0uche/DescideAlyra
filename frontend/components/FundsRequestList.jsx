@@ -19,10 +19,6 @@ function FundsRequestList({ projectInfoContext }) {
    const [fundsRequests, setFundsRequests] = useState([]);
 
    useEffect(() => {
-      console.log(
-         "==========> projectInfoContext.projectId",
-         Number(projectInfoContext.id)
-      );
       fetchFundsRequests(setFundsRequests, projectInfoContext.id);
    }, [newFundsRequest]);
 

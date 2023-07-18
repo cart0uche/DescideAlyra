@@ -23,7 +23,7 @@ import { useFundsContext } from "@/context/fundsContext";
 
 function OneFundsRequest({ fundsRequest }) {
    const { isOpen, onToggle, onClose } = useDisclosure();
-   const { projectInfoContext } = useFundsContext();
+   const { projectInfoContext, newVoteAddedForRequestId } = useFundsContext();
    const { address } = useAccount();
    const {
       getFundsRequestDetails,
@@ -44,8 +44,11 @@ function OneFundsRequest({ fundsRequest }) {
    }, []);
 
    useEffect(() => {
-      console.log("fundsRequestDetail", fundsRequestDetail);
-   }, [fundsRequestDetail]);
+      if (newVoteAddedForRequestId === fundsRequest.fundsRequestId) {
+         getVoteResult(fundsRequest.fundsRequestId);
+      }
+   }, [newVoteAddedForRequestId]);
+
 
    const isMineProject = () => {
       if (projectInfoContext && projectInfoContext.researcher === address) {
