@@ -7,12 +7,14 @@ const {
 } = require("./helper");
 
 let nftContract;
+let researcherRegistry;
 
-describe("FundNFT Contract", function () {
+describe.only("FundNFT Contract", function () {
    beforeEach(async function () {
+      let fundsFactory;
       [admin, researcher1] = await ethers.getSigners();
-      let fundsFactory = await deployProject();
-      await addResearcher(fundsFactory, researcher1);
+      [fundsFactory, researcherRegistry] = await deployProject();
+      await addResearcher(researcherRegistry, researcher1);
       await addResearchProject(fundsFactory, researcher1, 0, "10");
       const project1 = await fundsFactory
          .connect(researcher1)
