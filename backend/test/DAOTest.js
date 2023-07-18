@@ -7,11 +7,21 @@ describe("DAO Contract", function () {
    beforeEach(async function () {
       [admin, researcher1, researcher2, investor1, investor2] =
          await ethers.getSigners();
-      let DAO = await ethers.getContractFactory("DAO");
-      dao = await DAO.deploy();
-      let FundsFactory = await ethers.getContractFactory("FundsFactory");
-      let fundsFactory = await FundsFactory.deploy(dao.target);
-      await dao.setFactoryAddress(fundsFactory.target);
+         let DAO = await ethers.getContractFactory("DAO");
+         dao = await DAO.deploy();
+
+         let ResearcherRegistry = await ethers.getContractFactory(
+            "ResearcherRegistry"
+         );
+         let researcherRegistry = await ResearcherRegistry.deploy();
+      
+         let FundsFactory = await ethers.getContractFactory("FundsFactory");
+         let fundsFactory = await FundsFactory.deploy(
+            dao.target,
+            researcherRegistry.target
+         );
+         await dao.setFactoryAddress(fundsFactory.target);
+         await researcherRegistry.setFactoryAddress(fundsFactory.target);
    });
 
    it("should revert addDao not called by fundsFactory", async function () {
