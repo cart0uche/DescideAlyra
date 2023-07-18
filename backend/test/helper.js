@@ -51,7 +51,7 @@ async function addRequest(fundsFactory, researcher, index, amount) {
 
 async function buyNFT(fundsFactory, investor, projectIndex, nftType, value) {
    await fundsFactory.connect(investor).buyNFT(projectIndex, nftType, {
-      value: value,
+      value: ethers.parseEther(value),
    });
 }
 

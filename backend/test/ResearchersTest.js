@@ -18,17 +18,18 @@ const VIP = 3;
 const FUNDS_STATE_IN_PROGRESS = 0;
 const FUNDS_STATE_ENDED = 1;
 
-describe("FundsFactory Contract", function () {
+describe.only("FundsFactory Contract", function () {
    let fundsFactory;
+   let researcherRegistry;
 
    describe("Researcher functions", function () {
       describe("Adding a project", function () {
          beforeEach(async function () {
             [admin, researcher1, researcher2, researcher3] =
                await ethers.getSigners();
-            fundsFactory = await deployProject();
-            await addResearcher(fundsFactory, researcher1);
-            await addResearcher(fundsFactory, researcher2);
+            [fundsFactory, researcherRegistry] = await deployProject();
+            await addResearcher(researcherRegistry, researcher1);
+            await addResearcher(researcherRegistry, researcher2);
          });
 
          it("emit an event when adding a project", async function () {
@@ -102,11 +103,15 @@ describe("FundsFactory Contract", function () {
             expect(project3.amountAsked).to.be.equal(new BN(300));
             expect(project3.projectDetailsUri).to.be.equal("uri3");
 
-            const r1 = await fundsFactory.getResearcher(researcher1.address);
+            const r1 = await researcherRegistry.getResearcher(
+               researcher1.address
+            );
             expect(r1.projectListIds[0]).to.be.equal(0);
             expect(r1.projectListIds[1]).to.be.equal(2);
 
-            const r2 = await fundsFactory.getResearcher(researcher2.address);
+            const r2 = await researcherRegistry.getResearcher(
+               researcher2.address
+            );
             expect(r2.projectListIds[0]).to.be.equal(1);
          });
 
@@ -157,8 +162,8 @@ describe("FundsFactory Contract", function () {
          beforeEach(async function () {
             [admin, researcher1, researcher2, researcher3] =
                await ethers.getSigners();
-            fundsFactory = await deployProject();
-            await addResearcher(fundsFactory, researcher1);
+            [fundsFactory, researcherRegistry] = await deployProject();
+            await addResearcher(researcherRegistry, researcher1);
             await addResearchProject(fundsFactory, researcher1, 0, "100");
          });
 
@@ -178,10 +183,10 @@ describe("FundsFactory Contract", function () {
 
       describe("Create funds request", function () {
          beforeEach(async function () {
-            [admin, researcher1, researcher2, researcher3] =
+            [admin, researcher1, researcher2, researcher3, investor1] =
                await ethers.getSigners();
-            fundsFactory = await deployProject();
-            await addResearcher(fundsFactory, researcher1);
+            [fundsFactory, researcherRegistry] = await deployProject();
+            await addResearcher(researcherRegistry, researcher1);
             await addResearchProject(fundsFactory, researcher1, 0, "100");
             await addResearchProject(fundsFactory, researcher1, 1, "200");
             await fundsFactory
@@ -190,33 +195,47 @@ describe("FundsFactory Contract", function () {
                   "projet3",
                   "description3",
                   "image3",
-                  300,
+                  ethers.parseEther("300"),
                   "uri3"
                );
             await fundsFactory.validResearchProject(0);
             await fundsFactory.validResearchProject(1);
+
+            await buyNFT(fundsFactory, investor1, 0, VIP, "10");
+
+            await buyNFT(fundsFactory, investor1, 1, VIP, "20");
+
             await fundsFactory.connect(researcher1).openFundsRequest(0);
+            await fundsFactory.connect(researcher1).openFundsRequest(1);
          });
 
          it("emit an event when creating a funds request", async function () {
-            const project1 = await fundsFactory
+            const project0 = await fundsFactory
                .connect(researcher1)
                .getResearchProject(0);
             await expect(
                fundsFactory
                   .connect(researcher1)
-                  .createFundsRequest(project1.id, 10, "description1")
+                  .createFundsRequest(
+                     project0.id,
+                     ethers.parseEther("5"),
+                     "description1"
+                  )
             )
                .to.emit(fundsFactory, "FundsRequestCreated")
                .withArgs(0, researcher1.address);
 
-            const project2 = await fundsFactory
+            const project1 = await fundsFactory
                .connect(researcher1)
-               .getResearchProject(0);
+               .getResearchProject(1);
             await expect(
                fundsFactory
                   .connect(researcher1)
-                  .createFundsRequest(project2.id, 10, "description2")
+                  .createFundsRequest(
+                     project1.id,
+                     ethers.parseEther("20"),
+                     "description2"
+                  )
             )
                .to.emit(fundsFactory, "FundsRequestCreated")
                .withArgs(1, researcher1.address);
@@ -269,17 +288,22 @@ describe("FundsFactory Contract", function () {
 
       describe("Close funds request", function () {
          beforeEach(async function () {
-            [admin, researcher1, researcher2, researcher3] =
+            [admin, researcher1, researcher2, researcher3, investor1] =
                await ethers.getSigners();
-            fundsFactory = await deployProject();
-            await addResearcher(fundsFactory, researcher1);
+            [fundsFactory, researcherRegistry] = await deployProject();
+            await addResearcher(researcherRegistry, researcher1);
             await addResearchProject(fundsFactory, researcher1, 0, "100");
             await addResearchProject(fundsFactory, researcher1, 1, "200");
+
+            await buyNFT(fundsFactory, investor1, 0, VIP, "10");
+            await buyNFT(fundsFactory, investor1, 1, VIP, "20");
+
             await fundsFactory.connect(researcher1).openFundsRequest(0);
             await fundsFactory.connect(researcher1).openFundsRequest(1);
-            await addRequest(fundsFactory, researcher1, 0, "10");
-            await addRequest(fundsFactory, researcher1, 0, "20");
-            await addRequest(fundsFactory, researcher1, 1, "30");
+
+            await addRequest(fundsFactory, researcher1, 0, "5");
+            await addRequest(fundsFactory, researcher1, 0, "5");
+            await addRequest(fundsFactory, researcher1, 1, "10");
          });
 
          it("emit an event when closing a funds request", async function () {
@@ -314,21 +338,25 @@ describe("FundsFactory Contract", function () {
       describe("Get funds request details", function () {
          let timestamp1, timestamp2, timestamp3;
          beforeEach(async function () {
-            [admin, researcher1, researcher2, researcher3] =
+            [admin, researcher1, researcher2, researcher3, investor1] =
                await ethers.getSigners();
 
-            fundsFactory = await deployProject();
-            await addResearcher(fundsFactory, researcher1);
+            [fundsFactory, researcherRegistry] = await deployProject();
+            await addResearcher(researcherRegistry, researcher1);
             await addResearchProject(fundsFactory, researcher1, 0, "100");
             await addResearchProject(fundsFactory, researcher1, 1, "200");
+
+            await buyNFT(fundsFactory, investor1, 0, VIP, "10");
+            await buyNFT(fundsFactory, investor1, 1, VIP, "20");
+
             await fundsFactory.connect(researcher1).openFundsRequest(0);
             await fundsFactory.connect(researcher1).openFundsRequest(1);
 
-            await addRequest(fundsFactory, researcher1, 0, "10");
+            await addRequest(fundsFactory, researcher1, 0, "7");
             timestamp1 = await time.latest();
-            await addRequest(fundsFactory, researcher1, 0, "20");
+            await addRequest(fundsFactory, researcher1, 0, "3");
             timestamp2 = await time.latest();
-            await addRequest(fundsFactory, researcher1, 1, "30");
+            await addRequest(fundsFactory, researcher1, 1, "20");
             timestamp3 = await time.latest();
          });
 
@@ -345,7 +373,7 @@ describe("FundsFactory Contract", function () {
                .getFundsRequestDetails(0);
 
             expect(projectId).to.be.equal(0);
-            expect(amountAsked).to.be.equal(ethers.parseEther("10"));
+            expect(amountAsked).to.be.equal(ethers.parseEther("7"));
             expect(description).to.be.equal("description");
             expect(creationTime).to.be.equal(timestamp1);
             expect(isAccepted).to.be.false;
@@ -363,7 +391,7 @@ describe("FundsFactory Contract", function () {
                .getFundsRequestDetails(1);
 
             expect(projectId).to.be.equal(0);
-            expect(amountAsked).to.be.equal(ethers.parseEther("20"));
+            expect(amountAsked).to.be.equal(ethers.parseEther("3"));
             expect(description).to.be.equal("description");
             expect(creationTime).to.be.equal(timestamp2);
             expect(isAccepted).to.be.false;
@@ -381,7 +409,7 @@ describe("FundsFactory Contract", function () {
                .getFundsRequestDetails(2);
 
             expect(projectId).to.be.equal(1);
-            expect(amountAsked).to.be.equal(ethers.parseEther("30"));
+            expect(amountAsked).to.be.equal(ethers.parseEther("20"));
             expect(description).to.be.equal("description");
             expect(creationTime).to.be.equal(timestamp3);
             expect(isAccepted).to.be.false;
@@ -399,18 +427,12 @@ describe("FundsFactory Contract", function () {
          beforeEach(async function () {
             [admin, researcher1, researcher2, investor1] =
                await ethers.getSigners();
-            fundsFactory = await deployProject();
-            await addResearcher(fundsFactory, researcher1);
+            [fundsFactory, researcherRegistry] = await deployProject();
+            await addResearcher(researcherRegistry, researcher1);
             await addResearchProject(fundsFactory, researcher1, 0, "100");
-            await buyNFT(
-               fundsFactory,
-               investor1,
-               0,
-               VIP,
-               ethers.parseEther("10")
-            );
+            await buyNFT(fundsFactory, investor1, 0, VIP, "10");
             await fundsFactory.connect(researcher1).openFundsRequest(0);
-            await addRequest(fundsFactory, researcher1, 0, "10");
+            await addRequest(fundsFactory, researcher1, 0, "5");
             await fundsFactory.connect(investor1).addVote(0, true);
             await fundsFactory.connect(researcher1).closeFundRequest(0);
          });
@@ -425,7 +447,7 @@ describe("FundsFactory Contract", function () {
                researcher1.address
             );
             expect(Number(balanceAfter - balanceBefore)).to.eq(
-               Number(ethers.parseEther("10")) -
+               Number(ethers.parseEther("5")) -
                   Number(receipt.gasUsed) * Number(receipt.gasPrice)
             );
          });
@@ -437,16 +459,16 @@ describe("FundsFactory Contract", function () {
          });
 
          it("should revert if the request is not ended", async function () {
-            await addRequest(fundsFactory, researcher1, 0, "10");
+            await addRequest(fundsFactory, researcher1, 0, "5");
             await fundsFactory.connect(investor1).addVote(1, true);
             //await fundsFactory.connect(researcher1).closeFundRequest(0);
             await expect(
                fundsFactory.connect(researcher1).claimFunds(1)
-            ).to.be.revertedWith("Fund request is not ended");
+            ).to.be.revertedWith("Fund request is not closed");
          });
 
          it("should revert if the request is not accepted", async function () {
-            await addRequest(fundsFactory, researcher1, 0, "10");
+            await addRequest(fundsFactory, researcher1, 0, "5");
             await fundsFactory.connect(investor1).addVote(1, false);
             await fundsFactory.connect(researcher1).closeFundRequest(1);
             await expect(

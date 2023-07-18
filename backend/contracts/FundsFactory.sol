@@ -203,7 +203,7 @@ contract FundsFactory is Ownable {
         requestIdNumber++;
 
         emit FundsRequestCreated(
-            researchProjects[id].fundRequestListsIds.length - 1,
+            requestId,
             msg.sender
         );
     }
