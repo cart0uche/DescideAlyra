@@ -21,7 +21,6 @@ async function deployProject() {
 }
 
 async function addResearcher(researcherRegistry, researcher) {
-   console.log(researcherRegistry.interface);
    await researcherRegistry.addResearcher(
       researcher.address,
       "dupont",
