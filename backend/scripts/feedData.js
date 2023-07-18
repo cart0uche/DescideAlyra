@@ -1,6 +1,15 @@
 const hre = require("hardhat");
 
 async function main() {
+   const CLASSIC = 0;
+   const PLUS = 1;
+   const PREMIUM = 2;
+   const VIP = 3;
+
+   const PROJECT_0 = 0;
+   const PROJECT_1 = 1;
+   const PROJECT_2 = 2;
+
    const fundsFactory = await ethers.getContractAt(
       "FundsFactory",
       "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
@@ -80,10 +89,46 @@ async function main() {
       "bafybeig3byiidfkljdaw2uwj6wq2nn36ejibffzvifxp2aucbyonw7igsa"
    );
 
+   // Valid projects
+   await fundsFactory.validResearchProject(PROJECT_0);
+   await fundsFactory.validResearchProject(PROJECT_1);
+   await fundsFactory.validResearchProject(PROJECT_2);
 
-   // Valid first project
-   await fundsFactory.validResearchProject(0);
-   await fundsFactory.validResearchProject(1);
+   // Buy NFTs VIP on project 0
+   await fundsFactory.buyNFT(PROJECT_0, VIP, {
+      value: ethers.parseEther("1"),
+   });
+
+   // Buy NFTs CLASSIC on project 0
+   await fundsFactory.buyNFT(PROJECT_0, CLASSIC, {
+      value: ethers.parseEther("0.1"),
+   });
+
+   // Buy NFTs PREMIUM on project 1
+   await fundsFactory.buyNFT(PROJECT_1, PREMIUM, {
+      value: ethers.parseEther("0.5"),
+   });
+
+   // Add 2 funds request on project 0
+   await fundsFactory.openFundsRequest(PROJECT_0);
+   await fundsFactory.createFundsRequest(
+      PROJECT_0,
+      ethers.parseEther("0.1"),
+      "1st funds request on project 0"
+   );
+   await fundsFactory.createFundsRequest(
+      PROJECT_0,
+      ethers.parseEther("0.2"),
+      "2nd funds request on project 0"
+   );
+
+   // Add 1 funds request on project 1
+   await fundsFactory.openFundsRequest(PROJECT_1);
+   await fundsFactory.createFundsRequest(
+      PROJECT_1,
+      ethers.parseEther("0.3"),
+      "1st funds request on project 1"
+   );
 }
 
 // We recommend this pattern to be able to use async/await everywhere
