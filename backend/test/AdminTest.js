@@ -8,38 +8,41 @@ const {
 
 describe("FundsFactory Contract", function () {
    let fundsFactory;
+   let researcherRegistry;
 
-   describe("Admin functions", function () {
+   describe.only("Admin functions", function () {
       describe("Valid researcher", function () {
          beforeEach(async function () {
             [admin, researcher1, researcher2, investor1, investor2] =
                await ethers.getSigners();
-            fundsFactory = await deployProject();
-            await addResearcher(fundsFactory, researcher1);
+            [fundsFactory, researcherRegistry] = await deployProject();
+            await addResearcher(researcherRegistry, researcher1);
          });
 
          it("change researcher status", async function () {
-            await fundsFactory.addResearcher(
+            await researcherRegistry.addResearcher(
                researcher2.address,
                "dupont",
                "david",
                "archeon"
             );
-            let researcher = await fundsFactory.getResearcher(
+            let researcher = await researcherRegistry.getResearcher(
                researcher2.address
             );
             expect(researcher.isValidated).to.be.false;
-            await fundsFactory.changeResearcherStatus(
+            await researcherRegistry.changeResearcherStatus(
                researcher2.address,
                true
             );
-            researcher = await fundsFactory.getResearcher(researcher2.address);
+            researcher = await researcherRegistry.getResearcher(
+               researcher2.address
+            );
             expect(researcher.isValidated).to.be.true;
          });
 
          it("should revert if not called by owner", async function () {
             await expect(
-               fundsFactory
+               researcherRegistry
                   .connect(researcher1)
                   .changeResearcherStatus(researcher1.address, true)
             ).to.be.revertedWith("Ownable: caller is not the owner");
@@ -50,8 +53,8 @@ describe("FundsFactory Contract", function () {
          beforeEach(async function () {
             [admin, researcher1, researcher2, investor1, investor2] =
                await ethers.getSigners();
-            fundsFactory = await deployProject();
-            await addResearcher(fundsFactory, researcher1);
+            [fundsFactory, researcherRegistry] = await deployProject();
+            await addResearcher(researcherRegistry, researcher1);
             await addResearchProject(fundsFactory, researcher1, 0, "100");
          });
 

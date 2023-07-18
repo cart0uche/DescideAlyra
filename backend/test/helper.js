@@ -3,21 +3,32 @@ const { ethers } = require("hardhat");
 async function deployProject() {
    let DAO = await ethers.getContractFactory("DAO");
    let dao = await DAO.deploy();
+
+   let ResearcherRegistry = await ethers.getContractFactory(
+      "ResearcherRegistry"
+   );
+   let researcherRegistry = await ResearcherRegistry.deploy();
+
    let FundsFactory = await ethers.getContractFactory("FundsFactory");
-   let fundsFactory = await FundsFactory.deploy(dao.target);
+   let fundsFactory = await FundsFactory.deploy(
+      dao.target,
+      researcherRegistry.target
+   );
    await dao.setFactoryAddress(fundsFactory.target);
-   return fundsFactory;
+   await researcherRegistry.setFactoryAddress(fundsFactory.target);
+
+   return [fundsFactory, researcherRegistry];
 }
 
-async function addResearcher(fundsFactory, researcher) {
-   await fundsFactory.addResearcher(
+async function addResearcher(researcherRegistry, researcher) {
+   console.log(researcherRegistry.interface);
+   await researcherRegistry.addResearcher(
       researcher.address,
       "dupont",
       "david",
       "archeon"
    );
-   await fundsFactory.changeResearcherStatus(researcher.address, true);
-   await fundsFactory.changeResearcherStatus(researcher.address, true);
+   await researcherRegistry.changeResearcherStatus(researcher.address, true);
 }
 
 async function addResearchProject(fundsFactory, researcher, index, amount) {
