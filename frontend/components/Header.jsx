@@ -1,11 +1,18 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Flex, Text, Spacer } from "@chakra-ui/react";
 import Link from "next/link";
 import Image from "next/image";
+import { useProject } from "@/hooks/useProject";
 
 const Header = () => {
+   const { isOwner, fetchOwner } = useProject();
+
+   useEffect(() => {
+      fetchOwner();
+   }, []);
+
    return (
       <Flex
          p="2rem"
@@ -59,17 +66,19 @@ const Header = () => {
                   Discover
                </Text>
             </Link>
-            <Link href="/admin">
-               <Text
-                  fontSize="1.5rem"
-                  fontWeight="bold"
-                  color="blue.500"
-                  cursor="pointer"
-                  ml={10}
-               >
-                  Admin
-               </Text>
-            </Link>
+            {isOwner ? (
+               <Link href="/admin">
+                  <Text
+                     fontSize="1.5rem"
+                     fontWeight="bold"
+                     color="blue.500"
+                     cursor="pointer"
+                     ml={10}
+                  >
+                     Admin
+                  </Text>
+               </Link>
+            ) : null}
          </Flex>
 
          <Flex marginLeft="auto">

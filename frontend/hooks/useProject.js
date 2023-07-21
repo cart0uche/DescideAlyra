@@ -7,6 +7,7 @@ import { readContract } from "@wagmi/core";
 export function useProject() {
    const { isConnected, address: addressAccount } = useAccount();
    const [projectInfo, setProjectInfo] = useState();
+   const [isOwner, setIsOwner] = useState(false);
    const toast = useToast();
 
    // Get project details
@@ -81,6 +82,23 @@ export function useProject() {
          },
       });
 
+   const fetchOwner = async () => {
+      console.log("->fetchOwner");
+      const data = await readContract({
+         address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+         abi: Contract.abi,
+         functionName: "owner",
+         onError(error) {
+            console.log("fetchOwner Error", error);
+         },
+         onSuccess(data) {
+            console.log("fetchOwner SUCCESS ", data);
+         },
+         account: addressAccount,
+      });
+      setIsOwner(data === addressAccount);
+   };
+
    return {
       createProject,
       isLoadingCreateProject,
@@ -88,5 +106,7 @@ export function useProject() {
       projectInfo,
       validProject,
       isLoadingValidProject,
+      fetchOwner,
+      isOwner,
    };
 }
