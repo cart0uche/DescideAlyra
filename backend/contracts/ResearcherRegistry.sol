@@ -3,6 +3,11 @@ pragma solidity 0.8.17;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+/**
+ * @author  Hafid Saou
+ * @title   ResearcherRegistry contract
+ * @notice  This contract is used to manage researchers 
+ */
 contract ResearcherRegistry is Ownable {
     struct Researcher {
         string lastname;
@@ -34,11 +39,35 @@ contract ResearcherRegistry is Ownable {
         _;
     }
 
+    /**
+     * @notice  Set the factory address 
+     * @param   _factoryAddress   The address of the factory
+     */
     function setFactoryAddress(address _factoryAddress) external {
         factoryAddress = _factoryAddress;
     }
 
-       function addResearcher(
+    /***** FACTORY FUNCTIONS******/
+
+    /**
+     * @notice  Add a project to a researcher
+     * @param   addr  Address of the researcher.
+     * @param   projectId  Project identifier.
+     */
+    function addProjectToResearcher(address addr, uint projectId) external onlyFactory() {
+        researchers[addr].projectListIds.push(projectId);
+    }
+
+    /****************************/
+
+    /**
+     * @notice  Add a researcher
+     * @param   addr  Address of the researcher.
+     * @param   lastname  Lastname of the researcher.
+     * @param   forname  Forname of the researcher.
+     * @param   company  Company of the researcher.
+     */
+    function addResearcher(
         address addr,
         string calldata lastname,
         string calldata forname,
@@ -55,6 +84,11 @@ contract ResearcherRegistry is Ownable {
         emit ResearcherAdded(addr, lastname, forname, company);
     }
 
+    /**
+     * @notice  Change the status of a researcher
+     * @param   addr  Address of the researcher.
+     * @param   status  New status of the researcher.
+     */
     function changeResearcherStatus(
         address addr,
         bool status
@@ -62,15 +96,20 @@ contract ResearcherRegistry is Ownable {
         researchers[addr].isValidated = status;
     }
 
+    /**
+     * @notice  Check if a researcher is validated
+     * @param   addr  Address of the researcher.
+     * @return  bool  True if the researcher is validated.
+     */
     function isValid(address addr) external view returns (bool) {
         return researchers[addr].isValidated;
-    }   
+    }  
 
-    function addProjectToResearcher(address addr, uint projectId) external onlyFactory() {
-        require(researchers[addr].isValidated, "Researcher does not exist");
-        researchers[addr].projectListIds.push(projectId);
-    }
-
+    /**
+     * @notice  Get a researcher
+     * @param   addr  Address of the researcher.
+     * @return  Researcher  The researcher details.
+     */
     function getResearcher(address addr) external view returns (Researcher memory) {
         return (researchers[addr]);
     }

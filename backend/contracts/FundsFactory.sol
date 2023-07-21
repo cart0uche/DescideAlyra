@@ -7,8 +7,14 @@ import "./FundNFT.sol";
 import "./DAO.sol";
 import "./ResearcherRegistry.sol"; 
 
+
+/**
+ * @author  Hafid Saou
+ * @title   A contract for managing funds for research projects.
+ */
 contract FundsFactory is Ownable {
-    // EVENTS
+    
+    /************* EVENT *************/ 
     event ResearcherAdded(
         address addr,
         string lastname,
@@ -22,7 +28,7 @@ contract FundsFactory is Ownable {
     event VoteAdded(address investor, uint projectId, uint requestId, bool vote);
 
 
-    /******************ENUMS *************/ 
+    /*************ENUMS *************/ 
 
     enum ResearchProjectStatus {
         waitingForValidation,
@@ -32,7 +38,7 @@ contract FundsFactory is Ownable {
     }
 
     
-    /****************** STRUCTS *************/ 
+    /************ STRUCTS *************/ 
 
     struct Investor {
         uint[] fundRequestListsIds;
@@ -56,7 +62,6 @@ contract FundsFactory is Ownable {
     }
 
     /****************** VARIABLES *************/ 
-    //mapping(address => ResearchProject[]) researchProjectByResearcher;
     ResearchProject[] researchProjects;
 
     DAO dao;
@@ -72,6 +77,11 @@ contract FundsFactory is Ownable {
     // ADMIN FUNCTIONS
     ////////////////////////////////
 
+    
+    /**
+     * @notice  Allow admin to validate a research project.
+     * @param   id  project identifier
+     */
     function validResearchProject(uint id) external onlyOwner {
         researchProjects[id].status = ResearchProjectStatus.nftSaleOpen;
         emit ResearchProjectValidated(id);
@@ -85,14 +95,6 @@ contract FundsFactory is Ownable {
         _;
     }
 
-    modifier onlyCurrentResearcherOrAdmin(address addr) {
-        require(
-            msg.sender == addr || msg.sender == owner(),
-            "You're not register"
-        );
-        _;
-    }
-
     modifier belongToResearcher(uint projectId) {
         require(projectId < researchProjects.length, "Id dont exist");
         require(
@@ -102,6 +104,15 @@ contract FundsFactory is Ownable {
         _;
     }
 
+
+    /**
+     * @notice  Allow researcher to add a research project, and deplot a NFT contract for this project.
+     * @param   title  The title of the research project.
+     * @param   description  The description of the research project.
+     * @param   imageUrl  The image url of the research project.
+     * @param   amountAsked  The amount asked for the research project.
+     * @param   projectDetailsUri  The uri of the litepaper
+     */
     function addResearchProject(
         string memory title,
         string memory description,
@@ -134,6 +145,11 @@ contract FundsFactory is Ownable {
         emit ResearchProjectCreated(researchProjects.length - 1, msg.sender);
     }
 
+    /**
+     * @notice  Allow resercher to get a research project details.
+     * @param   id  Project identifier.
+     * @return  ResearchProject  The research project details.
+     */
     function getResearchProject(
         uint id
     ) external view returns (ResearchProject memory) {
@@ -141,6 +157,12 @@ contract FundsFactory is Ownable {
         return researchProjects[id];
     }
 
+    /**
+     * @notice  Add a NFT contract to a research project.
+     * @param   id  Project identifier.
+     * @param   tokenName  The name of the NFT.
+     * @param   symbol  The symbol of the NFT.
+     */
     function addNFT(
         uint id,
         string memory tokenName,
@@ -156,6 +178,11 @@ contract FundsFactory is Ownable {
 
     //  FUNDS REQUEST FUNCTIONS
 
+
+    /**
+     * @notice  Allow researcher to open a funds request.
+     * @param   projectId  Project identifier.
+     */
     function openFundsRequest(
         uint projectId
     ) external belongToResearcher(projectId) {
@@ -168,6 +195,12 @@ contract FundsFactory is Ownable {
         researchProjects[projectId].status = ResearchProjectStatus.fundRequestOpen;
     }   
 
+    /**
+     * @notice  Allow researcher to create a funds request.
+     * @param   id  The id of the research project.
+     * @param   amount  The amount asked.
+     * @param   description  The description of the funds request.
+     */
     function createFundsRequest(
         uint id,
         uint amount,
@@ -202,9 +235,6 @@ contract FundsFactory is Ownable {
         researchProjects[id].amountAlreayRaised += amount;
         requestIdNumber++;
 
-        console.log("id", id);
-        console.log("requestId", requestId);
-        console.log("msg.sender", msg.sender);
         emit FundsRequestCreated(
             id,
             requestId,
@@ -212,6 +242,10 @@ contract FundsFactory is Ownable {
         );
     }
 
+    /**
+     * @notice  Allow researcher to close a funds request.
+     * @param   requestId  The id of the funds request.
+     */
     function closeFundRequest(
         uint requestId
     ) external  {
@@ -235,6 +269,10 @@ contract FundsFactory is Ownable {
         );
     }
 
+    /**
+     * @notice  Allow researcher to claim funds.
+     * @param   requestId  The id of the funds request.
+     */
     function claimFunds(
         uint requestId
     ) external {
@@ -254,6 +292,17 @@ contract FundsFactory is Ownable {
     }
 
     // get funds request details from funds request id
+    /**
+     * @notice  .
+     * @dev     .
+     * @param   fundRequestId  .
+     * @return  uint  .
+     * @return  uint256  .
+     * @return  string  .
+     * @return  uint256  .
+     * @return  bool  .
+     * @return  uint  .
+     */
     function getFundsRequestDetails(
         uint fundRequestId
     ) external view returns (uint, uint256, string memory, uint256, bool, uint) {
@@ -267,6 +316,14 @@ contract FundsFactory is Ownable {
     // INVESTOR FUNCTIONS
     ////////////////////////////////
 
+    /**
+     * @notice  Allow investor to get NFT prices.
+     * @param   id  Project identifier.
+     * @return  uint  Price of classic NFT.
+     * @return  uint  Price of plus NFT.
+     * @return  uint  Price of premium NFT.
+     * @return  uint  Price of vip NFT.
+     */
     function getNFT_Prices(
         uint id
     ) external view returns (uint, uint, uint, uint) {
@@ -274,13 +331,26 @@ contract FundsFactory is Ownable {
         return nft.getPrices();
     }
 
+    /**
+     * @notice  Allow investor to get NFT number minted.
+     * @param   id  Project identifier.
+     * @return  uint  Number of classic NFT minted.
+     * @return  uint  Number of plus NFT minted.
+     * @return  uint  Number of premium NFT minted.
+     * @return  uint  Number of vip NFT minted.
+     */
     function getNumberNFTMinted(
         uint id
-    ) external view returns (uint, uint, uint, uint, bool) {
+    ) external view returns (uint, uint, uint, uint) {
         FundNFT nft = FundNFT(researchProjects[id].fundNFT);
         return nft.getNumberNFTMinted();
     }
 
+    /**
+     * @notice  Allow investor to buy NFT.
+     * @param   projectId  Project identifier.
+     * @param   typeNFT  Type of NFT(0,1,2,3)
+     */
     function buyNFT(uint projectId, uint typeNFT) external payable {
         require(
             researchProjects[projectId].status ==
@@ -296,6 +366,12 @@ contract FundsFactory is Ownable {
 
     }
 
+    
+    /**
+     * @notice  Allow investor to add a vote.
+     * @param   requestId  Request identifier.
+     * @param   vote  Vote (true or false).
+     */
     function addVote(
         uint requestId,
         bool vote
@@ -303,7 +379,7 @@ contract FundsFactory is Ownable {
         (uint projectId,,,,,) =  dao.getFundRequestDetails(requestId);
         require(
             FundNFT(researchProjects[projectId].fundNFT).balanceOf(msg.sender) > 0,
-            "You need to buy NFT to vote"
+            "You need to own a NFT to vote"
         );
 
         dao.voteForFundRequest(requestId, projectId, vote, msg.sender);
@@ -315,6 +391,12 @@ contract FundsFactory is Ownable {
     ////////////////////////////////
 
     // create a function to get the vote result from DAO
+    
+    /**
+     * @notice  Allow anyone to get the vote result from DAO.   
+     * @param   requestId  Request identifier.
+     * @return  DAO.Vote  The vote result details.
+     */
     function getVoteResult(
         uint requestId
     ) external view returns (DAO.Vote memory) {

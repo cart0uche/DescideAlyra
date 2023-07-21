@@ -2,6 +2,11 @@
 pragma solidity 0.8.17;
 import "hardhat/console.sol";
 
+/**
+ * @author  Hafid Saou
+ * @title   DAO contract
+ * @notice  This contract is used to manage DAO
+ */
 contract DAO {
 
     struct Vote {
@@ -55,6 +60,13 @@ contract DAO {
         _;
     }
 
+    /**
+     * @notice  Add a DAO
+     * @param   projectId  Project identifier.
+     * @param   requestId  Request identifier.
+     * @param   amount  Amount asked.
+     * @param   description  Description of the request.
+     */
     function addDao( uint projectId,
         uint requestId,
         uint amount,
@@ -71,6 +83,10 @@ contract DAO {
         fundRequests.push(fundRequest);
     }
 
+    /**
+     * @notice   Get the request details
+     * @param   requestId  Request identifier.
+     */
     function getFundRequestDetails(uint requestId) public view onlyFactory returns(uint, uint256, string memory, uint256, bool, uint){
          require(
             requestId < fundRequests.length,
@@ -86,8 +102,14 @@ contract DAO {
         ;
     }
 
-
-    // create a function for voting for a fund request
+    
+    /**
+     * @notice  Vote for a fund request
+     * @param   requestId  Request identifier.
+     * @param   projectId  Project identifier.
+     * @param   vote  Vote (true or false)
+     * @param   investor  Address of the investor.
+     */
     function voteForFundRequest(
         uint requestId,
         uint projectId,
@@ -127,6 +149,12 @@ contract DAO {
         investorsVotes[requestId][investor] = true;
     }   
 
+    /**
+     * @notice  Add a vote weight for an investor
+     * @param   projectId  Project identifier.
+     * @param   investor  Address of the investor.
+     * @param   weight  Weight of the vote.
+     */
     function addInvestorVoteWeight(uint projectId, address investor, uint weight) external onlyFactory{
         // count the number of investor for a project
         if(investorsVoteWeight[projectId][investor] == 0)
@@ -138,7 +166,10 @@ contract DAO {
       
     } 
 
-    // add a function to close a request
+    /**
+     * @notice  Close a fund request
+     * @param   requestId  Request identifier.
+     */
     function closeFundRequest(uint requestId) external onlyFactory returns(uint, bool){
         require(
             requestId < fundRequests.length,
@@ -161,6 +192,7 @@ contract DAO {
                 fundRequests[requestId].isAccepted = false;
             }
         } else {
+
             fundRequests[requestId].isAccepted = false;
         }       
 
@@ -169,7 +201,11 @@ contract DAO {
         return (fundRequests[requestId].amountAsked, fundRequests[requestId].isAccepted);
     }
 
-    // create a function to get the vote results
+    
+    /**
+     * @notice  Get the vote result
+     * @param   requestId  Request identifier.
+     */
     function getVoteResult(uint requestId) external view onlyFactory returns(Vote memory){
         require(
             requestId < fundRequests.length,
@@ -181,6 +217,10 @@ contract DAO {
         return (vote);
     }
 
+    /**
+     * @notice  Determine if a researcher can claim funds
+     * @param   requestId  Request identifier.
+     */
     function shouldClaimFunds(uint requestId) external view onlyFactory returns(uint) {
         require(
             requestId < fundRequests.length,
@@ -199,6 +239,11 @@ contract DAO {
         return fundRequests[requestId].amountAsked;
     }
 
+    
+    /**
+     * @notice  Claim funds
+     * @param   requestId  Request identifier.
+     */
     function claimFunds(uint requestId) external onlyFactory {
         require(
             requestId < fundRequests.length,

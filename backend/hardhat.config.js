@@ -23,7 +23,7 @@ module.exports = {
          url: "https://sepolia.infura.io/v3/" + process.env.INFURA_KEY,
          // If not set, it uses the hardhat account 0 private key.
          accounts: [
-            process.env.PRIVATE_KEY ??
+            process.env.DEPLOYER_PRIVATE_KEY ??
                "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
          ],
       },

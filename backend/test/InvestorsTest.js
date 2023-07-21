@@ -163,7 +163,7 @@ describe("FundsFactory Contract", function () {
          });
 
          const uri =
-            '{"name": "projet1","image": "ipfs://image1","attributes": [{"type": "CLASSIC"}]}';
+            '{"name": "projet1","image": "ipfs://image1","attributes": [{"trait_type": "type", "value": "CLASSIC"}]}';
 
          // encode the json with base64
          const uriBase64 =
@@ -219,32 +219,33 @@ describe("FundsFactory Contract", function () {
             .withArgs(investor1.address, 0, 0, false);
       });
 
-      it("should fail if not buy NFT", async function () {
+      it("should revert if not buy NFT", async function () {
          await expect(
             fundsFactory.connect(investor2).addVote(0, true)
-         ).to.be.revertedWith("You need to buy NFT to vote");
+         ).to.be.revertedWith("You need to own a NFT to vote");
       });
 
-      it("should fail if already vote", async function () {
+      it("should revert if already vote", async function () {
          await fundsFactory.connect(investor1).addVote(0, true);
          await expect(
             fundsFactory.connect(investor1).addVote(0, true)
          ).to.be.revertedWith("You already vote for this fund request");
       });
 
-      it("should fail if request id dont exist", async function () {
+      it("should revert if request id dont exist", async function () {
          await expect(
             fundsFactory.connect(investor1).addVote(1, true)
          ).to.be.revertedWith("Id dont exist");
       });
 
-      // TODO
-      it("should fail if request is not in progress", async function () {});
+      it("should revert if request is not in progress", async function () {
+         await fundsFactory.connect(researcher1).closeFundRequest(0);
+         await expect(
+            fundsFactory.connect(investor1).addVote(0, true)
+         ).to.be.revertedWith("Fund request is not in progress");
+      });
 
-      // TODO
-      it("should fail if request is already accepted", async function () {});
-
-      it("should fail if request is expired", async function () {
+      it("should revert if request is expired", async function () {
          const oneMonth = 2629743; // seconds in 1 month
          await ethers.provider.send("evm_increaseTime", [oneMonth]);
          await ethers.provider.send("evm_mine");

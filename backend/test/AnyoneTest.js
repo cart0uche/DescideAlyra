@@ -45,7 +45,7 @@ describe("FundsFactory Contract", function () {
             expect(r.exist).to.be.true;
          });
 
-         it("should fail is a research is added twice", async function () {
+         it("should revert is a research is added twice", async function () {
             await researcherRegistry
                .connect(researcher1)
                .addResearcher(
@@ -62,6 +62,21 @@ describe("FundsFactory Contract", function () {
                   "archeon"
                )
             ).to.be.revertedWith("Researcher already exist");
+         });
+      });
+      describe("Researchers valid", function () {
+         beforeEach(async function () {
+            [admin, researcher1, researcher2] = await ethers.getSigners();
+            [fundsFactory, researcherRegistry] = await deployProject();
+            await addResearcher(researcherRegistry, researcher1);
+         });
+
+         it("returns true if valid", async function () {
+            expect(await researcherRegistry.isValid(researcher1)).to.be.true;
+         });
+
+         it("returns false if notvalid", async function () {
+            expect(await researcherRegistry.isValid(researcher2)).to.be.false;
          });
       });
    });

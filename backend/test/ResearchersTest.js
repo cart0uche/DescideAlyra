@@ -115,7 +115,7 @@ describe("FundsFactory Contract", function () {
             expect(r2.projectListIds[0]).to.be.equal(1);
          });
 
-         it("should fail if amount is 0", async function () {
+         it("should revert if amount is 0", async function () {
             await expect(
                fundsFactory
                   .connect(researcher1)
@@ -129,7 +129,7 @@ describe("FundsFactory Contract", function () {
             ).to.be.revertedWith("Amount not 0");
          });
 
-         it("should fail if details is empty", async function () {
+         it("should revert if details is empty", async function () {
             await expect(
                fundsFactory
                   .connect(researcher1)
@@ -143,7 +143,7 @@ describe("FundsFactory Contract", function () {
             ).to.be.revertedWith("Detail is mandatory");
          });
 
-         it("should fail if get unknown project", async function () {
+         it("should revert if get unknown project", async function () {
             await fundsFactory
                .connect(researcher1)
                .addResearchProject(
@@ -241,7 +241,7 @@ describe("FundsFactory Contract", function () {
                .withArgs(1, 1, researcher1.address);
          });
 
-         it("should fail if amount is 0", async function () {
+         it("should revert if amount is 0", async function () {
             const project1 = await fundsFactory
                .connect(researcher1)
                .getResearchProject(0);
@@ -252,7 +252,7 @@ describe("FundsFactory Contract", function () {
             ).to.be.revertedWith("Amount not 0");
          });
 
-         it("should fail if description is empty", async function () {
+         it("should revert if description is empty", async function () {
             const project1 = await fundsFactory
                .connect(researcher1)
                .getResearchProject(0);
@@ -263,7 +263,7 @@ describe("FundsFactory Contract", function () {
             ).to.be.revertedWith("Detail is mandatory");
          });
 
-         it("should fail if get unknown project", async function () {
+         it("should revert if get unknown project", async function () {
             await expect(
                fundsFactory
                   .connect(researcher1)
@@ -272,7 +272,7 @@ describe("FundsFactory Contract", function () {
          });
 
          // test it should failes if the project is not validated
-         it("should fail if the project is not validated", async function () {
+         it("should revert if the project is not validated", async function () {
             const project3 = await fundsFactory
                .connect(researcher1)
                .getResearchProject(2);
@@ -312,27 +312,24 @@ describe("FundsFactory Contract", function () {
                .withArgs(0, researcher1.address);
          });
 
-         it("should fail if request id dont exist", async function () {
+         it("should revert if request id dont exist", async function () {
             await expect(
                fundsFactory.connect(researcher1).closeFundRequest(5)
             ).to.be.revertedWith("Id dont exist");
          });
 
-         it("should fail if request is already closed", async function () {
+         it("should revert if request is already closed", async function () {
             await fundsFactory.connect(researcher1).closeFundRequest(0);
             await expect(
                fundsFactory.connect(researcher1).closeFundRequest(0)
             ).to.be.revertedWith("Fund request is not in progress");
          });
 
-         it("should fail if another researcher try to close the request", async function () {
+         it("should revert if another researcher try to close the request", async function () {
             await expect(
                fundsFactory.connect(researcher2).closeFundRequest(0)
             ).to.be.revertedWith("Project not yours");
          });
-
-         // TODO
-         it("should fail if the request is already accepted", async function () {});
       });
 
       describe("Get funds request details", function () {
@@ -416,7 +413,7 @@ describe("FundsFactory Contract", function () {
             expect(status).to.be.equal(FUNDS_STATE_IN_PROGRESS);
          });
 
-         it("should fail if request id dont exist", async function () {
+         it("should revert if request id dont exist", async function () {
             await expect(
                fundsFactory.connect(researcher1).getFundsRequestDetails(5)
             ).to.be.revertedWith("Id dont exist");
