@@ -1,6 +1,7 @@
 import { useNFT } from "@/hooks/useNFT";
 import { SimpleGrid, Box } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
+import { useFundsContext } from "@/context/fundsContext";
 import Mint from "./Mint";
 
 function Mints({ projectInfoContext }) {
@@ -41,14 +42,17 @@ function Mints({ projectInfoContext }) {
          typeNFT: 3,
       },
    ]);
+   const { updateViewNFT } = useFundsContext();
 
    console.log("projectInfoContext.fundNFT ", projectInfoContext.fundNFT);
 
    useEffect(() => {
-      console.log("Mints : projectInfoContext.id ", projectInfoContext.id);
       fetchNFTPrices(projectInfoContext.id);
-      fetchNFTNbMinted(projectInfoContext.id);
    }, []);
+
+   useEffect(() => {
+      fetchNFTNbMinted(projectInfoContext.id);
+   }, [updateViewNFT]);
 
    useEffect(() => {
       console.log("NFTPrices ", NFTPrices);
@@ -72,7 +76,7 @@ function Mints({ projectInfoContext }) {
             });
          });
       }
-   }, [NFTQuantityMinted]);
+   }, [NFTQuantityMinted, updateViewNFT]);
 
    return (
       <Box mt={8}>

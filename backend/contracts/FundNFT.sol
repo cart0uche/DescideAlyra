@@ -23,9 +23,6 @@ contract FundNFT is
     ERC721Pausable,
     Ownable
 {
-    // EVENT
-    event fundNFTMinted(address _from, uint _tokenId, uint nftType);
-
     //ENUM
     enum nftType {
         CLASSIC,
@@ -147,9 +144,7 @@ contract FundNFT is
          nftConfs[nftType(typeNFT)].number++;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, dataURI);
-
-        emit fundNFTMinted(to, tokenId, typeNFT);
-       
+      
     }
     
     /**

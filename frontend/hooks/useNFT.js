@@ -1,9 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAccount, useContractWrite } from "wagmi";
-import { publicClient } from "../conf/client";
-import { parseAbiItem } from "viem";
 import Contract from "@/public/FundsFactory.json";
-import { useToast } from "@chakra-ui/react";
 import { readContract } from "@wagmi/core";
 
 export function useNFT() {

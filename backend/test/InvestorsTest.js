@@ -1,5 +1,6 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
+const { time } = require("@nomicfoundation/hardhat-network-helpers");
 const {
    deployProject,
    addResearcher,
@@ -47,8 +48,8 @@ describe("FundsFactory Contract", function () {
                value: ethers.parseEther("0.1"),
             })
          )
-            .to.emit(nftContract, "fundNFTMinted")
-            .withArgs(investor1.address, 0, CLASSIC);
+            .to.emit(fundsFactory, "NFTbought")
+            .withArgs(investor1.address, 0, CLASSIC, await time.latest());
       });
 
       it("emit an event of mint NFT when buy plus NFT", async function () {
@@ -62,8 +63,8 @@ describe("FundsFactory Contract", function () {
                .connect(investor1)
                .buyNFT(0, PLUS, { value: ethers.parseEther("2.5") })
          )
-            .to.emit(nftContract, "fundNFTMinted")
-            .withArgs(investor1.address, 0, PLUS);
+            .to.emit(fundsFactory, "NFTbought")
+            .withArgs(investor1.address, 0, PLUS, await time.latest());
       });
 
       it("emit an event of mint NFT when buy premium NFT", async function () {
@@ -77,8 +78,8 @@ describe("FundsFactory Contract", function () {
                value: ethers.parseEther("5"),
             })
          )
-            .to.emit(nftContract, "fundNFTMinted")
-            .withArgs(investor1.address, 0, PREMIUM);
+            .to.emit(fundsFactory, "NFTbought")
+            .withArgs(investor1.address, 0, PREMIUM, await time.latest());
       });
 
       it("emit an event of mint NFT when buy vip NFT", async function () {
@@ -92,8 +93,8 @@ describe("FundsFactory Contract", function () {
                .connect(investor1)
                .buyNFT(0, VIP, { value: ethers.parseEther("10") })
          )
-            .to.emit(nftContract, "fundNFTMinted")
-            .withArgs(investor1.address, 0, VIP);
+            .to.emit(fundsFactory, "NFTbought")
+            .withArgs(investor1.address, 0, VIP, await time.latest());
       });
 
       it("increment investor balance", async function () {

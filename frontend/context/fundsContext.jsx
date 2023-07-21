@@ -10,6 +10,7 @@ export const FundsContextProvider = ({ children }) => {
    const [newFundsRequest, setNewFundsRequest] = useState(0);
    const [projectInfoContext, setProjectInfoContext] = useState(null);
    const [newVoteAddedForRequestId, setNewVoteAdded] = useState(null);
+   const [updateViewNFT, setUpdateViewNFT] = useState(0);
 
    const toast = useToast();
 
@@ -35,6 +36,17 @@ export const FundsContextProvider = ({ children }) => {
       },
    });
 
+   const unwatchNFTbought = useContractEvent({
+      address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+      abi: Contract.abi,
+      eventName: "NFTbought",
+      listener: (event) => {
+         console.log("-----> NFTbought ", event[0].args.timestamp);
+         setUpdateViewNFT(Number(event[0].args.timestamp));
+         unwatchNFTbought();
+      },
+   });
+
    return (
       <FundsContext.Provider
          value={{
@@ -42,6 +54,7 @@ export const FundsContextProvider = ({ children }) => {
             setProjectInfoContext,
             newFundsRequest,
             newVoteAddedForRequestId,
+            updateViewNFT,
          }}
       >
          {children}

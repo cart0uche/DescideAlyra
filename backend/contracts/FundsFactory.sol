@@ -26,6 +26,7 @@ contract FundsFactory is Ownable {
     event FundsRequestCreated(uint projectId, uint requestId, address researcher);
     event FundsRequestClosed(uint requestId, address reasearcher);
     event VoteAdded(address investor, uint projectId, uint requestId, bool vote);
+    event NFTbought(address investor, uint projectId, uint typeNFT, uint timestamp);
 
 
     /*************ENUMS *************/ 
@@ -363,7 +364,7 @@ contract FundsFactory is Ownable {
         researchProjects[projectId].amountReceived += msg.value;
         uint weightVote = nft.getWeight(typeNFT);
         dao.addInvestorVoteWeight(projectId, msg.sender, weightVote);
-
+        emit NFTbought(msg.sender, projectId, typeNFT, block.timestamp);
     }
 
     
