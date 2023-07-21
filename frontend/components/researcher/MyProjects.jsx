@@ -3,13 +3,22 @@ import { useEffect, useState } from "react";
 import { fetchProject } from "@/components/fetchData";
 import CardProject from "./CardProject";
 import { v4 as uuidv4 } from "uuid";
+import { useAccount } from "wagmi";
 
 function MyProjects() {
    const [projects, setProjects] = useState([]);
+   const [myProjects, setMyProjects] = useState([]);
+   const { address } = useAccount();
 
    useEffect(() => {
       fetchProject(setProjects);
    }, []);
+
+   useEffect(() => {
+      setMyProjects(
+         projects.filter((project) => project.researcherAddress === address)
+      );
+   }, [projects]);
 
    return (
       <div>
@@ -18,8 +27,8 @@ function MyProjects() {
                spacing={4}
                templateColumns="repeat(auto-fill, minmax(200px, 1fr))"
             >
-               {projects && projects.length > 0 ? (
-                  projects.map((project) => (
+               {myProjects && myProjects.length > 0 ? (
+                  myProjects.map((project) => (
                      <Card key={uuidv4()} marginBottom="4">
                         <CardProject project={project} />
                      </Card>

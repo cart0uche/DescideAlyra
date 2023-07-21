@@ -41,7 +41,7 @@ export const FundsContextProvider = ({ children }) => {
       abi: Contract.abi,
       eventName: "NFTbought",
       listener: (event) => {
-         console.log("-----> NFTbought ", event[0].args.timestamp);
+         console.log("NFTbought ", event[0].args.timestamp);
          setUpdateViewNFT(Number(event[0].args.timestamp));
          unwatchNFTbought();
       },

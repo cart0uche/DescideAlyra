@@ -6,7 +6,6 @@ import { ethers } from "ethers";
 import { useAccount } from "wagmi";
 import {
    ButtonGroup,
-   useToast,
    Popover,
    PopoverTrigger,
    PopoverContent,
@@ -20,6 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { MdOutlineHowToVote } from "react-icons/md";
 import { useFundsContext } from "@/context/fundsContext";
+import Link from "next/link";
 
 function OneFundsRequest({ fundsRequest }) {
    const { isOpen, onToggle, onClose } = useDisclosure();
@@ -48,7 +48,6 @@ function OneFundsRequest({ fundsRequest }) {
          getVoteResult(fundsRequest.fundsRequestId);
       }
    }, [newVoteAddedForRequestId]);
-
 
    const isMineProject = () => {
       if (projectInfoContext && projectInfoContext.researcher === address) {
@@ -91,21 +90,25 @@ function OneFundsRequest({ fundsRequest }) {
          </Td>
          <Td>
             <Flex direction="column">
+               <Link href="/vote">
+                  <Text fontSize="xl">See Vote details</Text>
+               </Link>
                {voteResult ? (
                   <>
-                     <Text>
-                        Votes : {Number(voteResult.voted)} /{" "}
-                        {Number(voteResult.totalVoters)}
-                     </Text>
-                     <Text color="green">
-                        Yes : {Number(voteResult.yes)} (weight:{" "}
-                        {Number(voteResult.yesWeight)})
-                     </Text>
-                     <Text color="red">
-                        No : {Number(voteResult.no)} (weight:{" "}
-                        {Number(voteResult.noWeight)})
-                     </Text>
-
+                     <Flex justifyContent="center">
+                        <Text>
+                           Votes : {Number(voteResult.voted)} /{" "}
+                           {Number(voteResult.totalVoters)}
+                        </Text>
+                     </Flex>
+                     <Flex justifyContent="space-between">
+                        <Text color="green">
+                           Yes : {Number(voteResult.yesWeight)}
+                        </Text>
+                        <Text color="red">
+                           No : {Number(voteResult.noWeight)}
+                        </Text>
+                     </Flex>
                      {fundsRequestDetail &&
                      getStatus(Number(fundsRequestDetail[5])) === "Closed" ? (
                         <>

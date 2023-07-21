@@ -2,7 +2,7 @@ import { publicClient } from "../conf/client";
 import { parseAbiItem } from "viem";
 
 export async function fetchResearcher(setter) {
-   console.log("--------> fetchResearcher");
+   console.log("fetchResearcher");
    const blockNumber = BigInt(
       Number(await publicClient.getBlockNumber()) - 15000
    );
@@ -11,8 +11,8 @@ export async function fetchResearcher(setter) {
       event: parseAbiItem(
          "event ResearcherAdded(address, string, string, string)"
       ),
-      //fromBlock: blockNumber < 0 ? 0n : blockNumber,
-      fromBlock: 3908436n,
+      fromBlock: blockNumber < 0 ? 0n : blockNumber,
+      //fromBlock: 3908436n,
    });
 
    const logs = await publicClient.getFilterLogs({ filter });
@@ -33,7 +33,7 @@ export async function fetchResearcher(setter) {
 }
 
 export async function fetchProject(setter) {
-   console.log("--------> fetchProject");
+   console.log("fetchProject");
    const blockNumber = BigInt(
       Number(await publicClient.getBlockNumber()) - 15000
    );
@@ -88,4 +88,38 @@ export async function fetchFundsRequests(setter, projectId) {
    });
 
    setter(parsedProjects);
+}
+
+export async function fetchVotes(setter, projectId) {
+   const blockNumber = BigInt(
+      Number(await publicClient.getBlockNumber()) - 15000
+   );
+   const filter = await publicClient.createEventFilter({
+      address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+      event: parseAbiItem("event VoteAdded(address, uint, uint, bool)"),
+      fromBlock: 0n,
+   });
+
+   const logs = await publicClient.getFilterLogs({ filter });
+   console.log("logs", logs);
+
+   // add a filter on projectId
+   const filteredLogs = logs.filter((log) => {
+      return log.args[1] === projectId;
+   });
+
+   const parsedVotes = filteredLogs.map((log, index) => {
+      const voter = log.args[0];
+      const projectId = log.args[1];
+      const fundsRequestId = log.args[2];
+      const voted = log.args[3];
+      return {
+         voter,
+         projectId,
+         fundsRequestId,
+         voted,
+      };
+   });
+
+   setter(parsedVotes);
 }
