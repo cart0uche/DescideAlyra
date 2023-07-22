@@ -10,6 +10,7 @@ import {
    Progress,
 } from "@chakra-ui/react";
 import { FaEthereum, FaClock } from "react-icons/fa";
+import { HiStatusOnline } from "react-icons/hi";
 import Mints from "./Mints";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
@@ -41,6 +42,16 @@ function Project() {
          default:
             return "";
       }
+   };
+
+   // add 30 days to creationTime and return the diffence with now
+   const getExpiredDate = (creationTime) => {
+      const date = new Date(1000 * Number(creationTime));
+      const expireDate = new Date(date.getTime() + 30 * 24 * 60 * 60 * 1000);
+      const now = new Date();
+      const diff = expireDate.getTime() - now.getTime();
+      const diffDays = Math.ceil(diff / (1000 * 3600 * 24));
+      return diffDays;
    };
 
    useEffect(() => {
@@ -114,27 +125,21 @@ function Project() {
                      <Flex alignItems="center" mb={4}>
                         <FaEthereum size={24} color="gray.500" />
                         <Text fontSize="xl" fontWeight="bold" ml={2}>
-                           Goal:{" "}
-                        </Text>
-
-                        <Text fontSize="xl">
-                           {Number(projectInfoContext.amountAsked)} ETH
+                           Goal : {Number(projectInfoContext.amountAsked)} ETH
                         </Text>
                      </Flex>
 
-                     <Flex alignItems="center" mb={1}>
+                     <Flex alignItems="center" mb={4}>
                         <FaEthereum size={24} color="gray.500" />
                         <Text fontSize="xl" fontWeight="bold" ml={2}>
-                           Funded:{" "}
-                        </Text>
-
-                        <Text fontSize="xl">
+                           Funded :{" "}
                            {ethers.utils.formatEther(
                               projectInfoContext.amountReceived
                            )}
                            ETH
                         </Text>
                      </Flex>
+
                      <Box
                         position="relative"
                         width={{ base: "100%", md: "50%" }}
@@ -155,8 +160,20 @@ function Project() {
                         />
                      </Box>
 
-                     <Flex alignItems="center" mb={4}>
+                     <Flex alignItems="center" mt={4} mb={4}>
                         <FaClock size={24} color="gray.500" />
+                        <Text fontSize="xl" fontWeight="bold" ml={2}>
+                           Expire in :{" "}
+                           {projectInfoContext &&
+                              getExpiredDate(
+                                 Number(projectInfoContext.creationTime)
+                              )}{" "}
+                           days
+                        </Text>
+                     </Flex>
+
+                     <Flex alignItems="center" mb={4}>
+                        <HiStatusOnline size={24} color="gray.500" />
                         <Text fontSize="xl" fontWeight="bold" ml={2}>
                            Status:{" "}
                         </Text>
