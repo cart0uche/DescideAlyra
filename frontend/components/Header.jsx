@@ -66,6 +66,17 @@ const Header = () => {
                   Discover
                </Text>
             </Link>
+            <Link href="/investor/myInvestissements">
+               <Text
+                  fontSize="1.5rem"
+                  fontWeight="bold"
+                  color="blue.500"
+                  cursor="pointer"
+                  ml={10}
+               >
+                  Investor
+               </Text>
+            </Link>
             {isOwner ? (
                <Link href="/admin">
                   <Text

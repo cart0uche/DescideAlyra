@@ -123,3 +123,36 @@ export async function fetchVotes(setter, projectId) {
 
    setter(parsedVotes);
 }
+
+// event NFTbought(address investor, uint projectId, uint typeNFT, uint timestamp);
+export async function fetchInvestedProjects(setter, investorAddress) {
+   const blockNumber = BigInt(
+      Number(await publicClient.getBlockNumber()) - 15000
+   );
+   const filter = await publicClient.createEventFilter({
+      address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+      event: parseAbiItem("event NFTbought(address, uint, uint, uint)"),
+      fromBlock: 0n,
+   });
+
+   const logs = await publicClient.getFilterLogs({ filter });
+   console.log("logs", logs);
+
+   // add a filter on projectId
+   const filteredLogs = logs.filter((log) => {
+      return log.args[0] === investorAddress;
+   });
+
+   const parsedInvests = filteredLogs.map((log, index) => {
+      const projectId = log.args[1];
+      const typeNFT = log.args[2];
+      const timestamp = log.args[3];
+      return {
+         projectId,
+         typeNFT,
+         timestamp,
+      };
+   });
+
+   setter(parsedInvests);
+}

@@ -4,6 +4,8 @@ import {
    CardFooter,
    Heading,
    Divider,
+   Spacer,
+   Flex,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useProject } from "@/hooks/useProject";
@@ -27,12 +29,27 @@ function CardProject({ project }) {
       router.push("/project");
    };
 
+   const getNFTType = (typeNFT) => {
+      switch (typeNFT) {
+         case 0:
+            return "Classic";
+         case 1:
+            return "Plus";
+         case 2:
+            return "Premium";
+         case 3:
+            return "VIP";
+         default:
+            return "";
+      }
+   };
+
    return (
       <>
          {projectInfo ? (
             <>
                <CardHeader>
-                  <Heading size="sm"> Proposal {projectInfo.title}</Heading>
+                  <Heading size="sm"> {projectInfo.title}</Heading>
                </CardHeader>
                <CardBody>
                   <Image
@@ -45,13 +62,21 @@ function CardProject({ project }) {
                </CardBody>
                <Divider />
                <CardFooter>
-                  <Link href="/project" legacyBehavior>
-                     <a onClick={handleDetailClick}>
-                        <Heading as="h2" size="s" color="#3182CE">
-                           Details
+                  <Flex justifyContent="center" direction="column">
+                     {project.typeNFT !== undefined ? (
+                        <Heading as="h2" size="s">
+                           You own {getNFTType(Number(project.typeNFT))} NFT
                         </Heading>
-                     </a>
-                  </Link>
+                     ) : null}
+
+                     <Link href="/project" legacyBehavior>
+                        <a onClick={handleDetailClick}>
+                           <Heading as="h2" size="s" color="#3182CE">
+                              Details
+                           </Heading>
+                        </a>
+                     </Link>
+                  </Flex>
                </CardFooter>
             </>
          ) : null}
