@@ -1,9 +1,7 @@
-import { Box, Flex, Text, useToken } from "@chakra-ui/react";
+import { Box, Flex, Text } from "@chakra-ui/react";
 import Link from "next/link";
-import { useState } from "react";
 
 function Action({ title, link }) {
-
    return (
       <Box
          w="500px"
@@ -12,7 +10,6 @@ function Action({ title, link }) {
          position="relative"
          borderWidth="2px"
          borderRadius="md"
-
       >
          <Link href={link}>
             <Flex

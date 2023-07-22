@@ -21,8 +21,10 @@ function Votes() {
    const [votes, setVotes] = useState([]);
 
    useEffect(() => {
-      console.log("Votes projectInfoContext", projectInfoContext);
-      fetchVotes(setVotes, projectInfoContext.id);
+    if (projectInfoContext !== null) {
+       console.log("Votes projectInfoContext", projectInfoContext);
+       fetchVotes(setVotes, projectInfoContext.id);
+    }
    }, [projectInfoContext]);
 
    useEffect(() => {

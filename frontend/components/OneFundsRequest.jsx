@@ -90,9 +90,6 @@ function OneFundsRequest({ fundsRequest }) {
          </Td>
          <Td>
             <Flex direction="column">
-               <Link href="/vote">
-                  <Text fontSize="xl">See Vote details</Text>
-               </Link>
                {voteResult ? (
                   <>
                      <Flex justifyContent="center">
@@ -214,7 +211,9 @@ function OneFundsRequest({ fundsRequest }) {
                   </>
                ) : (
                   <>
-                     {isMineProject(projectInfoContext.researcher) &&
+                     {fundsRequestDetail &&
+                     getStatus(Number(fundsRequestDetail[5])) === "Closed" &&
+                     isMineProject(projectInfoContext.researcher) &&
                      voteResult &&
                      voteResult.isAccepted ? (
                         <Button

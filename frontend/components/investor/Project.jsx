@@ -19,6 +19,7 @@ import ChangeProjectStatus from "../researcher/ChangeProjectStatus";
 import FundsRequestList from "../FundsRequestList";
 import FundRequestCreation from "../FundRequestCreation";
 import { useEffect } from "react";
+import SeeVoteDetails from "../SeeVoteDetails";
 
 function Project() {
    const { projectInfoContext } = useFundsContext();
@@ -216,12 +217,9 @@ function Project() {
                      />
                   </Flex>
                ) : null}
-               <Flex
-                  alignItems="center"
-                  mb={4}
-                  direction="column"
-                  mt={10}
-               ></Flex>
+               <Flex alignItems="center" mb={4} direction="column" mt={10}>
+                  <SeeVoteDetails />
+               </Flex>
             </Box>
          </Flex>
       </>
