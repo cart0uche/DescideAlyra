@@ -1,4 +1,4 @@
-import { Card, SimpleGrid, Flex } from "@chakra-ui/react";
+import { Card, SimpleGrid, Flex, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import CardProject from "../researcher/CardProject";
 import { fetchProject } from "@/components/fetchData";
@@ -13,6 +13,9 @@ function Discover() {
 
    return (
       <div>
+         <Text fontSize="2xl" fontWeight="bold" textAlign="center">
+            All projects
+         </Text>
          <Flex justifyContent="center" alignItems="center" mt={100}>
             <SimpleGrid
                spacing={4}

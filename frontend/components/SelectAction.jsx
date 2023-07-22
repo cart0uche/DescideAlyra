@@ -13,7 +13,7 @@ function SelectAtion() {
             mt={200}
          >
             <HStack spacing={10}>
-               <Action title="Invest in a project" link="" />
+               <Action title="Invest in a project" link="/investor" />
                <Action title="Propose a project" link="/researcher" />
             </HStack>
          </Flex>
