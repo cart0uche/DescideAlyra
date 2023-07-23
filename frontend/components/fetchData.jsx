@@ -1,6 +1,8 @@
 import { publicClient } from "../conf/client";
 import { parseAbiItem } from "viem";
 
+const fromBlock = 3950520n; //0n;
+
 export async function fetchResearcher(setter) {
    console.log("fetchResearcher");
    const blockNumber = BigInt(
@@ -11,8 +13,8 @@ export async function fetchResearcher(setter) {
       event: parseAbiItem(
          "event ResearcherAdded(address, string, string, string)"
       ),
-      fromBlock: blockNumber < 0 ? 0n : blockNumber,
-      //fromBlock: 3908436n,
+      //fromBlock: blockNumber < 0 ? 0n : blockNumber,
+      fromBlock: fromBlock,
    });
 
    const logs = await publicClient.getFilterLogs({ filter });
@@ -40,7 +42,8 @@ export async function fetchProject(setter) {
    const filter = await publicClient.createEventFilter({
       address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
       event: parseAbiItem("event ResearchProjectCreated(uint256, address)"),
-      fromBlock: blockNumber < 0 ? 0n : blockNumber,
+      //fromBlock: blockNumber < 0 ? 0n : blockNumber,
+      fromBlock: fromBlock,
    });
 
    const logs = await publicClient.getFilterLogs({ filter });
@@ -65,7 +68,7 @@ export async function fetchFundsRequests(setter, projectId) {
       event: parseAbiItem(
          "event FundsRequestCreated(uint256, uint256, address)"
       ),
-      fromBlock: 0n,
+      fromBlock: fromBlock,
    });
 
    const logs = await publicClient.getFilterLogs({ filter });
@@ -97,7 +100,7 @@ export async function fetchVotes(setter, projectId) {
    const filter = await publicClient.createEventFilter({
       address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
       event: parseAbiItem("event VoteAdded(address, uint, uint, bool)"),
-      fromBlock: 0n,
+      fromBlock: fromBlock,
    });
 
    const logs = await publicClient.getFilterLogs({ filter });
@@ -132,7 +135,7 @@ export async function fetchInvestedProjects(setter, investorAddress) {
    const filter = await publicClient.createEventFilter({
       address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
       event: parseAbiItem("event NFTbought(address, uint, uint, uint)"),
-      fromBlock: 0n,
+      fromBlock: fromBlock,
    });
 
    const logs = await publicClient.getFilterLogs({ filter });
