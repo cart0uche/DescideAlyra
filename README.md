@@ -108,14 +108,7 @@ Le smart contrat FundsFactory a été déployé sur Sepolia à cette adresse :
 Les tests couvrent 98% des instructions
 ![](capture.png)
 
-Les suites de tests sont divisés en 4 groupes (describe) pour vérifier le fonctionnement de chaque étape du workflow de Vote:
 
--  L'enregistrement des votants (Test register voters)
--  L'enregistrement des propositions de votes (Test register a proposal)
--  L'ajout de votes (Test adding a vote)
--  Le compte des votes (Test count votes)
-
-Un cinquième groupe permet de vérifier le fonctionnement du workflow (Test workflow)
 
 ## Note
 
