@@ -19,6 +19,7 @@ Le projet DeScide est un project de crowdfunding web3 permettant à des chercheu
 et à des investisseurs de gagner des NFTs en participant à des projets qui leur tiennent à coeur.
 
 Vidéo de présentation : https://www.youtube.com/watch?v=FFocy0PBXBk
+Deploiement sur vercel : descide-alyra.vercel.app
 
 ## Spécification
 
