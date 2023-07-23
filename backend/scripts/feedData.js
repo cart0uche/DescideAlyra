@@ -63,7 +63,6 @@ async function main() {
       true
    );
 
-   await transaction.wait();
 
    // Create projects
    await fundsFactory.addResearchProject(

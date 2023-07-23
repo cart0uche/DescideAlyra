@@ -43,7 +43,7 @@ contract FundNFT is
     // VARIABLES
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIdCounter;
-    mapping(nftType => nftConf) nftConfs;
+    mapping(nftType => nftConf) private nftConfs;
 
 
     constructor(
@@ -123,11 +123,11 @@ contract FundNFT is
         bytes memory uri = abi.encodePacked(
             '{',
                 '"name": "', projectTitle, '",',
-                '"image": "ipfs://', projectImageUrl, '",', // Ajout d'une virgule manquante
+                '"image": "ipfs://', projectImageUrl, '",', 
                 '"attributes": [',
                     '{',
                         '"trait_type": "type", "value": "',  labelTypeNFT(typeNFT), '"',
-                    '}', // Ajout d'une virgule manquante
+                    '}', 
                 ']',
             '}'
         );

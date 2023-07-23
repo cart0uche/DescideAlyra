@@ -39,10 +39,10 @@ contract DAO {
     address private factoryAddress;
     FundRequest[] private fundRequests;
 
-    mapping(uint => mapping(address => uint)) public investorsVoteWeight;
-    mapping(uint => uint) public totalVoteWeight;
-    mapping(uint => mapping(address => bool)) public investorsVotes;
-    mapping(uint => uint) public investorByProject;
+    mapping(uint => mapping(address => uint)) private investorsVoteWeight;
+    mapping(uint => uint) private totalVoteWeight;
+    mapping(uint => mapping(address => bool)) private investorsVotes;
+    mapping(uint => uint) private investorByProject;
 
     constructor() {
     }

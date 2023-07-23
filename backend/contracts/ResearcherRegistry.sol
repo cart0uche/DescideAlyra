@@ -19,7 +19,7 @@ contract ResearcherRegistry is Ownable {
         uint[] projectListIds;
     }
 
-    mapping(address => Researcher) public researchers;
+    mapping(address => Researcher) private researchers;
 
     event ResearcherAdded(
         address addr,

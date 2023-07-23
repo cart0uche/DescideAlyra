@@ -63,11 +63,11 @@ contract FundsFactory is Ownable {
     }
 
     /****************** VARIABLES *************/ 
-    ResearchProject[] researchProjects;
+    ResearchProject[] private researchProjects;
 
-    DAO dao;
+    DAO private dao;
     ResearcherRegistry private researcherRegistry;
-    uint requestIdNumber;
+    uint private requestIdNumber;
 
     constructor(address _dao, address _researcherRegistry) {
         dao = DAO(_dao);
@@ -287,6 +287,7 @@ contract FundsFactory is Ownable {
             amount <= address(this).balance,
             "Not enough funds"
         );
+        // we avoid reentrancy attack by setting the request status to "claimed" before sending the funds
         dao.claimFunds(requestId);
          (bool sent, ) = msg.sender.call{value: amount}("");
         require(sent, "Failed to send Ether");
