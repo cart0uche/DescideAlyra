@@ -1,7 +1,7 @@
 import { publicClient } from "../conf/client";
 import { parseAbiItem } from "viem";
 
-const fromBlock = 3950520n; //0n;
+const fromBlock = 3950400n; //0n;
 
 export async function fetchResearcher(setter) {
    console.log("fetchResearcher");
