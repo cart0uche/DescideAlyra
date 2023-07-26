@@ -19,6 +19,7 @@ Le projet DeScide est un project de crowdfunding web3 permettant à des chercheu
 et à des investisseurs de gagner des NFTs en participant à des projets qui leur tiennent à coeur.
 
 Vidéo de présentation : https://www.youtube.com/watch?v=FFocy0PBXBk
+Deploiement sur vercel : descide-alyra.vercel.app
 
 ## Spécification
 
@@ -94,13 +95,13 @@ Sur le backend, il ya 2 variables à renseigner dans /backend/.env:
 Le smart contrat ResearcherRegistry a été déployé sur Sepolia à cette adresse :
 
 ```
-0xbd99E81B52C6134b6E60057d4Ec418AD73754C4B
+0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
 ```
 
 Le smart contrat FundsFactory a été déployé sur Sepolia à cette adresse :
 
 ```
-0x784816Ac0D73B8180fD337Ed638827DE6c86D09E
+0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0
 ```
 
 ## Stratégie de test
