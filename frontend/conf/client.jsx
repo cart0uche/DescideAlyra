@@ -6,5 +6,15 @@ const chain =
 
 export const publicClient = createPublicClient({
    chain: chain,
-   transport: http(),
+   transport: http(
+      "https://eth-sepolia.g.alchemy.com/v2/" +
+         process.env.NEXT_PUBLIC_ALCHEMY_ID
+   ),
 });
+
+export const getPublicClient = () => {
+   return createPublicClient({
+      chain: sepolia,
+      transport: http(),
+   });
+};
